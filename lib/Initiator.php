@@ -8,17 +8,17 @@ class Initiator extends \Controller_Addon {
 	function init(){
 		parent::init(); 
 
-		if($this->app->getConfig('multi-xepans',false)){
-            $this->app->side_menu->addItem(['Epans','icon'=>' fa fa-globe','badge'=>[1 ,'swatch'=>' label label-primary pull-right']],'xepan_epanservices_epans')->setAttr(['title'=>'Epans']);
-        }
     }
 
 
     function setup_admin(){
-    	$this->routePages('xepan_epanservices');
+        $this->routePages('xepan_epanservices');
         $this->addLocation(array('template'=>'templates','js'=>'templates/js','css'=>'templates/css'))
         ->setBaseURL('../vendor/xepan/epanservices/')
         ;
+		if($this->app->getConfig('multi-xepans',false)){
+            $this->app->side_menu->addItem(['Epans','icon'=>' fa fa-globe','badge'=>[1 ,'swatch'=>' label label-primary pull-right']],'xepan_epanservices_epans')->setAttr(['title'=>'Epans']);
+        }
 
     	return $this;
     }
