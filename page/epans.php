@@ -19,5 +19,6 @@ class page_epans extends \xepan\base\Page {
 		
 		$crud = $this->add('xepan\hr\CRUD');
 		$crud->setModel('xepan\epanservices\Epan');
+
 	}
 }
