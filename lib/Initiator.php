@@ -24,6 +24,9 @@ class Initiator extends \Controller_Addon {
     }
 
     function setup_frontend(){
+        $epan_model = $this->add('xepan/epanservices/Model_Epan');
+        $this->app->addHook('order_placed',[$epan_model,'createFromOrder']);
+        $this->app->addHook('invoice_paid',[$epan_model,'invoicePaid']);
     	return $this;
     }
 
