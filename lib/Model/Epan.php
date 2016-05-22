@@ -33,6 +33,23 @@ class Model_Epan extends \xepan\base\Model_Epan{
 		$this->addHook('beforeDelete',[$this,'swipeEvenrything']);
 	}
 
+	function createFromOrder($app,$order){
+		// foreach order item
+		// if item is epan
+		// 		create epan in trial mode give unique epan name
+		// 	if item is template
+		// 		add template to user account
+		
+	}
+
+	function invoicePaid($app,$invoice){
+		// get related order 
+		// 	if item is epan
+		// 		change mode to paid and extend valid_till
+		// 	if item is template
+		// 		mark paid
+	}
+
 	function userAndDatabaseCreate(){
 		preg_match(
                     '|([a-z]+)://([^:]*)(:(.*))?@([A-Za-z0-9\.-]*)'.
