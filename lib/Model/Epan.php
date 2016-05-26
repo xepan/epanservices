@@ -34,12 +34,48 @@ class Model_Epan extends \xepan\base\Model_Epan{
 	}
 
 	function createFromOrder($app,$order){
-		// foreach order item
-		// if item is epan
-		// 		create epan in trial mode give unique epan name
-		// 	if item is template
-		// 		add template to user account
+		if(!$this->app->customer()->loadLoggedIn())
+			throw new \Exception("customer/ user not found");
 		
+		$epan_service_category = ['Epan','Templates','Addons','Application'];
+		
+		// foreach order item
+		$order_items = $order->orderItems();
+		foreach ($order_items as $order_item) {
+			$item = $order_item->item();
+
+			$associate_category	= $this->add('xepan\commerce\Model_CategoryItemAssociation')->addCondition('item_id',$item->id);
+			$associate_category->addExpression('category_name')->set($associate_category->refSQL('category_id')->addCondition('status','Active')->fieldQuery('name'));
+			foreach ($associate_category as $category) {
+				// if item is not in epan_service_category then continue
+				if(!in_array($category['category_name'], $epan_service_category))
+					continue;
+
+				// if item category is epan
+				// create epan in trial mode give unique epan name
+				if($category['category_name'] === "Epan"){
+					$this->createTrialEpan();
+				}
+
+				// 	if item category is template
+				// get current user active and paid epan 
+				// 	add template to user account
+				if($category['category_name'] === "Templates"){
+					
+				}
+
+			}
+		}
+	}
+
+	function createTrialEpan(){
+		$new_trial_epan = $this->add('xepan\epanservices\Model_Epan');
+		$new_trial_epan['created_by_id'] = $this->app->auth->model->id;
+		$new_trial_epan['name'] = uniqid();
+		$new_trial_epan['status'] = "Trial";
+		$new_trial_epan['valid_till'] = date("Y-m-d", strtotime(date("Y-m-d", strtotime($this->app->now)) . " +14 DAY"));
+		$new_trial_epan['epan_category_id'] = $this->add('xepan\base\Model_Epan_Category')->tryLoadAny()->id;
+		$new_trial_epan->save();
 	}
 
 	function invoicePaid($app,$invoice){
