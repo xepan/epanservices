@@ -34,7 +34,9 @@ class Model_Epan extends \xepan\base\Model_Epan{
 	}
 
 	function createFromOrder($app,$order){
-		if(!$this->app->customer()->loadLoggedIn())
+		$customer = $this->add('xepan\commerce\Model_Customer');
+		
+		if(!$customer->loadLoggedIn())
 			throw new \Exception("customer/ user not found");
 		
 		$epan_service_category = ['Epan','Templates','Addons','Application'];
@@ -42,11 +44,15 @@ class Model_Epan extends \xepan\base\Model_Epan{
 		// foreach order item
 		$order_items = $order->orderItems();
 		foreach ($order_items as $order_item) {
+			
 			$item = $order_item->item();
+			throw new \Exception($item->id);
 
 			$associate_category	= $this->add('xepan\commerce\Model_CategoryItemAssociation')->addCondition('item_id',$item->id);
 			$associate_category->addExpression('category_name')->set($associate_category->refSQL('category_id')->addCondition('status','Active')->fieldQuery('name'));
+
 			foreach ($associate_category as $category) {
+						
 				// if item is not in epan_service_category then continue
 				if(!in_array($category['category_name'], $epan_service_category))
 					continue;
