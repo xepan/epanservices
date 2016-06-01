@@ -27,8 +27,8 @@ class Model_Epan extends \xepan\base\Model_Epan{
 
 		$this->getElement('epan_category_id')->display(['form'=>'xepan\commerce\DropDown']);
 
-		$this->addHook('beforeInsert',[$this,'createFolder']);
-		$this->addHook('beforeInsert',[$this,'userAndDatabaseCreate']);
+		// $this->addHook('beforeInsert',[$this,'createFolder']);
+		// $this->addHook('beforeInsert',[$this,'userAndDatabaseCreate']);
 		$this->addHook('beforeDelete',[$this,'notifyByHook']);
 		$this->addHook('beforeDelete',[$this,'swipeEvenrything']);
 	}
@@ -46,13 +46,10 @@ class Model_Epan extends \xepan\base\Model_Epan{
 		foreach ($order_items as $order_item) {
 			
 			$item = $order_item->item();
-			throw new \Exception($item->id);
-
 			$associate_category	= $this->add('xepan\commerce\Model_CategoryItemAssociation')->addCondition('item_id',$item->id);
 			$associate_category->addExpression('category_name')->set($associate_category->refSQL('category_id')->addCondition('status','Active')->fieldQuery('name'));
 
-			foreach ($associate_category as $category) {
-						
+			foreach ($associate_category as $category) {						
 				// if item is not in epan_service_category then continue
 				if(!in_array($category['category_name'], $epan_service_category))
 					continue;
