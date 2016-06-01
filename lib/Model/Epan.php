@@ -24,7 +24,6 @@ class Model_Epan extends \xepan\base\Model_Epan{
 
 	function init(){
 		parent::init();
-
 		$this->getElement('epan_category_id')->display(['form'=>'xepan\commerce\DropDown']);
 
 		// $this->addHook('beforeInsert',[$this,'createFolder']);
@@ -72,8 +71,11 @@ class Model_Epan extends \xepan\base\Model_Epan{
 	}
 
 	function createTrialEpan(){
+		$customer = $this->add('xepan\commerce\Model_Customer');
+		$customer->loadLoggedIn();
+
 		$new_trial_epan = $this->add('xepan\epanservices\Model_Epan');
-		$new_trial_epan['created_by_id'] = $this->app->auth->model->id;
+		$new_trial_epan['created_by_id'] = $customer->id;
 		$new_trial_epan['name'] = uniqid();
 		$new_trial_epan['status'] = "Trial";
 		$new_trial_epan['valid_till'] = date("Y-m-d", strtotime(date("Y-m-d", strtotime($this->app->now)) . " +14 DAY"));

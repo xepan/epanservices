@@ -31,16 +31,19 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 	}
 
 	function showMyEpans(){
-
-		$this->app->addStyleSheet('jquery-ui');
-
-		$this->new_btn  = $this->add('Button')->set('Create New Epan Web Site')->addClass('btn btn-primary btn-lg');
-		$this->grid = $this->add('Grid');		
-		$this->new_btn->js('click',$this->js()->reload(['action'=>'createNew']));
-
+		$this->grid = $this->add('xepan\base\Grid');
 		$myEpans = $this->add('xepan\epanservices\Model_Epan');
 		$myEpans->addCondition('created_by_id',$this->customer->id);
-		
-		$this->grid->setModel($myEpans);
+		$this->grid->setModel($myEpans,['epan_category','xepan_template','created_by','name','status']);
+		$publish_button = $this->grid->addColumn('Button','Publish');
+
+		if($_GET['Publish']){
+			$new=$this->add('xepan\epanservices\Model_Epan');
+			$new->load($_GET['Publish']);
+			$new['published']=true;
+			$new->save();
+			$this->grid->js()->reload()->execute();
+			
+		}
 	}
 }
