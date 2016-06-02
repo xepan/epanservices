@@ -124,6 +124,7 @@ class Model_Epan extends \xepan\base\Model_Epan{
 		else
 			$new_db->dsql()->expr(file_get_contents(getcwd().'/install.sql'))->execute();
 
+		$saved_db = $this->app->db;
 		$this->app->db = $new_db;
 
 		try{
@@ -133,7 +134,10 @@ class Model_Epan extends \xepan\base\Model_Epan{
 			$this->app->resetDB = true;
 
 			foreach ($this->app->xepan_addons as $addon) {
-				$this->app->xepan_app_initiators[$addon]->resetDB();	
+				if($addon==='xepan\base') 
+					$this->app->xepan_app_initiators[$addon]->resetDB(null,$install_apps=false);
+				else
+					$this->app->xepan_app_initiators[$addon]->resetDB();
 			}
 
 			$this->installApplication();
@@ -141,11 +145,13 @@ class Model_Epan extends \xepan\base\Model_Epan{
 			$this->add('xepan\base\Model_Epan')->tryLoadAny()->set('name',$this['name'])->save();			
 			$this->app->db->dsql()->expr('SET FOREIGN_KEY_CHECKS = 1;')->execute();        
 			$this->api->db->commit();
+			$this->app->db = $saved_db;
 			$this->app->auth->login($user);
 		}catch(\Exception_StopInit $e){
 
 		}catch(\Exception $e){			
 			$this->api->db->rollback();
+			$this->app->db = $saved_db;
 			$this->app->auth->login($user);
 			throw $e;
 		}
@@ -214,19 +220,13 @@ class Model_Epan extends \xepan\base\Model_Epan{
 
         $extra_info = $this['extra_info']; // loaded from old app->db  (changed in called function btw)
         $extra_info = json_decode($extra_info,true);
-	
-        $addons=[];
+
+        $addons_to_keep = [];
         foreach ($extra_info['specification'] as $key => $value) {
-            if(strtolower($value) != 'yes'){
-            	$app_inst = $this->add('xepan\base\Model_Epan_InstalledApplication');
-            				
-				$app_inst_j = $app_inst->join('application','application_id');
-            	$app_inst_j->addField('application_name','name');
-           		 
-				$app_inst->addCondition('application_name',$key);
-				$app_inst->tryLoadAny();
-				$app_inst->delete();
+            if(strtolower($value) === 'yes'){
+            	$epan->installApp($this->add('xepan\base\Model_Application')->loadBy('namespace','xepan\\'.strtolower($key)));
             }
-        }       
+        }
+
 	}
 }

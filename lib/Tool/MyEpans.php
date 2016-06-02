@@ -55,10 +55,11 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 
 			if($form->isSubmitted()){
 				$new['name'] = $form['name'];
-				$new['is_published']=true;	
-				$new->save();	    		
+				$new['is_published']=true;
+	
 				$new->createFolder($new);
 				$new->userAndDatabaseCreate();
+				$new->save();	    		
 			}
     	});
 
