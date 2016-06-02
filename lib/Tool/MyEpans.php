@@ -31,11 +31,12 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 	}
 
 	function showMyEpans(){
+		$this->app->addStyleSheet('jquery-ui');
 		$this->grid = $this->add('xepan\base\Grid');
 		$myEpans = $this->add('xepan\epanservices\Model_Epan');
 		$myEpans->addCondition('created_by_id',$this->customer->id);
 		$this->grid->setModel($myEpans,['epan_category','xepan_template','created_by','name','status']);
-
+		
 		$this->grid->add('VirtualPage')
        		 ->addColumn('Publish')
        		 ->set(function($page){
@@ -57,8 +58,8 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 				$new['is_published']=true;	
 				
 				$new->createFolder($new);
-				$new->userAndDatabaseCreate();
-				$new->save();	    		
+				// $new->userAndDatabaseCreate();
+				// $new->save();	    		
 			}
     	});
 
