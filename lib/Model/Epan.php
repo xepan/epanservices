@@ -56,7 +56,12 @@ class Model_Epan extends \xepan\base\Model_Epan{
 				// if item category is epan
 				// create epan in trial mode give unique epan name
 				if($category['category_name'] === "Epan"){
-					$this->createTrialEpan();
+					$extra_info['qsp_detail_id'] = $order_item->id;
+					$extra_info['item_id'] = $item->id;
+					$extra_info['specification'] = $item->getSpecification();
+
+					$epan_item_info = json_encode($extra_info);
+					$this->createTrialEpan($epan_item_info);
 				}
 
 				// 	if item category is template
@@ -70,7 +75,7 @@ class Model_Epan extends \xepan\base\Model_Epan{
 		}
 	}
 
-	function createTrialEpan(){
+	function createTrialEpan($epan_item_info){
 		$customer = $this->add('xepan\commerce\Model_Customer');
 		$customer->loadLoggedIn();
 
@@ -80,6 +85,7 @@ class Model_Epan extends \xepan\base\Model_Epan{
 		$new_trial_epan['status'] = "Trial";
 		$new_trial_epan['valid_till'] = date("Y-m-d", strtotime(date("Y-m-d", strtotime($this->app->now)) . " +14 DAY"));
 		$new_trial_epan['epan_category_id'] = $this->add('xepan\base\Model_Epan_Category')->tryLoadAny()->id;
+		$new_trial_epan['extra_info'] = $epan_item_info;		
 		$new_trial_epan->save();
 	}
 
@@ -117,7 +123,7 @@ class Model_Epan extends \xepan\base\Model_Epan{
 			$new_db->dsql()->expr(file_get_contents(getcwd().'/../install.sql'))->execute();
 		else
 			$new_db->dsql()->expr(file_get_contents(getcwd().'/install.sql'))->execute();
-		
+
 		$this->app->db = $new_db;
 
 		try{
@@ -129,6 +135,8 @@ class Model_Epan extends \xepan\base\Model_Epan{
 			foreach ($this->app->xepan_addons as $addon) {
 				$this->app->xepan_app_initiators[$addon]->resetDB();	
 			}
+
+			$this->installApplication();
 			
 			$this->add('xepan\base\Model_Epan')->tryLoadAny()->set('name',$this['name'])->save();			
 			$this->app->db->dsql()->expr('SET FOREIGN_KEY_CHECKS = 1;')->execute();        
@@ -156,8 +164,6 @@ class Model_Epan extends \xepan\base\Model_Epan{
 		}
 		$fs = \Nette\Utils\FileSystem::createDir('./websites/'.$this['name']);
 		$fs = \Nette\Utils\FileSystem::copy('./vendor/xepan/cms/templates/defaultlayout','./websites/'.$this['name'],true);
-		// $fs = \Nette\Utils\FileSystem::createDir('./websites/'.$this['name'].'/www');
-		// $fs = \Nette\Utils\FileSystem::createDir('./websites/'.$this['name'].'/assets');
 	}
 
 	function createSuperUser($m,$new_id){
@@ -203,4 +209,24 @@ class Model_Epan extends \xepan\base\Model_Epan{
 
 	}
 
+	function installApplication(){		
+		$epan = $this->add('xepan\base\Model_Epan')->tryLoadAny();		
+
+        $extra_info = $this['extra_info']; // loaded from old app->db  (changed in called function btw)
+        $extra_info = json_decode($extra_info,true);
+	
+        $addons=[];
+        foreach ($extra_info['specification'] as $key => $value) {
+            if(strtolower($value) != 'yes'){
+            	$app_inst = $this->add('xepan\base\Model_Epan_InstalledApplication');
+            				
+				$app_inst_j = $app_inst->join('application','application_id');
+            	$app_inst_j->addField('application_name','name');
+           		 
+				$app_inst->addCondition('application_name',$key);
+				$app_inst->tryLoadAny();
+				$app_inst->delete();
+            }
+        }       
+	}
 }

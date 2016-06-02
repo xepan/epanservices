@@ -51,15 +51,14 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 
 			$form = $page->add('Form');
 			$form->addField('name');
-			$form->addSubmit('Submit');
+			$form->addSubmit('Publish');
 
 			if($form->isSubmitted()){
 				$new['name'] = $form['name'];
 				$new['is_published']=true;	
-				
+				$new->save();	    		
 				$new->createFolder($new);
-				// $new->userAndDatabaseCreate();
-				// $new->save();	    		
+				$new->userAndDatabaseCreate();
 			}
     	});
 
@@ -77,7 +76,7 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 			}
 			
 			$form = $page->add('Form');
-			$form->addSubmit('Submit');
+			$form->addSubmit('Unpublish');
 			if($form->isSubmitted()){
 				$new['is_published']=null;	
 				$new->save();	    			
