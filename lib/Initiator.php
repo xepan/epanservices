@@ -24,9 +24,16 @@ class Initiator extends \Controller_Addon {
     }
 
     function setup_frontend(){
+        $this->routePages('xepan_epanservices');
+        $this->addLocation(array('template'=>'templates','js'=>'templates/js','css'=>'templates/css'))
+        ->setBaseURL('vendor/xepan/epanservices/')
+        ;
+
         $epan_model = $this->add('xepan/epanservices/Model_Epan');
         $this->app->addHook('order_placed',[$epan_model,'createFromOrder']);
         $this->app->addHook('invoice_paid',[$epan_model,'invoicePaid']);
+
+        $this->app->exportFrontEndTool('xepan\epanservices\Tool_EpanTrial','Epan Trial');
     	return $this;
     }
 
