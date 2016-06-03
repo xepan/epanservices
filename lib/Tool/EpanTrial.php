@@ -47,11 +47,11 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
         	$epan_name = $form['epan_name'];
         	$this->createEpan($epan_name);
         	
-        	$newEpan = $this->add('xepan\epanservices\Model_Epan')->addCondition('name',$epan_name)->tryLoadAny();
-        	$newEpan['is_published']=true;
-			$newEpan->createFolder($newEpan);
-			$newEpan->userAndDatabaseCreate();
-			$newEpan->save();  	
+   //      	$newEpan = $this->add('xepan\epanservices\Model_Epan')->addCondition('name',$epan_name)->tryLoadAny();
+   //      	$newEpan['is_published']=true;
+			// $newEpan->createFolder($newEpan);
+			// $newEpan->userAndDatabaseCreate();
+			// $newEpan->save();  	
         	
         	return;
 		}
