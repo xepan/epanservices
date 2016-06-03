@@ -13,7 +13,7 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 		$this->app->memorize('next_url',$this->app->page);
 		if(!$this->app->auth->isLoggedIn()){
 			$f = $this->add('Form');
-			$f->addSubmit('Login to have your free website')->addClass('btn btn-primary btn-block')->addStyle('height:50px; font-size:22px;');
+			$f->addSubmit('Free 14 days trial')->addClass('btn btn-primary btn-block')->addStyle('height:50px; font-size:22px;');
 
 			if($f->isSubmitted()){
 				$this->app->redirect($this->options['login_page']);
@@ -33,7 +33,7 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 			$form = $this->add('Form',null,'form');
 			$form->setLayout('view\tool\form\epantrial');
 			$form->addField('epan_name')->setAttr(['placeholder'=>'your website name'])->validate('required?Please enter a website name');
-			$form->addSubmit('click here and enjoy 15 day free trial')->addClass('btn btn-primary btn-block');	
+			$form->addSubmit('click here and enjoy 14 day free trial')->addClass('btn btn-primary btn-block');	
 		}
 
 		if($form->isSubmitted()){
