@@ -8,30 +8,35 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 	];
 
 	function init(){
-		parent::init();
+		parent::init();		
 		$this->app->addStyleSheet('jquery-ui');
+		$this->app->memorize('next_url',$this->app->page);
+		if(!$this->app->auth->isLoggedIn()){
+			$f = $this->add('Form');
+			$f->addSubmit('Login to have your free website')->addClass('btn btn-primary btn-block')->addStyle('height:50px; font-size:22px;');
 
-		/*FORM TO ASK USER FOR EPAN NAME AND TO CHECK LOGGEDIN*/
-		$form = $this->add('Form',null,'form');
-		$form->setLayout('view\tool\form\epantrial');
-		$form->addField('epan_name')->setAttr(['placeholder'=>'your website name'])->validate('required?Please enter a website name');
-		$form->addSubmit('click here and enjoy 15 day free trial')->addClass('btn btn-primary btn-block');
-
-		if($form->isSubmitted()){
-
-			if(!$this->app->auth->isLoggedIn()){
+			if($f->isSubmitted()){
 				$this->app->redirect($this->options['login_page']);
 				return;
 			}
+		}
 
-			$this->customer = $customer = $this->add('xepan\commerce\Model_Customer');
-	        $customer->loadLoggedIn();
+		$this->customer = $customer = $this->add('xepan\commerce\Model_Customer');
+        $customer->loadLoggedIn();
 
-    	    if(!$customer->loaded()){
-        	    $this->add('View_Info')->set('Customer account not found');
-            	return;            
-        	}
+	    if(!$customer->loaded()){
+        	return;            
+    	}
 
+		/*FORM TO ASK USER FOR EPAN NAME AND TO CHECK LOGGEDIN*/
+		if($this->app->auth->isLoggedIn()){
+			$form = $this->add('Form',null,'form');
+			$form->setLayout('view\tool\form\epantrial');
+			$form->addField('epan_name')->setAttr(['placeholder'=>'your website name'])->validate('required?Please enter a website name');
+			$form->addSubmit('click here and enjoy 15 day free trial')->addClass('btn btn-primary btn-block');	
+		}
+
+		if($form->isSubmitted()){
         	/* DO EPAN WITH THE SAME NAME EXIST */
         	$epan_name = $form['epan_name'];
         	$myEpans = $this->add('xepan\epanservices\Model_Epan');
