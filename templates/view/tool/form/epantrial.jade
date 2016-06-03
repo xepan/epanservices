@@ -1,6 +1,18 @@
 .row
-	.col-md-12.atk-form-row
-		{$epan_name}.epan.in
-.row
-	.col-md-12
-		{$FormButtons}		
+	.form-inine
+		.form-group
+			.col-md-6.atk-form-row
+				{$epan_name}
+				span(style="font-size:40px") .epan.in
+			.col-md-6.xepan-service-trial
+				{$FormButtons}		
+style(type='text/css', media='screen').
+	input {
+	    width: 75%;
+	}
+	.xepan-service-trial .btn-primary{
+		height:58px;
+		margin-top:20px;
+		font-size:22px;
+	}
+

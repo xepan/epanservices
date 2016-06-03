@@ -14,8 +14,8 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 		/*FORM TO ASK USER FOR EPAN NAME AND TO CHECK LOGGEDIN*/
 		$form = $this->add('Form',null,'form');
 		$form->setLayout('view\tool\form\epantrial');
-		$form->addField('epan_name');
-		$form->addSubmit('click here and enjoy 15 day free trial');
+		$form->addField('epan_name')->setAttr(['placeholder'=>'your website name'])->validate('required?Please enter a website name');
+		$form->addSubmit('click here and enjoy 15 day free trial')->addClass('btn btn-primary btn-block');
 
 		if($form->isSubmitted()){
 
@@ -47,13 +47,13 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
         	$epan_name = $form['epan_name'];
         	$this->createEpan($epan_name);
         	
-   //      	$newEpan = $this->add('xepan\epanservices\Model_Epan')->addCondition('name',$epan_name)->tryLoadAny();
-   //      	$newEpan['is_published']=true;
-			// $newEpan->createFolder($newEpan);
-			// $newEpan->userAndDatabaseCreate();
-			// $newEpan->save();  	
+        	$newEpan = $this->add('xepan\epanservices\Model_Epan')->addCondition('name',$epan_name)->tryLoadAny();
+        	$newEpan['is_published']=true;
+			$newEpan->createFolder($newEpan);
+			$newEpan->userAndDatabaseCreate();
+			$newEpan->save();  	
         	
-        	return;
+        	return $form->js()->univ()->successMessage('Your site is ready')->execute();
 		}
 	}
 
