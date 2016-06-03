@@ -59,9 +59,8 @@ class Model_Epan extends \xepan\base\Model_Epan{
 					$extra_info['qsp_detail_id'] = $order_item->id;
 					$extra_info['item_id'] = $item->id;
 					$extra_info['specification'] = $item->getSpecification();
-
 					$epan_item_info = json_encode($extra_info);
-					$this->createTrialEpan($epan_item_info);
+					$this->createTrialEpan($epan_item_info,$order_item);
 				}
 
 				// 	if item category is template
@@ -75,18 +74,33 @@ class Model_Epan extends \xepan\base\Model_Epan{
 		}
 	}
 
-	function createTrialEpan($epan_item_info){
+	function createTrialEpan($epan_item_info, $order_item){
 		$customer = $this->add('xepan\commerce\Model_Customer');
 		$customer->loadLoggedIn();
 
 		$new_trial_epan = $this->add('xepan\epanservices\Model_Epan');
+
+		/* EXTRACTING OUT EPAN NAME FROM EXTRA FIELD OF ORDER ITEM, (JUST IN CASE OF TRIAL)*/
+		if($order_item['extra_info']){
+			$cf_array = json_decode($order_item['extra_info'],true);
+			
+			$cf_genric_model = $this->add('xepan\commerce\Model_Item_CustomField_Generic')->addCondition('name','epan name')->tryLoadAny();
+			$epan_name = $cf_array[0][$cf_genric_model->id]['custom_field_value_name'];
+			$new_trial_epan['name'] = $epan_name;
+
+		}else{
+			$new_trial_epan['name'] = uniqid();
+		}
+		
+
 		$new_trial_epan['created_by_id'] = $customer->id;
-		$new_trial_epan['name'] = uniqid();
 		$new_trial_epan['status'] = "Trial";
 		$new_trial_epan['valid_till'] = date("Y-m-d", strtotime(date("Y-m-d", strtotime($this->app->now)) . " +14 DAY"));
 		$new_trial_epan['epan_category_id'] = $this->add('xepan\base\Model_Epan_Category')->tryLoadAny()->id;
 		$new_trial_epan['extra_info'] = $epan_item_info;		
 		$new_trial_epan->save();
+
+		return $new_trial_epan;
 	}
 
 	function invoicePaid($app,$invoice){
