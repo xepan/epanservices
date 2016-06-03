@@ -1,0 +1,17 @@
+.xepan-tool-options(id='{$_name}' style="display:none" for-xepan-component='xepan/epanservices/Tool_EpanTrial')
+	h3 Container
+	.xepan-tool-option
+		.xepan-tool-option-title Login Page URL
+		.xepan-tool-option-value
+			input#login_page(value='80%' data-attr='login_page')
+
+	script.
+		$('\#{$_name} [data-attr]').on('change',function(){
+			$(current_selected_component).attr($(this).data('attr'),$(this).val());
+		});
+
+		$('\#{$_name}').on('show',function(event){
+			$('\#{$_name} [data-attr]').each(function(index,value){
+				$(this).val($(current_selected_component).attr($(this).data('attr')));				
+			});
+		})
