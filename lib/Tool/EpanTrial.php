@@ -37,6 +37,16 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 		}
 
 		if($form->isSubmitted()){
+        	/* Already Tried */
+        	$already_created_epan = $this->add('xepan\epanservices\Model_Epan');
+        	$already_created_epan->addCondition('created_by_id',$customer->id);
+        	$already_created_epan->tryLoadAny();
+
+        	if($already_created_epan->loaded()){
+        		$form->error('epan_name','you already are our customer !');
+        		return;
+        	}
+        	
         	/* DO EPAN WITH THE SAME NAME EXIST */
         	$epan_name = $form['epan_name'];
         	$myEpans = $this->add('xepan\epanservices\Model_Epan');
@@ -47,6 +57,7 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
         		$form->error('epan_name','name already taken');
         		return;
         	}
+
 
         	/* IF CUSTOMER IS LOGGED IN AND EPAN NAME IS UNIQUE THEN CREATE EPAN */
         	$epan_name = $form['epan_name'];
