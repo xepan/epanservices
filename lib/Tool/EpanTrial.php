@@ -77,7 +77,7 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 		/* ADDING TRIAL ITEM INTO CART */
 		$cf_genric_model = $this->add('xepan\commerce\Model_Item_CustomField_Generic')->addCondition('name','epan name')->tryLoadAny();
 		if(!$cf_genric_model->loaded())
-			throw new \Exception("please add 'epan_name' custom field in epan item");
+			throw new \Exception("please add 'epan name' custom field in epan item");
 			
 		
 		/* MAKING ARRAY FOR PASSING CUSTOM FIELD IN METHOD */
@@ -91,6 +91,8 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
         
 		$trial_item = $this->add('xepan\commerce\Model_Item')->tryLoadBy('name','EpanTrial');
 		if(!$trial_item->loaded()) throw $this->exception('Please create an item with "EpanTrial" name first');
+		
+		$trial_item_id = $trial_item->id;
 		$trial_item_count = 1;
 
 		$model_cart = $this->add('xepan\commerce\Model_Cart');
