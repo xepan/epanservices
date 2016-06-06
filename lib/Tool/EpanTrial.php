@@ -37,6 +37,16 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 		}
 
 		if($form->isSubmitted()){
+        	/* Already Tried */
+        	$already_created_epan = $this->add('xepan\epanservices\Model_Epan');
+        	$already_created_epan->addCondition('created_by_id',$customer->id);
+        	$already_created_epan->tryLoadAny();
+
+        	if($already_created_epan->loaded()){
+        		$form->error('epan_name','you already are our customer !');
+        		return;
+        	}
+        	
         	/* DO EPAN WITH THE SAME NAME EXIST */
         	$epan_name = $form['epan_name'];
         	$myEpans = $this->add('xepan\epanservices\Model_Epan');
@@ -47,6 +57,7 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
         		$form->error('epan_name','name already taken');
         		return;
         	}
+
 
         	/* IF CUSTOMER IS LOGGED IN AND EPAN NAME IS UNIQUE THEN CREATE EPAN */
         	$epan_name = $form['epan_name'];
@@ -66,7 +77,7 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 		/* ADDING TRIAL ITEM INTO CART */
 		$cf_genric_model = $this->add('xepan\commerce\Model_Item_CustomField_Generic')->addCondition('name','epan name')->tryLoadAny();
 		if(!$cf_genric_model->loaded())
-			throw new \Exception("cf epan_name not found");
+			throw new \Exception("please add 'epan name' custom field in epan item");
 			
 		
 		/* MAKING ARRAY FOR PASSING CUSTOM FIELD IN METHOD */
@@ -78,7 +89,10 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 		$cf_array[0][$cf_genric_model->id]['custom_field_value_id'] = $epan_name;
 		$cf_array[0][$cf_genric_model->id]['custom_field_value_name'] = $epan_name;
         
-		$trial_item_id = 2401;
+		$trial_item = $this->add('xepan\commerce\Model_Item')->tryLoadBy('name','EpanTrial');
+		if(!$trial_item->loaded()) throw $this->exception('Please create an item with "EpanTrial" name first');
+		
+		$trial_item_id = $trial_item->id;
 		$trial_item_count = 1;
 
 		$model_cart = $this->add('xepan\commerce\Model_Cart');
