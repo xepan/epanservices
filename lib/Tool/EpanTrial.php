@@ -38,12 +38,13 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 
 		if($form->isSubmitted()){
         	/* Already Tried */
-        	$already_created_epan = $this->add('xepan\epanservices\Model_Epan');
-        	$already_created_epan->addCondition('created_by_id',$customer->id);
-        	$already_created_epan->tryLoadAny();
+        	$trial_epan = $this->add('xepan\epanservices\Model_Epan');
+        	$trial_epan->addCondition('created_by_id',$customer->id);
+        	$trial_epan->addCondition('status','Trial');
+        	$trial_epan->tryLoadAny();
 
-        	if($already_created_epan->loaded()){
-        		$form->error('epan_name','you already are our customer !');
+        	if($trial_epan->loaded()){
+        		$form->error('epan_name','you have already tried !');
         		return;
         	}
         	
