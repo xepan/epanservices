@@ -44,9 +44,6 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 				$id = $_GET[$page->short_name.'_id'];
 				$new=$page->add('xepan\epanservices\Model_Epan');
 				$new->load($id);
-
-				
-			
 			
 			if($new['is_published']){
 				$view = $page->add('View',null,null,['view\tool\alreadypulished-unpublished']);
@@ -85,13 +82,17 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 					
 					$new->createFolder($new);
 					$new->userAndDatabaseCreate();
-					$new->save();	    		
+					$new->save();	 
 					return $form->js(true,$form->js()->closest('.dialog')->dialog('close'))->univ()->successMessage('Epan Published')->execute();	    			
 				}
 				else{
 					$new['is_published']=true;
-					$new->save();	    		
-					return $form->js(true,$form->js()->closest('.dialog')->dialog('close'))->univ()->successMessage('Epan Published')->execute();	    			
+					$new->save();
+					$js_action = [
+							$form->js()->closest('.dialog')->dialog('close'),
+							$this->js(true)->reload()	
+							];	    		
+					return $form->js(true,$js_action)->univ()->successMessage('Epan Published')->execute();	    			
 				}
 			}
     	});
