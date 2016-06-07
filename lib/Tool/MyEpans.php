@@ -59,7 +59,8 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 			$form->setLayout('view\tool\form\un-pub');
 			
 			if(!file_exists(realpath($this->app->pathfinder->base_location->base_path.'/websites/'.$epan_name)) && !$x){								
-				$form->addField('name')->setAttr(['placeholder'=>'Epan Name']);
+				$form->addField('name')->setAttr(['placeholder'=>'Your website name']);
+				$form->layout->add('View',null,'domain')->set('.epan.in');
 			}
 
 			
@@ -67,6 +68,18 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 
 			if($form->isSubmitted()){
 				if($form->hasElement('name')){
+					if($form['name'] ==''){
+		        		return $form->error('name','You cannot leave website name empty');
+        			}
+        			if (preg_match('/[\'^£$%&*()}{@#~?><>,|=_+¬-]/', $form['name']))
+					{	
+		        		return $form->error('name','Website name cannot contain special characters');
+					}
+					if (preg_match('/\s/', $form['name']))
+					{	
+		        		return $form->error('name','Website name cannot contain spaces');
+					}
+
 					$new['name'] = $form['name'];
 					$new['is_published']=true;
 					
