@@ -52,13 +52,13 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 				return $page->add('View_Info')->set('Already Published');
 			}
 
-			
-			$x = $this->api->db->dsql()->expr("SELECT IF(EXISTS (SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'xepan2'), 'Yes','No')")->getOne(); 
+			$epan_name = $new['name'];
+			$x = $this->api->db->dsql()->expr("SELECT IF(EXISTS (SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '$epan_name'), '1','0')")->getOne(); 
 			$form = $page->add('Form');
 			$form->setLayout('view\tool\form\un-pub');
-
-			if(!file_exists(realpath($this->app->pathfinder->base_location->base_path.'/websites/'.$new['name'])) && !$x){
-				$form->addField('name');
+			
+			if(!file_exists(realpath($this->app->pathfinder->base_location->base_path.'/websites/'.$epan_name)) && !$x){								
+				$form->addField('name')->setAttr(['placeholder'=>'Epan Name']);
 			}
 
 			
