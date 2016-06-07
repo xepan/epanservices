@@ -31,6 +31,7 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 	}
 
 	function showMyEpans(){
+		
 		$this->app->addStyleSheet('jquery-ui');
 		$this->grid = $this->add('xepan\base\Grid');
 		$myEpans = $this->add('xepan\epanservices\Model_Epan');
@@ -38,34 +39,67 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 		$this->grid->setModel($myEpans,['epan_category','xepan_template','created_by','name','status']);
 		
 		$this->grid->add('VirtualPage')
-       		 ->addColumn('Publish')
+       		 ->addColumn('Publish','PUBLISH YOUR EPAN',['descr'=>'Publish'])
        		 ->set(function($page){
 				$id = $_GET[$page->short_name.'_id'];
 				$new=$page->add('xepan\epanservices\Model_Epan');
 				$new->load($id);
-
-				
+			
 			if($new['is_published']){
-				return $page->add('View_Info')->set('Already Published');
+				$view = $page->add('View',null,null,['view\tool\alreadypulished-unpublished']);
+				return $view->template->trySet('msg','This Epan is already Published');	
 			}
 
+			$epan_name = $new['name'];
+			$x = $this->api->db->dsql()->expr("SELECT IF(EXISTS (SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = '$epan_name'), '1','0')")->getOne(); 
 			$form = $page->add('Form');
-			$form->addField('name');
-			$form->addSubmit('Publish');
+			$form->setLayout('view\tool\form\un-pub');
+			
+			if(!file_exists(realpath($this->app->pathfinder->base_location->base_path.'/websites/'.$epan_name)) && !$x){								
+				$form->addField('name')->setAttr(['placeholder'=>'Your website name']);
+				$form->layout->add('View',null,'domain')->set('.epan.in');
+			}
+
+			
+			$form->addSubmit('Publish')->addClass('btn btn-block btn-primary');
 
 			if($form->isSubmitted()){
-				$new['name'] = $form['name'];
-				$new['is_published']=true;
-	
-				$new->createFolder($new);
-				$new->userAndDatabaseCreate();
-				$new->save();	    		
+				if($form->hasElement('name')){
+					if($form['name'] ==''){
+		        		return $form->error('name','You cannot leave website name empty');
+        			}
+        			if (preg_match('/[\'^£$%&*()}{@#~?><>,|=_+¬-]/', $form['name']))
+					{	
+		        		return $form->error('name','Website name cannot contain special characters');
+					}
+					if (preg_match('/\s/', $form['name']))
+					{	
+		        		return $form->error('name','Website name cannot contain spaces');
+					}
+
+					$new['name'] = $form['name'];
+					$new['is_published']=true;
+					
+					$new->createFolder($new);
+					$new->userAndDatabaseCreate();
+					$new->save();	 
+					return $form->js(true,$form->js()->closest('.dialog')->dialog('close'))->univ()->successMessage('Epan Published')->execute();	    			
+				}
+				else{
+					$new['is_published']=true;
+					$new->save();
+					$js_action = [
+							$form->js()->closest('.dialog')->dialog('close'),
+							$this->js(true)->reload()	
+							];	    		
+					return $form->js(true,$js_action)->univ()->successMessage('Epan Published')->execute();	    			
+				}
 			}
     	});
 
 
        $this->grid->add('VirtualPage')
-       		 ->addColumn('UnPublish')
+       		 ->addColumn('UnPublish','UNPUBLISH YOUR EPAN',['descr'=>'UnPublish'])
        		 ->set(function($page){
 				$id = $_GET[$page->short_name.'_id'];
 				$new=$page->add('xepan\epanservices\Model_Epan');
@@ -73,14 +107,19 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 
 				
 			if(!$new['is_published']){
-				return $page->add('View_Info')->set('Already UnPublished');
+				$view = $page->add('View',null,null,['view\tool\alreadypulished-unpublished']);
+				return $view->template->trySet('msg','This Epan is already UnPublished');	
 			}
 			
 			$form = $page->add('Form');
-			$form->addSubmit('Unpublish');
+			$form->setLayout('view\tool\form\un-pub');
+
+			$form->addSubmit('Unpublish')->addClass('btn btn-block btn-primary');
 			if($form->isSubmitted()){
 				$new['is_published']=null;	
-				$new->save();	    			
+				$new->save();
+
+				return $form->js(true,$form->js()->closest('.dialog')->dialog('close'))->univ()->successMessage('Epan Unpublished')->execute();	    			
 			}
 			
     	});		 

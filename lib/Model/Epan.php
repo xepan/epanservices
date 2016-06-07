@@ -75,13 +75,14 @@ class Model_Epan extends \xepan\base\Model_Epan{
 	}
 
 	function createTrialEpan($epan_item_info, $order_item){
+		
 		$customer = $this->add('xepan\commerce\Model_Customer');
 		$customer->loadLoggedIn();
 
 		$new_trial_epan = $this->add('xepan\epanservices\Model_Epan');
 
 		/* EXTRACTING OUT EPAN NAME FROM EXTRA FIELD OF ORDER ITEM, (JUST IN CASE OF TRIAL)*/
-		if($order_item['extra_info']){
+		if(count(json_decode($order_item['extra_info']))){
 			$cf_array = json_decode($order_item['extra_info'],true);
 			
 			$cf_genric_model = $this->add('xepan\commerce\Model_Item_CustomField_Generic')->addCondition('name','epan name')->tryLoadAny();
@@ -237,6 +238,7 @@ class Model_Epan extends \xepan\base\Model_Epan{
         $extra_info = json_decode($extra_info,true);
 
         $addons_to_keep = [];
+
         foreach ($extra_info['specification'] as $key => $value) {
             if(strtolower($value) === 'yes'){
             	$epan->installApp($this->add('xepan\base\Model_Application')->loadBy('namespace','xepan\\'.strtolower($key)));
