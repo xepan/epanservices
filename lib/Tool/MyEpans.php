@@ -39,7 +39,7 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 		$this->grid->setModel($myEpans,['epan_category','xepan_template','created_by','name','status']);
 		
 		$this->grid->add('VirtualPage')
-       		 ->addColumn('Publish')
+       		 ->addColumn('Publish','PUBLISH YOUR EPAN',['descr'=>'Publish'])
        		 ->set(function($page){
 				$id = $_GET[$page->short_name.'_id'];
 				$new=$page->add('xepan\epanservices\Model_Epan');
@@ -49,7 +49,8 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 			
 			
 			if($new['is_published']){
-				return $page->add('View_Info')->set('Already Published');
+				$view = $page->add('View',null,null,['view\tool\alreadypulished-unpublished']);
+				return $view->template->trySet('msg','This Epan is already Published');	
 			}
 
 			$epan_name = $new['name'];
@@ -66,27 +67,25 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 
 			if($form->isSubmitted()){
 				if($form->hasElement('name')){
-					// throw new \Exception('folder and db doesnt exist');
 					$new['name'] = $form['name'];
 					$new['is_published']=true;
 					
 					$new->createFolder($new);
 					$new->userAndDatabaseCreate();
 					$new->save();	    		
-					return $form->js()->univ()->successMessage('Epan Published')->execute();	    			
+					return $form->js(true,$form->js()->closest('.dialog')->dialog('close'))->univ()->successMessage('Epan Published')->execute();	    			
 				}
 				else{
-					// throw new \Exception('folder and db exist');
 					$new['is_published']=true;
 					$new->save();	    		
-					return $form->js()->univ()->successMessage('Epan Published')->execute();	    			
+					return $form->js(true,$form->js()->closest('.dialog')->dialog('close'))->univ()->successMessage('Epan Published')->execute();	    			
 				}
 			}
     	});
 
 
        $this->grid->add('VirtualPage')
-       		 ->addColumn('UnPublish')
+       		 ->addColumn('UnPublish','UNPUBLISH YOUR EPAN',['descr'=>'UnPublish'])
        		 ->set(function($page){
 				$id = $_GET[$page->short_name.'_id'];
 				$new=$page->add('xepan\epanservices\Model_Epan');
@@ -94,7 +93,8 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 
 				
 			if(!$new['is_published']){
-				return $page->add('View_Info')->set('Already UnPublished');
+				$view = $page->add('View',null,null,['view\tool\alreadypulished-unpublished']);
+				return $view->template->trySet('msg','This Epan is already UnPublished');	
 			}
 			
 			$form = $page->add('Form');
@@ -105,7 +105,7 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 				$new['is_published']=null;	
 				$new->save();
 
-				return $form->js()->univ()->successMessage('Epan Unpublished')->execute();	    			
+				return $form->js(true,$form->js()->closest('.dialog')->dialog('close'))->univ()->successMessage('Epan Unpublished')->execute();	    			
 			}
 			
     	});		 
