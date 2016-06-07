@@ -75,6 +75,7 @@ class Model_Epan extends \xepan\base\Model_Epan{
 	}
 
 	function createTrialEpan($epan_item_info, $order_item){
+		
 		$customer = $this->add('xepan\commerce\Model_Customer');
 		$customer->loadLoggedIn();
 
@@ -236,6 +237,7 @@ class Model_Epan extends \xepan\base\Model_Epan{
         $extra_info = json_decode($extra_info,true);
 
         $addons_to_keep = [];
+
         foreach ($extra_info['specification'] as $key => $value) {
             if(strtolower($value) === 'yes'){
             	$epan->installApp($this->add('xepan\base\Model_Application')->loadBy('namespace','xepan\\'.strtolower($key)));

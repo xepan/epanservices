@@ -31,6 +31,7 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 	}
 
 	function showMyEpans(){
+		
 		$this->app->addStyleSheet('jquery-ui');
 		$this->grid = $this->add('xepan\base\Grid');
 		$myEpans = $this->add('xepan\epanservices\Model_Epan');
@@ -45,21 +46,38 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 				$new->load($id);
 
 				
+			
+			
 			if($new['is_published']){
 				return $page->add('View_Info')->set('Already Published');
 			}
 
+			
+			$x = $this->api->db->dsql()->expr("SELECT IF(EXISTS (SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'xepan2'), 'Yes','No')")->getOne(); 
 			$form = $page->add('Form');
-			$form->addField('name');
+			
+			if(!file_exists(realpath($this->app->pathfinder->base_location->base_path.'/websites/'.$new['name'])) && !$x){
+				$form->addField('name');
+			}
+
+			
 			$form->addSubmit('Publish');
 
 			if($form->isSubmitted()){
-				$new['name'] = $form['name'];
-				$new['is_published']=true;
-	
-				$new->createFolder($new);
-				$new->userAndDatabaseCreate();
-				$new->save();	    		
+				if($form->hasElement('name')){
+					// throw new \Exception('folder and db doesnt exist');
+					$new['name'] = $form['name'];
+					$new['is_published']=true;
+					
+					$new->createFolder($new);
+					$new->userAndDatabaseCreate();
+					$new->save();	    		
+				}
+				else{
+					// throw new \Exception('folder and db exist');
+					$new['is_published']=true;
+					$new->save();	    		
+				}
 			}
     	});
 
