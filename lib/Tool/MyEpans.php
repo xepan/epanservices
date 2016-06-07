@@ -38,7 +38,7 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 		$myEpans->addCondition('created_by_id',$this->customer->id);
 		$this->grid->setModel($myEpans,['epan_category','xepan_template','created_by','name','status']);
 		
-		$this->grid->add('VirtualPage')
+		$this->grid->add('VirtualPage',['frame_options'=>['title'=>'abc']])
        		 ->addColumn('Publish')
        		 ->set(function($page){
 				$id = $_GET[$page->short_name.'_id'];
@@ -73,13 +73,13 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 					$new->createFolder($new);
 					$new->userAndDatabaseCreate();
 					$new->save();	    		
-					return $form->js()->univ()->successMessage('Epan Published')->execute();	    			
+					return $form->js(true,$form->js()->closest('.dialog')->dialog('close'))->univ()->successMessage('Epan Published')->execute();	    			
 				}
 				else{
 					// throw new \Exception('folder and db exist');
 					$new['is_published']=true;
 					$new->save();	    		
-					return $form->js()->univ()->successMessage('Epan Published')->execute();	    			
+					return $form->js(true,$form->js()->closest('.dialog')->dialog('close'))->univ()->successMessage('Epan Published')->execute();	    			
 				}
 			}
     	});
@@ -105,7 +105,7 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 				$new['is_published']=null;	
 				$new->save();
 
-				return $form->js()->univ()->successMessage('Epan Unpublished')->execute();	    			
+				return $form->js(true,$form->js()->closest('.dialog')->dialog('close'))->univ()->successMessage('Epan Unpublished')->execute();	    			
 			}
 			
     	});		 
