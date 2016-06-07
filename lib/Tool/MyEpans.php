@@ -55,13 +55,14 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 			
 			$x = $this->api->db->dsql()->expr("SELECT IF(EXISTS (SELECT SCHEMA_NAME FROM INFORMATION_SCHEMA.SCHEMATA WHERE SCHEMA_NAME = 'xepan2'), 'Yes','No')")->getOne(); 
 			$form = $page->add('Form');
-			
+			$form->setLayout('view\tool\form\un-pub');
+
 			if(!file_exists(realpath($this->app->pathfinder->base_location->base_path.'/websites/'.$new['name'])) && !$x){
 				$form->addField('name');
 			}
 
 			
-			$form->addSubmit('Publish');
+			$form->addSubmit('Publish')->addClass('btn btn-block btn-primary');
 
 			if($form->isSubmitted()){
 				if($form->hasElement('name')){
@@ -72,11 +73,13 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 					$new->createFolder($new);
 					$new->userAndDatabaseCreate();
 					$new->save();	    		
+					return $form->js()->univ()->successMessage('Epan Published')->execute();	    			
 				}
 				else{
 					// throw new \Exception('folder and db exist');
 					$new['is_published']=true;
 					$new->save();	    		
+					return $form->js()->univ()->successMessage('Epan Published')->execute();	    			
 				}
 			}
     	});
@@ -95,10 +98,14 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 			}
 			
 			$form = $page->add('Form');
-			$form->addSubmit('Unpublish');
+			$form->setLayout('view\tool\form\un-pub');
+
+			$form->addSubmit('Unpublish')->addClass('btn btn-block btn-primary');
 			if($form->isSubmitted()){
 				$new['is_published']=null;	
-				$new->save();	    			
+				$new->save();
+
+				return $form->js()->univ()->successMessage('Epan Unpublished')->execute();	    			
 			}
 			
     	});		 
