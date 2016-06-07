@@ -82,7 +82,7 @@ class Model_Epan extends \xepan\base\Model_Epan{
 		$new_trial_epan = $this->add('xepan\epanservices\Model_Epan');
 
 		/* EXTRACTING OUT EPAN NAME FROM EXTRA FIELD OF ORDER ITEM, (JUST IN CASE OF TRIAL)*/
-		if($order_item['extra_info']){
+		if(count(json_decode($order_item['extra_info']))){
 			$cf_array = json_decode($order_item['extra_info'],true);
 			
 			$cf_genric_model = $this->add('xepan\commerce\Model_Item_CustomField_Generic')->addCondition('name','epan name')->tryLoadAny();
