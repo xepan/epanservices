@@ -183,6 +183,7 @@ class Model_Epan extends \xepan\base\Model_Epan{
 						->addMoreInfo('epan',$this['name']);
 		}
 		$fs = \Nette\Utils\FileSystem::createDir('./websites/'.$this['name']);
+		$fs = \Nette\Utils\FileSystem::createDir('./websites/'.$this['name'].'/assets');
 		$fs = \Nette\Utils\FileSystem::copy('./vendor/xepan/cms/templates/defaultlayout','./websites/'.$this['name'],true);
 	}
 
