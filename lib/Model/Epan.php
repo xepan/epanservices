@@ -120,7 +120,7 @@ class Model_Epan extends \xepan\base\Model_Epan{
                     $matches
                 );
 		
-		$username = strtolower($this->app->normalizeName($this['name']));
+		$username = uniqid();
 		$database = strtolower($this->app->normalizeName($this['name']));
 		$host = $matches[5];
 		$password = md5(uniqid());
