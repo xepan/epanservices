@@ -26,7 +26,7 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
         $customer->loadLoggedIn();
 
 	    if(!$customer->loaded()){
-	    	$this->add('View')->addClass('panel panel-danger')->set('You are not a registred customer');
+	    	$this->add('View')->addClass('panel panel-danger')->set('You are not a registered customer');
         	return;            
     	}
 
