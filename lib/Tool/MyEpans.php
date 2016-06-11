@@ -27,13 +27,14 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
         }
 
 		$this->showMyEpans();
+		$this->showMyTemplates();
 		
 	}
 
 	function showMyEpans(){
 		
 		$this->app->addStyleSheet('jquery-ui');
-		$this->grid = $this->add('xepan\base\Grid');
+		$this->grid = $this->add('xepan\base\Grid',null,'epan');
 		$myEpans = $this->add('xepan\epanservices\Model_Epan');
 		$myEpans->addCondition('created_by_id',$this->customer->id);
 		$this->grid->setModel($myEpans,['epan_category','xepan_template','created_by','name','status']);
@@ -123,5 +124,31 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 			}
 			
     	});		 
+	}
+
+	function showMyTemplates(){
+
+		$customer = $this->add('xepan\commerce\Model_Customer');
+        $customer->loadLoggedIn();
+		$template_cat_model = $this->add('xepan\commerce\Model_Category')->tryLoadBy('name','Template');
+
+		if(!$template_cat_model->loaded()){
+			$this->add('View_Error',null,'err_msg')->set('Category model not loaded.');
+			return;
+		}	
+
+		$templates = $this->add('xepan\commerce\Model_QSP_Detail');
+		$templates->addCondition('customer_id',$customer->id);
+
+		$cat_assoc_j = $templates->join('category_item_association.item_id','item_id');
+		$cat_assoc_j->addField('category_id');
+		$templates->addCondition('category_id',$template_cat_model->id);
+
+		$template_grid = $this->add('xepan\base\Grid',null,'my_template');
+		$template_grid->setModel($templates);	
+	}
+
+	function defaultTemplate(){
+		return ['view\tool\myepans'];
 	}
 }
