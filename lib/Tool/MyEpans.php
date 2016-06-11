@@ -144,7 +144,7 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 		$cat_assoc_j->addField('category_id');
 		$templates->addCondition('category_id',$template_cat_model->id);
 
-		$template_grid = $this->add('xepan\base\Grid',null,'my_template');
+		$template_grid = $this->add('xepan\base\Grid',null,'my_template',['view\tool\mytemplate']);
 		$template_grid->setModel($templates);	
 	}
 
