@@ -145,8 +145,54 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 		$templates->addCondition('category_id',$template_cat_model->id);
 
 		$template_grid = $this->add('xepan\base\Grid',null,'my_template',['view\tool\mytemplate']);
-		$template_grid->setModel($templates);	
+		$template_grid->setModel($templates);
+		
+		
+
+		$template_grid->addHook('formatRow',function($g){
+			$item = $this->add('xepan\commerce\Model_Item')->load($g->model['item_id']);
+			$g->current_row_html['preview_image'] =  $item['first_image'];					     				     		
+			$g->current_row_html['preview_url'] =  'http://'.$item['sku'].'.epan.in';								     				     							     				     		
+     	});
+     	
+		$vp = $this->add('VirtualPage');
+		$vp->set(function($p){
+			
+			$qsp_detail = $p->add('xepan\commerce\Model_QSP_Detail')->load($_GET['qsp_detail_id']);
+			$item = $p->add('xepan\commerce\Model_Item')->load($qsp_detail['item_id']);
+			$template_name = $item['sku'];
+
+			if(!file_exists(realpath($this->app->pathfinder->base_location->base_path.'/websites/'.$template_name))){
+				throw $this->exception('Template not found: Folder do not exist in websites.');
+			}
+
+			$customer = $p->add('xepan\commerce\Model_Customer');
+        	$customer->loadLoggedIn();
+
+			$epan = $p->add('xepan\epanservices\Model_Epan');
+			$epan->addCondition('created_by_id',$customer->id);			
+
+			$form = $p->add('Form');
+			$form->addField('xepan\commerce\DropDown','epan')->setModel($epan);
+			
+			if($form->isSubmitted()){
+				if(file_exists(realpath($this->app->pathfinder->base_location->base_path.'/websites/'.$form['epan']))){
+					// move old folder into some folder
+				}
+			}
+
+			// check if new templates name is equal to old name
+				// if yes then override www folder and exit
+			// else rename www folder into "some name" and copy new template there and name it www and exit
+
+ 		});
+		
+		$template_grid->on('click','.xepan-change-template',function($js,$data)use($vp){
+			return $js->univ()->dialogURL("APPLY NEW TEMPLATE",$this->api->url($vp->getURL(),['qsp_detail_id'=>$data['id']]));
+		});
+
 	}
+
 
 	function defaultTemplate(){
 		return ['view\tool\myepans'];

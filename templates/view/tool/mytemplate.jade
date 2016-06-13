@@ -5,13 +5,13 @@
         div(class="{$odd_even} col-md-4" data-id="{$id}")
             {cols}
             .recent-work-wrap
-                img.img-responsive(src='{preview_image}preview_url{/}', alt='' onerror="this.src='vendor/xepan/commerce/templates/view/tool/cart/images/not-found.png'")
+                img.img-responsive(src='{preview_image}preview_url{/}', alt='' onerror1="this.src='vendor/xepan/commerce/templates/view/tool/cart/images/not-found.png'")
                 .overlay
                   .recent-work-inner.text-center(style="height:100%;")
                     h3(style="height: 80px;")
                       a(href='#') {$name}
-                    .btn.btn-block.btn-lg(style="border:1px solid white;") Apply
-                    a.preview(href='{$preview_url}', rel='Template Preview')
+                    .btn.btn-block.btn-lg.xepan-change-template(style="border:1px solid white;" data-id='{$id}') Apply
+                    a.preview(href='{$preview_url}', target="_blank" rel='Template Preview')
                         .btn.i.fa.fa-eye &nbsp;View
                 {/}
                 {/}{/}
