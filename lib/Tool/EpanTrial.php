@@ -107,17 +107,13 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 							'billing_address' => ' ',
 							'billing_city'=>' ',
 							'billing_state_id'=>' ',
-							'billing_state'=>' ',
 							'billing_country_id'=>' ',
-							'billing_country'=>' ',
 							'billing_pincode'=>' ',
 
 							'shipping_address' =>' ',
 							'shipping_city'=>' ',
 							'shipping_state_id'=>' ',
-							'shipping_state'=>' ',
 							'shipping_country_id'=>' ',
-							'shipping_country'=>' ',
 							'shipping_pincode'=>' ',
 							];
 							
