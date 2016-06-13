@@ -170,7 +170,6 @@ class Model_Epan extends \xepan\base\Model_Epan{
 			$this->app->auth->login($user);
 			throw $e;
 		}
-
 	}
 
 	function createFolderTest(){
@@ -184,9 +183,11 @@ class Model_Epan extends \xepan\base\Model_Epan{
 						->addMoreInfo('epan',$this['name']);
 		}
 		$fs = \Nette\Utils\FileSystem::createDir('./websites/'.$this['name']);
-		$fs = \Nette\Utils\FileSystem::createDir('./websites/'.$this['name'].'/assets');
-		$fs = \Nette\Utils\FileSystem::createDir('./websites/'.$this['name'].'/upload');
-		$fs = \Nette\Utils\FileSystem::copy('./vendor/xepan/cms/templates/defaultlayout','./websites/'.$this['name'],true);
+		if(file_exists(realpath($this->app->pathfinder->base_location->base_path.'/websites/default'))){
+			$fs = \Nette\Utils\FileSystem::copy('./websites/default','./websites/'.$this['name'],true);
+		}else{
+			$fs = \Nette\Utils\FileSystem::copy('./vendor/xepan/cms/templates/defaultlayout','./websites/'.$this['name'],true);
+		}
 	}
 
 	function createSuperUser($m,$new_id){
