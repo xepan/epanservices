@@ -130,7 +130,7 @@ class Model_Epan extends \xepan\base\Model_Epan{
 
 		file_put_contents(realpath($this->app->pathfinder->base_location->base_path.'/websites/'.$this['name']).'/config.php', $config_file);
 		$this->app->db->dsql()->expr("CREATE database `$database`;")->execute();
-		$this->app->db->dsql()->expr("GRANT ALL PRIVILEGES ON $database.* To '$username'@'%' IDENTIFIED BY '$password';")->execute();
+		$this->app->db->dsql()->expr("GRANT ALL PRIVILEGES ON `$database`.* To '$username'@'%' IDENTIFIED BY '$password';")->execute();
 
 		$new_db = $this->add('DB');
 		$new_db->connect($dsn);
