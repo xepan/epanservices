@@ -11,7 +11,7 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 
 	function init(){
 		parent::init();
-
+		
 		if(!$this->app->auth->isLoggedIn()){
 			$this->app->redirect($this->options['login_page']);
 			return;
