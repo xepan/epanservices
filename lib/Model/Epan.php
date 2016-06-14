@@ -194,7 +194,7 @@ class Model_Epan extends \xepan\base\Model_Epan{
 			$fs = \Nette\Utils\FileSystem::createDir('./websites/'.$this['name']);
 			$fs = \Nette\Utils\FileSystem::createDir('./websites/'.$this['name'].'/assets');
 			$fs = \Nette\Utils\FileSystem::createDir('./websites/'.$this['name'].'/upload');
-			$fs = \Nette\Utils\FileSystem::copy('./websites/default/www','./websites/'.$this['name'],true);
+			$fs = \Nette\Utils\FileSystem::copy('./websites/default/www','./websites/'.$this['name'].'/www',true);
 		}else{
 			$fs = \Nette\Utils\FileSystem::createDir('./websites/'.$this['name']);
 			$fs = \Nette\Utils\FileSystem::copy('./vendor/xepan/cms/templates/defaultlayout','./websites/'.$this['name'],true);
