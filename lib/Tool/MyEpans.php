@@ -139,7 +139,7 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 
 		$customer = $this->add('xepan\commerce\Model_Customer');
         $customer->loadLoggedIn();
-		$template_cat_model = $this->add('xepan\commerce\Model_Category')->tryLoadBy('name','Template');
+		$template_cat_model = $this->add('xepan\commerce\Model_Category')->tryLoadBy('name','Templates');
 
 		if(!$template_cat_model->loaded()){
 			$this->add('View_Error',null,'err_msg')->set('Category model not loaded.');
