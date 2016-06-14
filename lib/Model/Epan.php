@@ -157,14 +157,21 @@ class Model_Epan extends \xepan\base\Model_Epan{
 
 			$this->installApplication();
 			
-			$this->add('xepan\base\Model_Epan')->tryLoadAny()->set('name',$this['name'])->save();			
+			$this->add('xepan\base\Model_Epan')->tryLoadAny()->set('name',$this['name'])->save();
+			
+			$user_new = $this->add('xepan\base\Model_User')->tryLoadAny()->set('username',$user['username'])->save();
+
 			$this->app->db->dsql()->expr('SET FOREIGN_KEY_CHECKS = 1;')->execute();        
+
 			$this->api->db->commit();
 			$this->app->db = $saved_db;
 			$this->app->auth->login($user);
+
+
 		}catch(\Exception_StopInit $e){
 
-		}catch(\Exception $e){			
+		}catch(\Exception $e){
+			throw $e;			
 			$this->api->db->rollback();
 			$this->app->db = $saved_db;
 			$this->app->auth->login($user);
@@ -187,7 +194,7 @@ class Model_Epan extends \xepan\base\Model_Epan{
 			$fs = \Nette\Utils\FileSystem::createDir('./websites/'.$this['name']);
 			$fs = \Nette\Utils\FileSystem::createDir('./websites/'.$this['name'].'/assets');
 			$fs = \Nette\Utils\FileSystem::createDir('./websites/'.$this['name'].'/upload');
-			$fs = \Nette\Utils\FileSystem::copy('./websites/default/www','./websites/'.$this['name'],true);
+			$fs = \Nette\Utils\FileSystem::copy('./websites/default/www','./websites/'.$this['name'].'/www',true);
 		}else{
 			$fs = \Nette\Utils\FileSystem::createDir('./websites/'.$this['name']);
 			$fs = \Nette\Utils\FileSystem::copy('./vendor/xepan/cms/templates/defaultlayout','./websites/'.$this['name'],true);
