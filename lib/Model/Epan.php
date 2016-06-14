@@ -29,7 +29,7 @@ class Model_Epan extends \xepan\base\Model_Epan{
 		// $this->addHook('beforeInsert',[$this,'createFolder']);
 		// $this->addHook('beforeInsert',[$this,'userAndDatabaseCreate']);
 		$this->addHook('beforeDelete',[$this,'notifyByHook']);
-		$this->addHook('beforeDelete',[$this,'swipeEvenrything']);
+		$this->addHook('beforeDelete',[$this,'swipeEverything']);
 	}
 
 	function createFromOrder($app,$order){
@@ -209,8 +209,10 @@ class Model_Epan extends \xepan\base\Model_Epan{
 		$this->app->hook('epan-deleted',[$this]);
 	}
 
-	function swipeEvenrything(){
-		include_once('websites/'.$this['name'].'/config.php');
+	function swipeEverything($epan=null){
+		if(!$epan) $epan = $this['name'];
+
+		include_once('websites/'.$epan.'/config.php');
 		
 		preg_match(
                     '|([a-z]+)://([^:]*)(:(.*))?@([A-Za-z0-9\.-]*)'.
@@ -219,7 +221,7 @@ class Model_Epan extends \xepan\base\Model_Epan{
                     $matches
                 );
 
-		$fs = \Nette\Utils\FileSystem::delete('./websites/'.$this['name']);
+		$fs = \Nette\Utils\FileSystem::delete('./websites/'.$epan);
 		$this->app->db->dsql()->expr("GRANT ALL PRIVILEGES ON `*`.* To '$matches[2]'@'%';")->execute();
 		$this->app->db->dsql()->expr("DROP USER `$matches[2]`@'%'")->execute();
 		$this->app->db->dsql()->expr("DROP DATABASE IF EXISTS `$matches[7]`;")->execute();		
@@ -244,6 +246,7 @@ class Model_Epan extends \xepan\base\Model_Epan{
         $extra_info = json_decode($extra_info,true);
 
         $addons_to_keep = [];
+
 
         foreach ($extra_info['specification'] as $key => $value) {
             if(strtolower($value) === 'yes'){

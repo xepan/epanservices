@@ -81,9 +81,18 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 					$new['name'] = $form['name'];
 					$new['is_published']=true;
 					
-					$new->createFolder($new);
-					$new->userAndDatabaseCreate();
-					$new->save();	 
+					try{
+						$this->api->db->beginTransaction();
+						$new->createFolder($new);
+						$new->userAndDatabaseCreate();
+						$new->save();	 
+						$this->api->db->commit();
+					}catch(\Exception $e){
+						$this->api->db->rollback();
+						$this->swipeEverything($new['name']);
+            			throw $e;
+					}
+
 					return $form->js(true,$form->js()->closest('.dialog')->dialog('close'))->univ()->successMessage('Epan Published')->execute();	    			
 				}
 				else{
