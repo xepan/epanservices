@@ -157,13 +157,14 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
      	
 		$vp = $this->add('VirtualPage');
 		$vp->set(function($p){
-			
-			$qsp_detail = $p->add('xepan\commerce\Model_QSP_Detail')->load($_GET['qsp_detail_id']);
+			$qsp_detail_id = $this->app->stickyGET('qsp_detail_id');
+
+			$qsp_detail = $p->add('xepan\commerce\Model_QSP_Detail')->load($qsp_detail_id);
 			$item = $p->add('xepan\commerce\Model_Item')->load($qsp_detail['item_id']);
 			$template_name = $item['sku'];
 
 			if(!file_exists(realpath($this->app->pathfinder->base_location->base_path.'/websites/'.$template_name))){
-				throw $this->exception('Template not found: Folder do not exist in websites.');
+				throw new \Exception('Template not found: Folder do not exist in websites.');	
 			}
 
 			$customer = $p->add('xepan\commerce\Model_Customer');
@@ -176,16 +177,24 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 			$form->addField('xepan\commerce\DropDown','epan')->setModel($epan);
 			
 			if($form->isSubmitted()){
-				if(file_exists(realpath($this->app->pathfinder->base_location->base_path.'/websites/'.$form['epan'].'/www'))){
-					$fs = \Nette\Utils\FileSystem::rename('./websites/'.$form['name'].'/www',$form['name'].'_delete_'.uniqid(),true);
+				$model_epan = $p->add('xepan\epanservices\Model_Epan')->load($form['epan']);
+				$folder_name = $model_epan['name'];
+
+				if(!$model_epan->loaded())
+					throw new \Exception("Epan model not loaded");
+				
+				if(file_exists(realpath($this->app->pathfinder->base_location->base_path.'/websites/'.$folder_name.'/www'))){													
+					$fs = \Nette\Utils\FileSystem::delete('./websites/'.$folder_name.'/www');
 				}
 
-				$fs = \Nette\Utils\FileSystem::createDir('./websites/'.$form['name'].'/www');
-				$fs = \Nette\Utils\FileSystem::copy('./websites/'.$template_name,'./websites/'.$form['name'].'/www',true);
+				$fs = \Nette\Utils\FileSystem::createDir('./websites/'.$folder_name.'/www');
+				$fs = \Nette\Utils\FileSystem::copy('./websites/'.$template_name,'./websites/'.$folder_name.'/www',true);
+				
+				return $form->js()->univ()->successMessage('Template Applied')->execute();
 			}
  		});
 		
-		$template_grid->on('click','.xepan-change-template',function($js,$data)use($vp){
+		$template_grid->on('click','.xepan-change-template',function($js,$data)use($vp){			
 			return $js->univ()->dialogURL("APPLY NEW TEMPLATE",$this->api->url($vp->getURL(),['qsp_detail_id'=>$data['id']]));
 		});
 
