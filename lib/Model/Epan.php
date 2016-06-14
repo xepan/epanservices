@@ -211,6 +211,9 @@ class Model_Epan extends \xepan\base\Model_Epan{
 
 	function swipeEverything($epan=null){
 		if(!$epan) $epan = $this['name'];
+		if($epan instanceof \xepan\epanservices\Model_Epan){
+			$epan=$epan['name'];
+		}
 
 		include_once('websites/'.$epan.'/config.php');
 		
