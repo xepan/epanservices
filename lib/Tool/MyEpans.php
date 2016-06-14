@@ -176,15 +176,13 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 			$form->addField('xepan\commerce\DropDown','epan')->setModel($epan);
 			
 			if($form->isSubmitted()){
-				if(file_exists(realpath($this->app->pathfinder->base_location->base_path.'/websites/'.$form['epan']))){
-					// move old folder into some folder
+				if(file_exists(realpath($this->app->pathfinder->base_location->base_path.'/websites/'.$form['epan'].'/www'))){
+					$fs = \Nette\Utils\FileSystem::rename('./websites/'.$form['name'].'/www',$form['name'].'_delete_'.uniqid(),true);
 				}
+
+				$fs = \Nette\Utils\FileSystem::createDir('./websites/'.$form['name'].'/www');
+				$fs = \Nette\Utils\FileSystem::copy('./websites/'.$template_name,'./websites/'.$form['name'].'/www',true);
 			}
-
-			// check if new templates name is equal to old name
-				// if yes then override www folder and exit
-			// else rename www folder into "some name" and copy new template there and name it www and exit
-
  		});
 		
 		$template_grid->on('click','.xepan-change-template',function($js,$data)use($vp){
