@@ -17,8 +17,7 @@ class page_epans extends \xepan\base\Page {
 	function init(){
 		parent::init();
 		
-		$crud = $this->add('xepan\hr\CRUD');
+		$crud = $this->add('xepan\hr\CRUD',null,null,['view\epans']);
 		$crud->setModel('xepan\epanservices\Epan');
-
 	}
 }
