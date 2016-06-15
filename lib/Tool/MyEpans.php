@@ -26,6 +26,8 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
             return;            
         }
 
+        $my_account = $this->add('xepan\commerce\Tool_MyAccount',null,'account',null);
+
 		$this->showMyEpans();
 		$this->showMyTemplates();
 		
@@ -139,37 +141,21 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 
 		$customer = $this->add('xepan\commerce\Model_Customer');
         $customer->loadLoggedIn();
-		$template_cat_model = $this->add('xepan\commerce\Model_Category')->tryLoadBy('name','Template');
-
-		if(!$template_cat_model->loaded()){
-			$this->add('View_Error',null,'err_msg')->set('Category model not loaded.');
-			return;
-		}	
-
-		$templates = $this->add('xepan\commerce\Model_QSP_Detail');
-		$templates->addCondition('customer_id',$customer->id);
-
-		$cat_assoc_j = $templates->join('category_item_association.item_id','item_id');
-		$cat_assoc_j->addField('category_id');
-		$templates->addCondition('category_id',$template_cat_model->id);
 
 		$template_grid = $this->add('xepan\base\Grid',null,'my_template',['view\tool\mytemplate']);
-		$template_grid->setModel($templates);
+		$template_grid->setModel('xepan\epanservices\Model_MyTemplates');
 		
-		
-
-		$template_grid->addHook('formatRow',function($g){
-			$item = $this->add('xepan\commerce\Model_Item')->load($g->model['item_id']);
+		$template_grid->addHook('formatRow',function($g){			
+			$item = $this->add('xepan\commerce\Model_Item')->load($g->model->id);
 			$g->current_row_html['preview_image'] =  $item['first_image'];					     				     		
 			$g->current_row_html['preview_url'] =  'http://'.$item['sku'].'.epan.in';								     				     							     				     		
      	});
      	
 		$vp = $this->add('VirtualPage');
 		$vp->set(function($p){
-			$qsp_detail_id = $this->app->stickyGET('qsp_detail_id');
+			$item_id = $this->app->stickyGET('item_id');
 
-			$qsp_detail = $p->add('xepan\commerce\Model_QSP_Detail')->load($qsp_detail_id);
-			$item = $p->add('xepan\commerce\Model_Item')->load($qsp_detail['item_id']);
+			$item = $p->add('xepan\commerce\Model_Item')->load($item_id);
 			$template_name = $item['sku'];
 
 			if(!file_exists(realpath($this->app->pathfinder->base_location->base_path.'/websites/'.$template_name))){
@@ -192,6 +178,22 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 				if(!$model_epan->loaded())
 					throw new \Exception("Epan model not loaded");
 				
+				// NUMBER OF TEMPLATES (NUMBER OF THIS TEMPLATE PURCHASED?)
+				$epan_template = $this->add('xepan\epanservices\Model_MyTemplates');
+				$epan_template->addCondition('id',$item_id);
+				$template_count = $epan_template->count()->getOne();
+				
+				// NUMBER OF EPANS ON WHICH THIS TEMPLATE IS APPLIED
+				$applied_count_epan = $this->add('xepan\epanservices\Model_Epan');
+				$applied_count_epan->addCondition('created_by_id',$customer->id);
+				$applied_count_epan->addCondition('xepan_template_id',$item_id);
+				$epan_count = $applied_count_epan->count()->getOne();
+				
+				// NO MORE TEMPLATES LEFT TO APPLY
+				if($epan_count == $template_count)
+					return $form->error('epan','You have already applied this template. Please buy or use any other template');
+										
+
 				if(file_exists(realpath($this->app->pathfinder->base_location->base_path.'/websites/'.$folder_name.'/www'))){													
 					$fs = \Nette\Utils\FileSystem::delete('./websites/'.$folder_name.'/www');
 				}
@@ -199,12 +201,15 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 				$fs = \Nette\Utils\FileSystem::createDir('./websites/'.$folder_name.'/www');
 				$fs = \Nette\Utils\FileSystem::copy('./websites/'.$template_name,'./websites/'.$folder_name.'/www',true);
 				
+				$model_epan['xepan_template_id'] = $item_id;
+				$model_epan->save();
+
 				return $form->js()->univ()->successMessage('Template Applied')->execute();
 			}
  		});
 		
 		$template_grid->on('click','.xepan-change-template',function($js,$data)use($vp){			
-			return $js->univ()->dialogURL("APPLY NEW TEMPLATE",$this->api->url($vp->getURL(),['qsp_detail_id'=>$data['id']]));
+			return $js->univ()->dialogURL("APPLY NEW TEMPLATE",$this->api->url($vp->getURL(),['item_id'=>$data['id']]));
 		});
 
 	}
