@@ -155,6 +155,15 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 		$cat_assoc_j->addField('category_id');
 		$templates->addCondition('category_id',$template_cat_model->id);
 
+		$template_master_j = $templates->join('qsp_master.id','qsp_master_id');
+		$template_master_j->addField('document_id');
+		
+		// $template_doc_j = $template_master_j->join('document.id','document_id');
+		// $template_doc_j->addField('status');
+		// $templates->addCondition('status','Paid');
+
+		
+
 		$template_grid = $this->add('xepan\base\Grid',null,'my_template',['view\tool\mytemplate']);
 		$template_grid->setModel($templates);
 		
