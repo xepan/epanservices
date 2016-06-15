@@ -26,6 +26,8 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
             return;            
         }
 
+        $my_account = $this->add('xepan\commerce\Tool_MyAccount',null,'account',null);
+
 		$this->showMyEpans();
 		$this->showMyTemplates();
 		
