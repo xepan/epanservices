@@ -141,46 +141,21 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 
 		$customer = $this->add('xepan\commerce\Model_Customer');
         $customer->loadLoggedIn();
-		$template_cat_model = $this->add('xepan\commerce\Model_Category')->tryLoadBy('name','Templates');
-
-		if(!$template_cat_model->loaded()){
-			$this->add('View_Error',null,'err_msg')->set('Category model not loaded.');
-			return;
-		}	
-
-		$templates = $this->add('xepan\commerce\Model_QSP_Detail');
-		$templates->addCondition('customer_id',$customer->id);
-
-		$cat_assoc_j = $templates->join('category_item_association.item_id','item_id');
-		$cat_assoc_j->addField('category_id');
-		$templates->addCondition('category_id',$template_cat_model->id);
-
-		$template_master_j = $templates->join('qsp_master.id','qsp_master_id');
-		$template_master_j->addField('document_id');
-		
-		// $template_doc_j = $template_master_j->join('document.id','document_id');
-		// $template_doc_j->addField('status');
-		// $templates->addCondition('status','Paid');
-
-		
 
 		$template_grid = $this->add('xepan\base\Grid',null,'my_template',['view\tool\mytemplate']);
-		$template_grid->setModel($templates);
+		$template_grid->setModel('xepan\epanservices\Model_MyTemplates');
 		
-		
-
-		$template_grid->addHook('formatRow',function($g){
-			$item = $this->add('xepan\commerce\Model_Item')->load($g->model['item_id']);
+		$template_grid->addHook('formatRow',function($g){			
+			$item = $this->add('xepan\commerce\Model_Item')->load($g->model->id);
 			$g->current_row_html['preview_image'] =  $item['first_image'];					     				     		
 			$g->current_row_html['preview_url'] =  'http://'.$item['sku'].'.epan.in';								     				     							     				     		
      	});
      	
 		$vp = $this->add('VirtualPage');
 		$vp->set(function($p){
-			$qsp_detail_id = $this->app->stickyGET('qsp_detail_id');
+			$item_id = $this->app->stickyGET('item_id');
 
-			$qsp_detail = $p->add('xepan\commerce\Model_QSP_Detail')->load($qsp_detail_id);
-			$item = $p->add('xepan\commerce\Model_Item')->load($qsp_detail['item_id']);
+			$item = $p->add('xepan\commerce\Model_Item')->load($item_id);
 			$template_name = $item['sku'];
 
 			if(!file_exists(realpath($this->app->pathfinder->base_location->base_path.'/websites/'.$template_name))){
@@ -215,7 +190,7 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
  		});
 		
 		$template_grid->on('click','.xepan-change-template',function($js,$data)use($vp){			
-			return $js->univ()->dialogURL("APPLY NEW TEMPLATE",$this->api->url($vp->getURL(),['qsp_detail_id'=>$data['id']]));
+			return $js->univ()->dialogURL("APPLY NEW TEMPLATE",$this->api->url($vp->getURL(),['item_id'=>$data['id']]));
 		});
 
 	}
