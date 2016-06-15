@@ -260,7 +260,9 @@ class Model_Epan extends \xepan\base\Model_Epan{
 
         foreach ($extra_info['specification'] as $key => $value) {
             if(strtolower($value) === 'yes'){
-            	$epan->installApp($this->add('xepan\base\Model_Application')->loadBy('namespace','xepan\\'.strtolower($key)));
+            	$app = $this->add('xepan\base\Model_Application')->tryLoadBy('namespace','xepan\\'.strtolower($key));
+            	if($app->loaded())
+	            	$epan->installApp($app);
             }
         }
 
