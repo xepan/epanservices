@@ -178,6 +178,22 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 				if(!$model_epan->loaded())
 					throw new \Exception("Epan model not loaded");
 				
+				// NUMBER OF TEMPLATES (NUMBER OF THIS TEMPLATE PURCHASED?)
+				$epan_template = $this->add('xepan\epanservices\Model_MyTemplates');
+				$epan_template->addCondition('id',$item_id);
+				$template_count = $epan_template->count()->getOne();
+				
+				// NUMBER OF EPANS ON WHICH THIS TEMPLATE IS APPLIED
+				$applied_count_epan = $this->add('xepan\epanservices\Model_Epan');
+				$applied_count_epan->addCondition('created_by_id',$customer->id);
+				$applied_count_epan->addCondition('xepan_template_id',$item_id);
+				$epan_count = $applied_count_epan->count()->getOne();
+				
+				// NO MORE TEMPLATES LEFT TO APPLY
+				if($epan_count == $template_count)
+					return $form->error('epan','You have already applied this template. Please buy or use any other template');
+										
+
 				if(file_exists(realpath($this->app->pathfinder->base_location->base_path.'/websites/'.$folder_name.'/www'))){													
 					$fs = \Nette\Utils\FileSystem::delete('./websites/'.$folder_name.'/www');
 				}
@@ -185,6 +201,9 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 				$fs = \Nette\Utils\FileSystem::createDir('./websites/'.$folder_name.'/www');
 				$fs = \Nette\Utils\FileSystem::copy('./websites/'.$template_name,'./websites/'.$folder_name.'/www',true);
 				
+				$model_epan['xepan_template_id'] = $item_id;
+				$model_epan->save();
+
 				return $form->js()->univ()->successMessage('Template Applied')->execute();
 			}
  		});

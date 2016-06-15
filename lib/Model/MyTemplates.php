@@ -10,10 +10,6 @@ class Model_MyTemplates extends \xepan\commerce\Model_Item{
 		$customer = $this->add('xepan\commerce\Model_Customer');
         $customer->loadLoggedIn();
 
-		// items that re from template category
-		// Those are ordered by me
-		// and for those invoices are paid
-
 		$template_cat_model = $this->add('xepan\commerce\Model_Category')->addCondition('name','Templates');
 
 		$cat_assoc_j = $this->join('category_item_association.item_id');

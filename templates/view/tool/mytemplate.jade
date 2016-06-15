@@ -2,9 +2,8 @@
     .page-header 
         .row
             {header}{cols}{col}{/}{/}{/}
-            {rows}{row}
+            {rows}{row}{cols}
             div(class="{$odd_even} col-md-{col-width}4{/}" data-id="{$id}")
-                {cols}
                 .recent-work-wrap
                     img.img-responsive(src='{preview_image}preview_url{/}', alt='' onerror1="this.src='vendor/xepan/commerce/templates/view/tool/cart/images/not-found.png'")
                     .overlay
@@ -12,15 +11,14 @@
                         h3(style="height: 80px;")
                           a(href='#') {$name}
                         .btn.btn-block.btn-lg.xepan-change-template(style="border:1px solid white;" data-id='{$id}') Apply
-                        a.preview(href='{$preview_url}', target="_blank" rel='Template Preview')
-                            .btn.i.fa.fa-eye &nbsp;View
-                {/}
-                {/}{/}
-                {not_found}
-                div.row
-                    .col-md-12.text-center.alert.alert-warning(role="alert")
-                        span.icon-attention.fa.fa-exclamation-triangle  &nbsp;{$not_found_message}
-                {/}
-                {totals}{cols}{col}{$content}{/}{/}{/}
-            {$Paginator}
+                        a.preview(href='{$preview_url}' target="_blank" rel='Template Preview')
+                            .btn.i.fa.fa-eye View
+            {/}{/}{/}
+            {not_found}
+            div.row
+                .col-md-12.text-center.alert.alert-warning(role="alert")
+                    span.icon-attention.fa.fa-exclamation-triangle  &nbsp;{$not_found_message}
+            {/}
+            {totals}{cols}{col}{$content}{/}{/}{/}
+        {$Paginator}
 
