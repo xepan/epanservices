@@ -64,13 +64,25 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 
         	/* IF CUSTOMER IS LOGGED IN AND EPAN NAME IS UNIQUE THEN CREATE EPAN */
         	$epan_name = $form['epan_name'];
-        	$this->createEpan($epan_name);
         	
-        	$newEpan = $this->add('xepan\epanservices\Model_Epan')->addCondition('name',$epan_name)->tryLoadAny();
-        	$newEpan['is_published']=true;
-			$newEpan->createFolder($newEpan);
-			$newEpan->userAndDatabaseCreate();
-			$newEpan->save();  	
+        	try{
+				$this->api->db->beginTransaction();
+	        	$this->createEpan($epan_name); // in epan services database, just a new row with specifications of apps
+	        	$newEpan_inServices = $this->add('xepan\epanservices\Model_Epan')->addCondition('name',$epan_name)->tryLoadAny();
+	        	$newEpan_inServices['is_published']=true;
+	        	
+				$newEpan_inServices->createFolder($newEpan_inServices);
+
+				$newEpan_inServices->userAndDatabaseCreate(); // individual new epan database
+				$newEpan_inServices->save();  	
+
+				$this->api->db->commit();
+			}catch(\Exception $e){
+				$this->api->db->rollback();
+				throw $e;				
+				$newEpan_inServices->swipeEverything($epan_name);
+    			return $form->error('epan_name','Could not create epan, please try again.');
+			}
         	
         	return $form->js()->univ()->successMessage('Your site is ready')->execute();
 		}
@@ -107,17 +119,13 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 							'billing_address' => ' ',
 							'billing_city'=>' ',
 							'billing_state_id'=>' ',
-							'billing_state'=>' ',
 							'billing_country_id'=>' ',
-							'billing_country'=>' ',
 							'billing_pincode'=>' ',
 
 							'shipping_address' =>' ',
 							'shipping_city'=>' ',
 							'shipping_state_id'=>' ',
-							'shipping_state'=>' ',
 							'shipping_country_id'=>' ',
-							'shipping_country'=>' ',
 							'shipping_pincode'=>' ',
 							];
 							

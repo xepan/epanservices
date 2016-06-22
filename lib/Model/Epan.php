@@ -29,7 +29,7 @@ class Model_Epan extends \xepan\base\Model_Epan{
 		// $this->addHook('beforeInsert',[$this,'createFolder']);
 		// $this->addHook('beforeInsert',[$this,'userAndDatabaseCreate']);
 		$this->addHook('beforeDelete',[$this,'notifyByHook']);
-		$this->addHook('beforeDelete',[$this,'swipeEvenrything']);
+		$this->addHook('beforeDelete',[$this,'swipeEverything']);
 	}
 
 	function createFromOrder($app,$order){
@@ -129,8 +129,8 @@ class Model_Epan extends \xepan\base\Model_Epan{
 		$config_file = "<?php \n\n\t\$config['dsn'] = '".$dsn."';\n\n";
 
 		file_put_contents(realpath($this->app->pathfinder->base_location->base_path.'/websites/'.$this['name']).'/config.php', $config_file);
-		$this->app->db->dsql()->expr("CREATE database $database;")->execute();
-		$this->app->db->dsql()->expr("GRANT ALL PRIVILEGES ON $database.* To '$username'@'%' IDENTIFIED BY '$password';")->execute();
+		$this->app->db->dsql()->expr("CREATE database `$database`;")->execute();
+		$this->app->db->dsql()->expr("GRANT ALL PRIVILEGES ON `$database`.* To '$username'@'%' IDENTIFIED BY '$password';")->execute();
 
 		$new_db = $this->add('DB');
 		$new_db->connect($dsn);
@@ -157,20 +157,26 @@ class Model_Epan extends \xepan\base\Model_Epan{
 
 			$this->installApplication();
 			
-			$this->add('xepan\base\Model_Epan')->tryLoadAny()->set('name',$this['name'])->save();			
+			$this->add('xepan\base\Model_Epan')->tryLoadAny()->set('name',$this['name'])->save();
+			
+			$user_new = $this->add('xepan\base\Model_User')->tryLoadAny()->set('username',$user['username'])->save();
+
 			$this->app->db->dsql()->expr('SET FOREIGN_KEY_CHECKS = 1;')->execute();        
+
 			$this->api->db->commit();
 			$this->app->db = $saved_db;
 			$this->app->auth->login($user);
+
+
 		}catch(\Exception_StopInit $e){
 
-		}catch(\Exception $e){			
+		}catch(\Exception $e){
+			throw $e;			
 			$this->api->db->rollback();
 			$this->app->db = $saved_db;
 			$this->app->auth->login($user);
 			throw $e;
 		}
-
 	}
 
 	function createFolderTest(){
@@ -183,10 +189,16 @@ class Model_Epan extends \xepan\base\Model_Epan{
 						->setField('name')
 						->addMoreInfo('epan',$this['name']);
 		}
-		$fs = \Nette\Utils\FileSystem::createDir('./websites/'.$this['name']);
+
+		if(file_exists(realpath($this->app->pathfinder->base_location->base_path.'/websites/default'))){
+			$fs = \Nette\Utils\FileSystem::createDir('./websites/'.$this['name']);
+			$fs = \Nette\Utils\FileSystem::copy('./websites/default/www','./websites/'.$this['name'].'/www',true);
+		}else{
+			$fs = \Nette\Utils\FileSystem::createDir('./websites/'.$this['name']);
+			$fs = \Nette\Utils\FileSystem::copy('./vendor/xepan/cms/templates/defaultlayout','./websites/'.$this['name'],true);
+		}
 		$fs = \Nette\Utils\FileSystem::createDir('./websites/'.$this['name'].'/assets');
 		$fs = \Nette\Utils\FileSystem::createDir('./websites/'.$this['name'].'/upload');
-		$fs = \Nette\Utils\FileSystem::copy('./vendor/xepan/cms/templates/defaultlayout','./websites/'.$this['name'],true);
 	}
 
 	function createSuperUser($m,$new_id){
@@ -204,8 +216,13 @@ class Model_Epan extends \xepan\base\Model_Epan{
 		$this->app->hook('epan-deleted',[$this]);
 	}
 
-	function swipeEvenrything(){
-		include_once('websites/'.$this['name'].'/config.php');
+	function swipeEverything($epan=null){
+		if(!$epan) $epan = $this['name'];
+		if($epan instanceof \xepan\epanservices\Model_Epan){
+			$epan=$epan['name'];
+		}
+
+		include_once('websites/'.$epan.'/config.php');
 		
 		preg_match(
                     '|([a-z]+)://([^:]*)(:(.*))?@([A-Za-z0-9\.-]*)'.
@@ -214,10 +231,10 @@ class Model_Epan extends \xepan\base\Model_Epan{
                     $matches
                 );
 
-		$fs = \Nette\Utils\FileSystem::delete('./websites/'.$this['name']);
-		$this->app->db->dsql()->expr("DROP USER '$matches[2]'@$matches[5];")->execute();
-		$this->app->db->dsql()->expr("DROP database $matches[7];")->execute();
-		
+		$fs = \Nette\Utils\FileSystem::delete('./websites/'.$epan);
+		$this->app->db->dsql()->expr("GRANT ALL PRIVILEGES ON `*`.* To '$matches[2]'@'%';")->execute();
+		$this->app->db->dsql()->expr("DROP USER `$matches[2]`@'%'")->execute();
+		$this->app->db->dsql()->expr("DROP DATABASE IF EXISTS `$matches[7]`;")->execute();		
 	}
 
 	function page_manage_applications($p){
@@ -240,9 +257,12 @@ class Model_Epan extends \xepan\base\Model_Epan{
 
         $addons_to_keep = [];
 
+
         foreach ($extra_info['specification'] as $key => $value) {
             if(strtolower($value) === 'yes'){
-            	$epan->installApp($this->add('xepan\base\Model_Application')->loadBy('namespace','xepan\\'.strtolower($key)));
+            	$app = $this->add('xepan\base\Model_Application')->tryLoadBy('namespace','xepan\\'.strtolower($key));
+            	if($app->loaded())
+	            	$epan->installApp($app);
             }
         }
 
