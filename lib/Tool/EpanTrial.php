@@ -13,7 +13,7 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 		$this->app->memorize('next_url',$this->app->page);
 		if(!$this->app->auth->isLoggedIn()){
 			$f = $this->add('Form');
-			$f->addSubmit('Free 14 days trial')->addClass('btn btn-primary btn-block')->addStyle(['font-size'=>'42px!important','font-family'=>'Lucida Console']);
+			$f->addSubmit('Free 14 days trial')->addClass('btn btn-primary btn-block xepan-form-free-trial-btn')->addStyle(['font-size'=>'42px','font-family'=>'Lucida Console']);
 
 			if($f->isSubmitted()){
 				$this->app->redirect($this->options['login_page']);
