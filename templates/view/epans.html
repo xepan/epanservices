@@ -7,14 +7,15 @@
     </div>
   </header>{/Pannel}
   <div class="main-box-body clearfix table-responsive">
-    <table style="width:100%" class="table user-list table-hover footable toggle-circle-filled">{header}
+    <table style="width:100%" class="table table-hover">{header}
       <thead class="xepan-hover-hand">{cols}{col}
         <th><span>Name </span></th>
         <th><span>Epan        </span></th>
         <th><span>Created_at</span></th>
         <th><span>Template</span></th>
+        <th><span>Status</span></th>
         <th><span>Published</span></th>
-        <th> </th>{/}{/}
+        <th> <span>Un Publish</span></th>{/}{/}
       </thead>{/}
       {$subheader}
       <tbody>{rows}{row}
@@ -23,8 +24,9 @@
           <td><span>{$epan_category}</span></td>
           <td><span>{$created_at}</span></td>
           <td><span>{$xepan_template_id}</span></td>
-          <td><span>{$is_published}</span></td>
-          <td>{$action}</td>
+          <td>{$status}</td>
+          <td>{$Publish}</td>
+          <td><span>{$UnPublish}</span></td>
           <td style="width: 15%;">
             {$edit}
             {$delete}
