@@ -4,17 +4,17 @@
       .tabs-wrapper.profile-tabs
         ul.nav.nav-tabs
           li.active
-            a(data-toggle='tab', href='#tab-account') My Account    
-          li
             a(data-toggle='tab', href='#tab-epan') My Epan
           li
             a(data-toggle='tab', href='#tab-template') My Template
+          li
+            a(data-toggle='tab', href='#tab-account') My Account    
         .tab-content
-          #tab-account.tab-pane.fade.in.active 
-              {$account}
-          #tab-epan.tab-pane.clearfix.fade 
+          #tab-epan.tab-pane.clearfix.fade.active.in 
               {$epan}
           #tab-template.tab-pane.clearfix.fade
             | {$Content}
             | {$err_msg}
             | {$my_template}
+          #tab-account.tab-pane.fade 
+              {$account}

@@ -4,16 +4,12 @@
     <div class="main-box clearfix">
       <div class="tabs-wrapper profile-tabs">
         <ul class="nav nav-tabs">
-          <li class="active"><a data-toggle="tab" href="#tab-account">My Account    </a></li>
-          <li><a data-toggle="tab" href="#tab-epan">My Epan</a></li>
+          <li class="active"><a data-toggle="tab" href="#tab-epan">My Epan</a></li>
           <li><a data-toggle="tab" href="#tab-template">My Template</a></li>
+          <li><a data-toggle="tab" href="#tab-account">My Account    </a></li>
         </ul>
         <div class="tab-content">
-          <div id="tab-account" class="tab-pane fade in active">
-             
-            {$account}
-          </div>
-          <div id="tab-epan" class="tab-pane clearfix fade">
+          <div id="tab-epan" class="tab-pane clearfix fade active in">
              
             {$epan}
           </div>
@@ -21,6 +17,10 @@
             {$Content}
             {$err_msg}
             {$my_template}
+          </div>
+          <div id="tab-account" class="tab-pane fade">
+             
+            {$account}
           </div>
         </div>
       </div>
