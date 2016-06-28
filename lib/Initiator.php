@@ -34,6 +34,7 @@ class Initiator extends \Controller_Addon {
         $this->app->addHook('invoice_paid',[$epan_model,'invoicePaid']);
 
         $this->app->exportFrontEndTool('xepan\epanservices\Tool_EpanTrial','Epan Trial');
+        $this->app->exportFrontEndTool('xepan\epanservices\Tool_AfterCreation','Epan Trial');
     	return $this;
     }
 
