@@ -83,9 +83,38 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 				$newEpan_inServices->swipeEverything($epan_name);
     			return $form->error('epan_name','Could not create epan, please try again.');
 			}
-        	
+
+        	$user = $customer->user();
+        	$email_id = $user['username']; 
+			$this->sendGreetingsMail($email_id);
+
         	return $this->app->redirect($this->app->url('greetings',['epan_name'=>$epan_name]));
 		}
+	}
+
+	function sendGreetingsMail($email_id){
+		$email_settings = $this->add('xepan\communication\Model_Communication_EmailSetting')->tryLoadAny();
+		$mail = $this->add('xepan\communication\Model_Communication_Email');
+		
+		$email_subject = file_get_contents('xepan\epanservices\default\greeting_mail_subject');
+		$email_body = file_get_contents('xepan\epanservices\default\greeting_mail_body');
+
+		$subject_temp=$this->add('GiTemplate');
+		$subject_temp->loadTemplateFromString($email_subject);
+		
+		$subject_v=$this->add('View',null,null,$subject_temp);
+
+		$temp=$this->add('GiTemplate');
+		$temp->loadTemplateFromString($email_body);
+		
+		$body_v=$this->add('View',null,null,$temp);
+		$body_v->template->trySet('username',$email_id);					
+
+		$mail->setfrom($email_settings['from_email'],$email_settings['from_name']);
+		$mail->addTo($email_id);
+		$mail->setSubject($subject_v->getHtml());
+		$mail->setBody($body_v->getHtml());
+		$mail->send($email_settings);
 	}
 
 	function createEpan($epan_name){
