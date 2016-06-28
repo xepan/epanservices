@@ -222,6 +222,8 @@ class Model_Epan extends \xepan\base\Model_Epan{
 			$epan=$epan['name'];
 		}
 
+		if(!file_exists(realpath('websites/'.$epan.'/config.php'))) return;
+		
 		include_once('websites/'.$epan.'/config.php');
 		
 		preg_match(
