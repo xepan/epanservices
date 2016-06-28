@@ -1,7 +1,5 @@
-.row
-	.col-md-12
-		.jumbotron.container
-			{$form} {$Content}
+.jumbotron.container
+	{$form} {$Content}
 
 style(type='text/css', media='screen').
 	.jumbotron {
@@ -11,4 +9,15 @@ style(type='text/css', media='screen').
 	    height: 100%;
 	    background-size: cover;
 	    overflow: hidden;
+	}
+	@media screen and (max-device-width: 980px) and (min-device-width: 320px) {
+		.jumbotron input{width:70%!important;}
+		.jumbotron{
+			line-height:1.143!important;
+			padding:0px!important;
+			font-size:15px!important;
+		}
+		.jumbotron span{
+			font-size:12px!important;
+		}
 	}			

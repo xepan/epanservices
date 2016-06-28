@@ -35,7 +35,7 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 			$form = $this->add('Form',null,'form');
 			$form->setLayout('view\tool\form\epantrial');
 			$form->addField('epan_name')->setAttr(['placeholder'=>'your website name'])->validate('required?Please enter a website name');
-			$form->addSubmit('click here and enjoy 14 day free trial')->addClass('btn btn-primary btn-block');	
+			$form->addSubmit('Free 14 day Trial')->addClass('btn btn-primary');	
 		}
 
 		if($form->isSubmitted()){
