@@ -84,7 +84,7 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
     			return $form->error('epan_name','Could not create epan, please try again.');
 			}
         	
-        	return $form->js()->univ()->successMessage('Your site is ready')->execute();
+        	return $this->app->redirect($this->app->url('myepans'));
 		}
 	}
 
