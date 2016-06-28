@@ -95,9 +95,9 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 	function sendGreetingsMail($email_id){
 		$email_settings = $this->add('xepan\communication\Model_Communication_EmailSetting')->tryLoadAny();
 		$mail = $this->add('xepan\communication\Model_Communication_Email');
-		
-		$email_subject = file_get_contents('xepan\epanservices\default\greeting_mail_subject');
-		$email_body = file_get_contents('xepan\epanservices\default\greeting_mail_body');
+						
+		$email_subject = file_get_contents(getcwd().'/vendor/xepan/epanservices/templates/mail/greeting_mail_subject.html');
+		$email_body = file_get_contents(getcwd().'/vendor/xepan/epanservices/templates/mail/greeting_mail_body.html');
 
 		$subject_temp=$this->add('GiTemplate');
 		$subject_temp->loadTemplateFromString($email_subject);
