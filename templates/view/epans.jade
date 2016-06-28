@@ -15,6 +15,10 @@
                 th
                     span Name 
                 th
+                    span Admin 
+                th
+                    span Frontent 
+                th
                     span Epan        
                 th
                     span Created_at
@@ -36,6 +40,10 @@
                     {cols}
                     td
                         span {$name}
+                    td
+                        a(href="http://{$name}.epan.in/admin" target="_blank") Admin
+                    td
+                        a(href="http://{$name}.epan.in" target="_blank") Frontent
                     td
                         span {$epan_category}
                     td
