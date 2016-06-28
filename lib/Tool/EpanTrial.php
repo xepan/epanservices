@@ -64,7 +64,7 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 
         	/* IF CUSTOMER IS LOGGED IN AND EPAN NAME IS UNIQUE THEN CREATE EPAN */
         	$epan_name = $form['epan_name'];
-        	
+        	$email_settings = $this->add('xepan\communication\Model_Communication_EmailSetting')->tryLoadAny();
         	try{
 				$this->api->db->beginTransaction();
 	        	$this->createEpan($epan_name); // in epan services database, just a new row with specifications of apps
@@ -86,16 +86,16 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 
         	$user = $customer->user();
         	$email_id = $user['username']; 
-			$this->sendGreetingsMail($email_id);
+			$this->sendGreetingsMail($email_id,$email_settings);
 
         	return $this->app->redirect($this->app->url('greetings',['epan_name'=>$epan_name]));
 		}
 	}
 
-	function sendGreetingsMail($email_id){
-		$email_settings = $this->add('xepan\communication\Model_Communication_EmailSetting')->tryLoadAny();
+	function sendGreetingsMail($email_id,$email_settings){
+		// $email_settings = $this->add('xepan\communication\Model_Communication_EmailSetting')->tryLoadAny();
 		$mail = $this->add('xepan\communication\Model_Communication_Email');
-						
+														
 		$email_subject = file_get_contents(getcwd().'/vendor/xepan/epanservices/templates/mail/greeting_mail_subject.html');
 		$email_body = file_get_contents(getcwd().'/vendor/xepan/epanservices/templates/mail/greeting_mail_body.html');
 
