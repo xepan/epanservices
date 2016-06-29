@@ -11,9 +11,11 @@ class Tool_AfterCreation extends \xepan\cms\View_Tool {
 		
 		$admin_url = "http://www.".$_GET['epan_name'].".epan.in/admin";
 		$website_url = "http://www.".$_GET['epan_name'].".epan.in";
+		$message = $this->app->stickyGET('message');
 
 		$this->template->trySet('admin',$admin_url);
 		$this->template->trySet('website',$website_url);
+		$this->template->trySet('message',$message);
 	}
 
 	function defaultTemplate(){

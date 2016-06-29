@@ -88,7 +88,7 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
         	$email_id = $user['username']; 
 			$this->sendGreetingsMail($email_id);
 
-        	return $this->app->redirect($this->app->url('greetings',['epan_name'=>$epan_name]));
+        	return $this->app->redirect($this->app->url('greetings',['epan_name'=>$epan_name,'message'=>'We have sent you a welcome mail. Check your email address linked to the account.']));
 		}
 	}
 
