@@ -8,7 +8,22 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 	];
 
 	function init(){
-		parent::init();		
+		parent::init();	
+		$company_m = $this->add('xepan\base\Model_ConfigJsonModel',
+					[
+						'fields'=>[
+									'company_name'=>"Line",
+									'company_owner'=>"Line",
+									'mobile_no'=>"Line",
+									'company_email'=>"Line",
+									'company_address'=>"Line",
+									'company_pin_code'=>"Line",
+									'company_description'=>"text",
+									],
+						'config_key'=>'COMPANY_AND_OWNER_INFORMATION',
+						'application'=>'communication'
+					]);	
+		$this->add('View',null,null,['view/schema-micro-data','person_info'])->setModel($company_m);		
 		$this->app->addStyleSheet('jquery-ui');
 		$this->app->memorize('next_url',$this->app->page);
 		if(!$this->app->auth->isLoggedIn()){
