@@ -9,7 +9,7 @@ class Tool_AfterCreation extends \xepan\cms\View_Tool {
 	function init(){
 		parent::init();		
 		
-		$admin_url = "http://www.".$_GET['epan_name'].".epan.in/admin";
+		$admin_url = "http://www.".$_GET['epan_name'].".epan.in/admin/?page=xepan_hr_user";
 		$website_url = "http://www.".$_GET['epan_name'].".epan.in";
 		$message = $this->app->stickyGET('message');
 
