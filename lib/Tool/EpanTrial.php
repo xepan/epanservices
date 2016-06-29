@@ -9,6 +9,8 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 
 	function init(){
 		parent::init();	
+		$this->app->addStyleSheet('jquery-ui');
+
 		$company_m = $this->add('xepan\base\Model_ConfigJsonModel',
 					[
 						'fields'=>[
@@ -22,11 +24,11 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 									],
 						'config_key'=>'COMPANY_AND_OWNER_INFORMATION',
 						'application'=>'communication'
-					]);	
+					]);
+		$company_m->tryLoadAny();	
 		$v=$this->add('View',null,null,['view/schema-micro-data','person_info']);
-		$v->setModel($company_m);		
-		$v->template->trySet('company_name',$company_m['company_name']);
-		$this->app->addStyleSheet('jquery-ui');
+		$v->setModel($company_m);
+		
 		$this->app->memorize('next_url',$this->app->page);
 		if(!$this->app->auth->isLoggedIn()){
 			$f = $this->add('Form');
