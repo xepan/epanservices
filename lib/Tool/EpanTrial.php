@@ -23,7 +23,8 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 						'config_key'=>'COMPANY_AND_OWNER_INFORMATION',
 						'application'=>'communication'
 					]);	
-		$v=$this->add('View',null,null,['view/schema-micro-data','person_info'])->setModel($company_m);		
+		$v=$this->add('View',null,null,['view/schema-micro-data','person_info']);
+		$v->setModel($company_m);		
 		$v->template->trySet('company_name',$company_m['company_name']);
 		$this->app->addStyleSheet('jquery-ui');
 		$this->app->memorize('next_url',$this->app->page);
