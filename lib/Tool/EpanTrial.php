@@ -10,7 +10,6 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 	function init(){
 		parent::init();	
 		$this->app->addStyleSheet('jquery-ui');
-
 		$company_m = $this->add('xepan\base\Model_ConfigJsonModel',
 					[
 						'fields'=>[
@@ -21,11 +20,28 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 									'company_address'=>"Line",
 									'company_pin_code'=>"Line",
 									'company_description'=>"text",
+									'company_description'=>"text",
+									'company_logo_absolute_url'=>"Line",
+									'company_twitter_url'=>"Line",
+									'company_facebook_url'=>"Line",
+									'company_google_url'=>"Line",
+									'company_linkedin_url'=>"Line",
 									],
 						'config_key'=>'COMPANY_AND_OWNER_INFORMATION',
 						'application'=>'communication'
 					]);
 		$company_m->tryLoadAny();	
+		
+		$social=$this->add('View',null,null,['view/schema-micro-data','social_block']);
+		$social->template->trySet('company_name',$company_m['company_name']);
+		$social->template->trySet('website_url',$this->app->pm->base_url);
+		$social->template->trySet('website_name',$this->app->current_website_name);
+		$social->template->trySet('logo_url',$company_m['company_logo_absolute_url']);
+		$social->template->trySet('twitter_url',$company_m['company_twitter_url']);
+		$social->template->trySet('facebook_url',$company_m['company_facebook_url']);
+		$social->template->trySet('google_url',$company_m['company_google_url']);
+		$social->template->trySet('linkedin_url',$company_m['company_linkedin_url']);
+		
 		$v=$this->add('View',null,null,['view/schema-micro-data','person_info']);
 		$v->setModel($company_m);
 		
