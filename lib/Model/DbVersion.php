@@ -24,7 +24,7 @@ class Model_DbVersion extends \Model {
          * This model automatically sets its source by traversing 
          * and searching for suitable files
          */
-        $path = $this->path = $this->api->pathfinder->base_location->base_path.'/../vendor/'.str_replace("\\","/",$this->namespace)."/".$this->dir;
+        $path = $this->path = $this->api->pathfinder->base_location->base_path.'/./vendor/'.str_replace("\\","/",$this->namespace)."/".$this->dir;
         $p = scandir($path); 
         unset($p[0]);
         unset($p[1]);
