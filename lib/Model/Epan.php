@@ -158,7 +158,7 @@ class Model_Epan extends \xepan\base\Model_Epan{
 
 			$this->installApplication();
 			
-			$this->add('xepan\base\Model_Epan')->tryLoadAny()->set('name',$this['name'])->save();
+			$this->add('xepan\base\Model_Epan')->tryLoadAny()->set('name',$this['name'])->set('epan_dbversion',$this->app->epan['epan_dbversion'])->save();
 			
 			$user_new = $this->add('xepan\base\Model_User')->tryLoadAny()->set('username',$user['username'])->save();
 
