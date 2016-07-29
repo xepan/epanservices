@@ -99,6 +99,7 @@ class Model_Epan extends \xepan\base\Model_Epan{
 		$new_trial_epan['valid_till'] = date("Y-m-d", strtotime(date("Y-m-d", strtotime($this->app->now)) . " +14 DAY"));
 		$new_trial_epan['epan_category_id'] = $this->add('xepan\base\Model_Epan_Category')->tryLoadAny()->id;
 		$new_trial_epan['extra_info'] = $epan_item_info;		
+		$new_trial_epan['epan_dbversion'] = $this->app->epan['epan_dbversion'];		
 		$new_trial_epan->save();
 
 		return $new_trial_epan;
