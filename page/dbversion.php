@@ -5,7 +5,7 @@ namespace xepan\epanservices;
 /**
 * 
 */
-class page_dbverison extends \xepan\base\Page{
+class page_dbversion extends \xepan\base\Page{
 	public $title='xEpan Database Version';
 	public $dir='dbversion';
     public $namespace = __NAMESPACE__;
