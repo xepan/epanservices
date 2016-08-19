@@ -36,6 +36,23 @@ class Initiator extends \Controller_Addon {
 
         $this->app->exportFrontEndTool('xepan\epanservices\Tool_EpanTrial','Epan Trial');
         $this->app->exportFrontEndTool('xepan\epanservices\Tool_AfterCreation','Epan Trial');
+
+        $this->app->addHook('cron_executor',function($app){
+            $now = \DateTime::createFromFormat('Y-m-d H:i:s', $this->app->now);
+            echo "Running All Epans Cron";
+            var_dump($now);
+            if($this->app->current_website_name !='www') return;
+            $job1 = new \Cron\Job\ShellJob();
+            $job1->setSchedule(new \Cron\Schedule\CrontabSchedule('*/1 * * * *'));
+            if(!$job1->getSchedule() || $job1->getSchedule()->valid($now)){
+                foreach ($this->add('xepan\base\Epan')->addCondition('id','<>',$this->app->epan->id) as $other_epans) {
+                    // wget all epans cron page with cut_page=true
+                    $command = 'wget https://'. $other_epans['name'].'.epan.in?page=xepan_base_cron&cut_page=true';
+                    shell_exec($command);
+                }
+            }
+        });
+
     	return $this;
     }
 

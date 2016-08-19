@@ -194,7 +194,7 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 							];
 							
 		$order = $this->add('xepan\commerce\Model_SalesOrder');
-		$order = $order->placeOrderFromCart($billing_detail);
+		$order = $order->placeOrderFromCart($billing_detail,false);
 		$this->app->hook('order_placed',[$order]);
 	}
 
