@@ -31,7 +31,8 @@ class page_dbversion extends \xepan\base\Page{
 	        	if($m['name'] and file_exists($path."/".$m['name'])){
 	        		$filename = $m['name'];
 	        	}else{
-					$filename = "dbversion-".($m->max_count+1).".sql";
+	        		$filename= str_pad($m->max_count+1, 8, "0",STR_PAD_LEFT).".sql";
+					// $filename = "dbversion-".($m->max_count+1).".sql";
 	        	}
 	        	
 				$newFileName = $path.'/'.$filename;

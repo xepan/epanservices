@@ -16,10 +16,12 @@ class Model_DbVersion extends \Model {
     public $path="";
     function init(){
         parent::init();
-
+        $this->add('xepan\base\Controller_Validator');
         $this->addField('name')->defaultValue();
         $this->addField('code')->type('text');
-
+        $this->is([
+                'code|to_trim|required'
+            ]);
         /**
          * This model automatically sets its source by traversing 
          * and searching for suitable files
@@ -33,8 +35,10 @@ class Model_DbVersion extends \Model {
         $i=2;
         
         foreach ($p as $file) {
-            $temp = explode(".", explode("-", $file)[1]);
-            if(is_array($temp) and isset($temp[0])){
+            // $temp = explode(".", explode("-", $file)[1]);
+            
+            $temp = explode(".",$file);
+            if(is_array($temp) and isset($temp[0]) and $temp[0] != "index"){
                 if($this->max_count < $temp[0] )
                     $this->max_count = $temp[0];
             }
