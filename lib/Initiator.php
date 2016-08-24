@@ -24,11 +24,16 @@ class Initiator extends \Controller_Addon {
     	return $this;
     }
 
-    function setup_frontend(){
+    function setup_pre_frontend(){
         $this->routePages('xepan_epanservices');
         $this->addLocation(array('template'=>'templates','js'=>'templates/js','css'=>'templates/css'))
         ->setBaseURL('vendor/xepan/epanservices/')
-        ;
+        ;        
+
+        return $this;
+    }
+
+    function setup_frontend(){
 
         $epan_model = $this->add('xepan/epanservices/Model_Epan');
         $this->app->addHook('order_placed',[$epan_model,'createFromOrder']);
@@ -39,9 +44,12 @@ class Initiator extends \Controller_Addon {
 
         $this->app->addHook('cron_executor',function($app){
             $now = \DateTime::createFromFormat('Y-m-d H:i:s', $this->app->now);
-            echo "Running All Epans Cron";
+            echo "Running All Epans Cron <br/>";
             var_dump($now);
-            if($this->app->current_website_name !='www') return;
+            if($this->app->current_website_name !='www'){
+                echo "leaving ". $this->app->current_website_name. '<br/>';
+                return;
+            }
             $job1 = new \Cron\Job\ShellJob();
             $job1->setSchedule(new \Cron\Schedule\CrontabSchedule('*/1 * * * *'));
             if(!$job1->getSchedule() || $job1->getSchedule()->valid($now)){
