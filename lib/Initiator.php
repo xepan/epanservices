@@ -53,16 +53,52 @@ class Initiator extends \Controller_Addon {
             $job1 = new \Cron\Job\ShellJob();
             $job1->setSchedule(new \Cron\Schedule\CrontabSchedule('*/1 * * * *'));
             if(!$job1->getSchedule() || $job1->getSchedule()->valid($now)){
+                $urls=[];
                 foreach ($this->add('xepan\base\Model_Epan')->addCondition('id','<>',$this->app->epan->id) as $other_epans) {
-                    // wget all epans cron page with cut_page=true
-                    $command = 'wget http://'. $other_epans['name'].'.epan.in?page=xepan_base_cron&cut_page=true';
-                    echo "<br/> executing ". $command. '<br/>';
-                    shell_exec($command);
+                    // $command = 'wget http://'. $other_epans['name'].'.epan.in?page=xepan_base_cron&cut_page=true';
+                    // echo "<br/> executing ". $command. '<br/>';
+                    // shell_exec($command);
+                    if($other_epans['name'] !=='www') continue;
+                    $urls[] = 'http://'. $other_epans['name'].'.epan.in?page=xepan_base_cron&cut_page=true';
+                }
+                if(count($urls)){
+                    $results = $this->multi_request($urls);
                 }
             }
         });
 
     	return $this;
+    }
+
+    function multi_request($urls)
+    {
+        $curly = array();
+        $result = array();
+        $mh = curl_multi_init();
+
+        foreach ($urls as $id => $url) {
+            $curly[$id] = curl_init();
+            curl_setopt($curly[$id], CURLOPT_URL, $url);
+            curl_setopt($curly[$id], CURLOPT_HEADER, 0);
+            curl_setopt($curly[$id], CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($curly[$id], CURLOPT_TIMEOUT, 30);
+            curl_setopt($curly[$id], CURLOPT_FOLLOWLOCATION, true);
+            curl_setopt($curly[$id], CURLOPT_SSL_VERIFYPEER, 0);
+            curl_setopt($curly[$id], CURLOPT_SSL_VERIFYHOST, 0);
+            curl_multi_add_handle($mh, $curly[$id]);
+        }
+
+        $running = null;
+        do {
+            curl_multi_exec($mh, $running);
+        } while($running > 0);
+
+        foreach($curly as $id => $c) {
+            $result[$id] = curl_multi_getcontent($c);
+            curl_multi_remove_handle($mh, $c);
+        }
+        curl_multi_close($mh);
+        return $result;
     }
 
 
