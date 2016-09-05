@@ -58,7 +58,7 @@ class Initiator extends \Controller_Addon {
                     // $command = 'wget http://'. $other_epans['name'].'.epan.in?page=xepan_base_cron&cut_page=true';
                     // echo "<br/> executing ". $command. '<br/>';
                     // shell_exec($command);
-                    $urls[] = 'http://'. $other_epans['name'].'.epan.in?page=xepan_base_cron&cut_page=true';
+                    $urls[] = 'http://'. $other_epans['name'].'.epan.in?page=xepan_base_cron&cut_page=true&now='.$this->app->now;
                 }
                 if(count($urls)){
                     $results = $this->multi_request($urls);
