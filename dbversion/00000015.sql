@@ -1,1 +1,1 @@
-ALTER TABLE `account_transaction_row` ADD `sub_tax` TEXT NULL AFTER `exchange_rate`;
+ALTER TABLE `account_transaction_row` ADD `remark` TEXT NULL AFTER `exchange_rate`;
