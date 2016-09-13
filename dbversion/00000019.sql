@@ -1,0 +1,1 @@
+ALTER TABLE `communication` ADD COLUMN `related_2_id`  int(11) NULL DEFAULT NULL AFTER `communication_channel_id`;
