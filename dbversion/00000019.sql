@@ -1,1 +1,1 @@
-ALTER TABLE `qsp_master` ADD `outsource_party_id` INT NULL AFTER `nominal_id`;
+ALTER TABLE `task` ADD COLUMN `is_reminder`  tinyint(4) NULL DEFAULT NULL AFTER `notify_to`;
