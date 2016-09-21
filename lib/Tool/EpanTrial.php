@@ -65,12 +65,16 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
         	return;            
     	}
 
+    	$v = $this->add('View')->setHtml('<span>Creating your website and admin panel</span> <img src="vendor\xepan\epanservices\templates\images\loader.gif">');
+    	$v->js(true)->hide();
+
 		/*FORM TO ASK USER FOR EPAN NAME AND TO CHECK LOGGEDIN*/
 		if($this->app->auth->isLoggedIn()){
 			$form = $this->add('Form',null,'form');
 			$form->setLayout('view\tool\form\epantrial');
 			$form->addField('epan_name')->setAttr(['placeholder'=>'your website name'])->validate('required?Please enter a website name');
-			$form->addSubmit('Free 14 day Trial')->addClass('btn btn-primary');	
+			$submit_button = $form->addSubmit('Free 14 day Trial')->addClass('btn btn-primary');	
+			$submit_button->js('click',$v->js()->show());
 		}
 
 		if($form->isSubmitted()){
@@ -81,7 +85,9 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
         	$trial_epan->tryLoadAny();
 
         	if($trial_epan->loaded()){
-        		$form->error('epan_name','you have already tried !');
+        		$form->js(true,$v->js(true)->hide())
+	            ->atk4_form('fieldError','epan_name','You Have already tried!')
+	            ->execute();
         		return;
         	}
         	
@@ -92,7 +98,9 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
         	$myEpans->tryLoadAny();
 
         	if($myEpans->loaded()){
-        		$form->error('epan_name','name already taken');
+        		$form->js(true,$v->js(true)->hide())
+	            ->atk4_form('fieldError','epan_name','name already taken')
+	            ->execute();
         		return;
         	}
 
@@ -116,7 +124,11 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 				$this->api->db->rollback();
 				throw $e;				
 				$newEpan_inServices->swipeEverything($epan_name);
-    			return $form->error('epan_name','Could not create epan, please try again.');
+    			
+				$form->js(true,$v->js(true)->hide())
+	            ->atk4_form('fieldError','epan_name','Could not create epan, please try again.')
+	            ->execute();
+        		return;
 			}
 
         	$user = $customer->user();
