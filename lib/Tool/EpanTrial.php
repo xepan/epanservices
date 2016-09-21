@@ -42,8 +42,8 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 		$social->template->trySet('google_url',$company_m['company_google_url']);
 		$social->template->trySet('linkedin_url',$company_m['company_linkedin_url']);
 		
-		$v=$this->add('View',null,null,['view/schema-micro-data','person_info']);
-		$v->setModel($company_m);
+		$view = $this->add('View',null,null,['view/schema-micro-data','person_info']);
+		$view->setModel($company_m);
 		
 		$this->app->memorize('next_url',$this->app->page);
 		if(!$this->app->auth->isLoggedIn()){
@@ -65,7 +65,7 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
         	return;            
     	}
 
-    	$v = $this->add('View')->setHtml('<span>Creating your website and admin panel</span> <img src="vendor\xepan\epanservices\templates\images\loader.gif">');
+    	$v = $this->add('View')->setHtml('<span>Creating your website and admin panel. Be with us, it will take less than 1 minute.</span> <img src="vendor\xepan\epanservices\templates\images\loader.gif">');
     	$v->js(true)->hide();
 
 		/*FORM TO ASK USER FOR EPAN NAME AND TO CHECK LOGGEDIN*/
