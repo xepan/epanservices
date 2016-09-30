@@ -1,4 +1,1 @@
-ALTER TABLE `custom_form` DROP COLUMN `created_at`;
-ALTER TABLE `custom_form` DROP COLUMN `created_by_id`;
-ALTER TABLE `custom_form` DROP COLUMN `type`;
-ALTER TABLE `custom_form` DROP COLUMN `status`;
+ALTER TABLE `customfield_association` ADD `is_optional` INT(11) NULL AFTER `order`;
