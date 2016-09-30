@@ -1,4 +1,4 @@
-ALTER TABLE `custom_form` DROP COLUMN `created_at`;
-ALTER TABLE `custom_form` DROP COLUMN `created_by_id`;
-ALTER TABLE `custom_form` DROP COLUMN `type`;
-ALTER TABLE `custom_form` DROP COLUMN `status`;
+ALTER TABLE `custom_form` ADD COLUMN `created_at`;
+ALTER TABLE `custom_form` ADD COLUMN `created_by_id`;
+ALTER TABLE `custom_form` ADD COLUMN `type`;
+ALTER TABLE `custom_form` ADD COLUMN `status`;
