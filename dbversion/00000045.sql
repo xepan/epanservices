@@ -1,1 +1,1 @@
-ALTER TABLE `contact` ADD COLUMN `assign_to_id`  int(11) NOT NULL AFTER `id`;
+ALTER TABLE `employee_movement` CHANGE `time` `movement_at` DATETIME NULL DEFAULT NULL;
