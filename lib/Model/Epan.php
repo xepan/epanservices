@@ -175,9 +175,11 @@ class Model_Epan extends \xepan\base\Model_Epan{
 
 
 		}catch(\Exception_StopInit $e){
+			$this->api->db->commit();
+			$this->app->db = $saved_db;
+			$this->app->auth->login($user);
 
 		}catch(\Exception $e){
-			throw $e;			
 			$this->api->db->rollback();
 			$this->app->db = $saved_db;
 			$this->app->auth->login($user);

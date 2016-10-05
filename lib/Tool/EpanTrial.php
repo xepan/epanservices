@@ -122,9 +122,9 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 				$this->api->db->commit();
 			}catch(\Exception $e){
 				$this->api->db->rollback();
-				throw $e;				
 				$newEpan_inServices->swipeEverything($epan_name);
     			
+				throw $e;				
 				$form->js(true,$v->js(true)->hide())
 	            ->atk4_form('fieldError','epan_name','Could not create epan, please try again.')
 	            ->execute();
