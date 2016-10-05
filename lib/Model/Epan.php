@@ -60,7 +60,7 @@ class Model_Epan extends \xepan\base\Model_Epan{
 				if($category['category_name'] === "Epan"){
 					$extra_info['qsp_detail_id'] = $order_item->id;
 					$extra_info['item_id'] = $item->id;
-					$extra_info['specification'] = $item->getSpecification();
+					$extra_info['specification'] = $item->getSpecification($case='exact');
 					$epan_item_info = json_encode($extra_info);
 					$this->createTrialEpan($epan_item_info,$order_item);
 				}
@@ -142,11 +142,11 @@ class Model_Epan extends \xepan\base\Model_Epan{
 		else
 			$new_db->dsql()->expr(file_get_contents(getcwd().'/install.sql'))->execute();
 
-		$saved_db = $this->app->db;
+		$saved_db = clone $this->app->db;
 		$this->app->db = $new_db;
 
 		try{
-			$user = clone $this->app->auth->model;
+			$user = $this->app->auth->model;
 			$this->api->db->beginTransaction();
 			$this->app->db->dsql()->expr('SET FOREIGN_KEY_CHECKS = 0;')->execute();
 			$this->app->resetDB = true;
@@ -176,15 +176,13 @@ class Model_Epan extends \xepan\base\Model_Epan{
 
 		}catch(\Exception_StopInit $e){
 			$this->api->db->commit();
-			$this->app->db = $saved_db;
-			$this->app->auth->login($user);
 
 		}catch(\Exception $e){
 			$this->api->db->rollback();
-			$this->app->db = $saved_db;
-			$this->app->auth->login($user);
 			throw $e;
 		}
+			$this->app->db = $saved_db;
+			$this->app->auth->login($user);
 	}
 
 	function createFolderTest(){

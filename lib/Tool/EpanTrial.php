@@ -109,6 +109,7 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
         	$epan_name = $form['epan_name'];
         	$email_settings = $this->add('xepan\communication\Model_Communication_EmailSetting')->tryLoadAny();
         	try{
+        		set_time_limit(60);
 				$this->api->db->beginTransaction();
 	        	$this->createEpan($epan_name); // in epan services database, just a new row with specifications of apps
 	        	$newEpan_inServices = $this->add('xepan\epanservices\Model_Epan')->addCondition('name',$epan_name)->tryLoadAny();
@@ -120,12 +121,14 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 				$newEpan_inServices->save();  	
 
 				$this->api->db->commit();
-			}catch(\Exception $e){
-				$this->api->db->rollback();
+				}catch(\Exception_StopInit $e){
+					$this->api->db->commit();
+				}catch(\Exception $e){
+					if($this->api->db->inTransaction()) $this->api->db->rollback();
+				throw $e;
 				if(isset($newEpan_inServices))
 					$newEpan_inServices->swipeEverything($epan_name);
     			
-				throw $e;				
 				$form->js(true,$v->js(true)->hide())
 	            ->atk4_form('fieldError','epan_name','Could not create epan, please try again.')
 	            ->execute();
