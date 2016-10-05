@@ -122,7 +122,8 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 				$this->api->db->commit();
 			}catch(\Exception $e){
 				$this->api->db->rollback();
-				$newEpan_inServices->swipeEverything($epan_name);
+				if(isset($newEpan_inServices))
+					$newEpan_inServices->swipeEverything($epan_name);
     			
 				throw $e;				
 				$form->js(true,$v->js(true)->hide())
