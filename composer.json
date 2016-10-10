@@ -18,7 +18,7 @@
         "reference": "origin/master"
     },
     "require": {
-        "xepan/hr":"dev-master"
+        "xepan/hr":">=0.2"
     },
     "autoload": {
         "psr-0": { "autocomplete": "lib" }
