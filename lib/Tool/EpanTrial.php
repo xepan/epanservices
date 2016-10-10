@@ -42,8 +42,8 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 		$social->template->trySet('google_url',$company_m['company_google_url']);
 		$social->template->trySet('linkedin_url',$company_m['company_linkedin_url']);
 		
-		$v=$this->add('View',null,null,['view/schema-micro-data','person_info']);
-		$v->setModel($company_m);
+		$view = $this->add('View',null,null,['view/schema-micro-data','person_info']);
+		$view->setModel($company_m);
 		
 		$this->app->memorize('next_url',$this->app->page);
 		if(!$this->app->auth->isLoggedIn()){
@@ -65,12 +65,16 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
         	return;            
     	}
 
+    	$v = $this->add('View')->setHtml('<span>Creating your website and admin panel. Be with us, it will take less than 1 minute.</span> <img src="vendor\xepan\epanservices\templates\images\loader.gif">');
+    	$v->js(true)->hide();
+
 		/*FORM TO ASK USER FOR EPAN NAME AND TO CHECK LOGGEDIN*/
 		if($this->app->auth->isLoggedIn()){
 			$form = $this->add('Form',null,'form');
 			$form->setLayout('view\tool\form\epantrial');
 			$form->addField('epan_name')->setAttr(['placeholder'=>'your website name'])->validate('required?Please enter a website name');
-			$form->addSubmit('Free 14 day Trial')->addClass('btn btn-primary');	
+			$submit_button = $form->addSubmit('Free 14 day Trial')->addClass('btn btn-primary');	
+			$submit_button->js('click',$v->js()->show());
 		}
 
 		if($form->isSubmitted()){
@@ -81,7 +85,9 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
         	$trial_epan->tryLoadAny();
 
         	if($trial_epan->loaded()){
-        		$form->error('epan_name','you have already tried !');
+        		$form->js(true,$v->js(true)->hide())
+	            ->atk4_form('fieldError','epan_name','You Have already tried!')
+	            ->execute();
         		return;
         	}
         	
@@ -92,7 +98,9 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
         	$myEpans->tryLoadAny();
 
         	if($myEpans->loaded()){
-        		$form->error('epan_name','name already taken');
+        		$form->js(true,$v->js(true)->hide())
+	            ->atk4_form('fieldError','epan_name','name already taken')
+	            ->execute();
         		return;
         	}
 
@@ -101,6 +109,7 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
         	$epan_name = $form['epan_name'];
         	$email_settings = $this->add('xepan\communication\Model_Communication_EmailSetting')->tryLoadAny();
         	try{
+        		set_time_limit(60);
 				$this->api->db->beginTransaction();
 	        	$this->createEpan($epan_name); // in epan services database, just a new row with specifications of apps
 	        	$newEpan_inServices = $this->add('xepan\epanservices\Model_Epan')->addCondition('name',$epan_name)->tryLoadAny();
@@ -112,11 +121,18 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 				$newEpan_inServices->save();  	
 
 				$this->api->db->commit();
-			}catch(\Exception $e){
-				$this->api->db->rollback();
-				throw $e;				
-				$newEpan_inServices->swipeEverything($epan_name);
-    			return $form->error('epan_name','Could not create epan, please try again.');
+				}catch(\Exception_StopInit $e){
+					$this->api->db->commit();
+				}catch(\Exception $e){
+					if($this->api->db->inTransaction()) $this->api->db->rollback();
+				throw $e;
+				if(isset($newEpan_inServices))
+					$newEpan_inServices->swipeEverything($epan_name);
+    			
+				$form->js(true,$v->js(true)->hide())
+	            ->atk4_form('fieldError','epan_name','Could not create epan, please try again.')
+	            ->execute();
+        		return;
 			}
 
         	$user = $customer->user();
