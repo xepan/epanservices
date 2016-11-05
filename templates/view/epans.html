@@ -15,9 +15,9 @@
         <th><span>Epan        </span></th>
         <th><span>Created_at</span></th>
         <th><span>Template</span></th>
-        <th><span>Status</span></th>
-        <th><span>Published</span></th>
-        <th> <span>Un Publish</span></th>{/}{/}
+        <th><span>Publish</span></th>
+        <th> <span>UnPublish</span></th>
+        <th></th>{/}{/}
       </thead>{/}
       {$subheader}
       <tbody>{rows}{row}
@@ -28,13 +28,13 @@
           <td><span>{$epan_category}</span></td>
           <td><span>{$created_at}</span></td>
           <td><span>{$xepan_template_id}</span></td>
-          <td>{$status}</td>
           <td>{$Publish}</td>
           <td><span>{$UnPublish}</span></td>
           <td style="width: 15%;">
             {$edit}
             {$delete}
-          </td>{/}
+          </td>
+          <td>{$action}                    </td>{/}
         </tr>{/}{/}
         {not_found}
         <div class="row">

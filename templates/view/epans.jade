@@ -25,11 +25,11 @@
                 th
                     span Template
                 th
-                    span Status
-                th
-                    span Published
+                    span Publish
                 th 
-                    span Un Publish
+                    span UnPublish
+                th
+
                 {/}{/}
             {/}
             {$subheader}
@@ -51,15 +51,14 @@
                     td
                         span {$xepan_template_id}
                     td
-                        {$status}
-                    td
                         {$Publish}
                     td
                         span {$UnPublish}
                     td(style="width: 15%;")
                         {$edit}
                         {$delete}
-                    
+                    td
+                        {$action}                    
                     {/}
                 {/}{/}
                 {not_found}

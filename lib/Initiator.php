@@ -20,8 +20,24 @@ class Initiator extends \Controller_Addon {
             $this->app->side_menu->addItem(['Epans','icon'=>' fa fa-globe','badge'=>[1 ,'swatch'=>' label label-primary pull-right']],'xepan_epanservices_epans')->setAttr(['title'=>'Epans']);
         }
         $this->app->side_menu->addItem([' DB Version Generate','icon'=>' fa fa-edit'],'xepan_epanservices_dbversion')->setAttr(['title'=>'DB Version Generate ']);
-
+        $this->app->addHook('epan_dashboard_page',[$this,'epanDashboard']);
     	return $this;
+    }
+
+    function epanDashboard($layout,$page){
+        $extra_info = $this->app->recall('epan_extra_info_array',false);
+        $valid_till = $extra_info['valid_till'];
+
+        $post = $this->add('xepan\hr\Model_Post');
+        $post->tryLoadBy('id',$this->app->employee['post_id']);
+        
+        if(!$post->loaded())
+            return;    
+        
+        if($valid_till AND $post['parent_post_id'] == null){            
+            $expiry_view = $page->add('View',null,'epan_expire_date',['view\epan-expiry-date']);
+            $expiry_view->template->trySet('expiry_date',$valid_till);
+        }
     }
 
     function setup_pre_frontend(){

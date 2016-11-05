@@ -16,10 +16,10 @@ class Model_Epan extends \xepan\base\Model_Epan{
 	public $status = ['Trial','Paid','Grace','Expired'];
 	
 	public $actions = [
-		'Trial'=>['view','edit','delete','manage_applications','pay'],
-		'Paid'=>['view','edit','delete','manage_applications'],
-		'Grace'=>['view','edit','delete','manage_applications','pay'],
-		'Expired'=>['view','edit','delete','manage_applications','pay']
+		'Trial'=>['view','edit','delete','manage_applications','pay','validity','expire'],
+		'Paid'=>['view','edit','delete','manage_applications','expire'],
+		'Grace'=>['view','edit','delete','manage_applications','pay','expire'],
+		'Expired'=>['view','edit','delete','pay']
 	];
 
 	function init(){
@@ -61,6 +61,8 @@ class Model_Epan extends \xepan\base\Model_Epan{
 					$extra_info['qsp_detail_id'] = $order_item->id;
 					$extra_info['item_id'] = $item->id;
 					$extra_info['specification'] = $item->getSpecification($case='exact');
+					$extra_info['valid_till'] = date("Y-m-d H:i:s", strtotime('+ 2 Weeks', strtotime($this->app->now)));
+
 					$epan_item_info = json_encode($extra_info);
 					$this->createTrialEpan($epan_item_info,$order_item);
 				}
@@ -255,6 +257,62 @@ class Model_Epan extends \xepan\base\Model_Epan{
 			$crud = $p->add('xepan\hr\CRUD');
 			$crud->setModel($installed_apps);
 
+	}
+
+	function pay(){
+		$this['status'] = 'Paid';
+		$this->save();
+
+		$this->app->employee
+				->addActivity("Epan '".$this['name']."' Paid By'".$this->app->employee['name']."'", $this->id, null,null,null,null)
+				->notifyWhoCan('manage_applications,expire','Paid');
+	}
+
+	function page_validity($p){
+		$extra_info = json_decode($this['extra_info'],true);
+
+		$form = $p->add('Form');
+		$form->addField('DateTimePicker','valid_till')->set($extra_info ['valid_till']);
+		$form->addSubmit('Save');
+		
+		if($form->isSubmitted()){
+			$this->validity($form['valid_till']);
+			$this->app->employee
+				->addActivity("Epan '".$this['name']."' Validity Changed By'".$this->app->employee['name']."'", $this->id, null,null,null,null)
+				->notifyWhoCan('pay,expire','Trial');
+			return $p->js()->univ()->closeDialog();
+		}
+	}
+
+	function validity($valid_till){
+		$extra_info = json_decode($this['extra_info'],true);
+		$extra_info ['valid_till'] = $valid_till;
+		$this['extra_info'] = $extra_info;
+		$this->save();
+		return true;
+	}
+
+	function page_expire($p){
+		$form = $p->add('Form');
+		$form->addField('text','narration');
+		$form->addSubmit('Save');
+		
+		if($form->isSubmitted()){
+			$this->expire($form['narration']);
+			$this->app->employee
+				->addActivity("Epan '".$this['name']."' Expired By'".$this->app->employee['name']."'", $this->id, null,null,null,null)
+				->notifyWhoCan('pay','Expired');
+			return $p->js()->univ()->closeDialog();
+		}
+	}	
+
+	function expire($narration){
+		$extra_info = json_decode($this['extra_info'],true);
+		$extra_info ['reason_for_expire'] = $narration;
+		$this['status']='Expired';
+		$this['extra_info']= $extra_info;
+		$this->save();
+		return true;
 	}
 
 	function installApplication(){		
