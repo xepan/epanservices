@@ -34,8 +34,14 @@ class Initiator extends \Controller_Addon {
         if(!$post->loaded())
             return;    
         
-        if($valid_till AND $post['parent_post_id'] == null){            
-            $expiry_view = $page->add('View',null,'epan_expire_date',['view\epan-expiry-date']);
+        if($valid_till AND $post['parent_post_id'] == null){
+            $expiry_view = $page->add('xepan\base\View_Widget_SingleInfo',null,'top_bar');
+            $expiry_view->setIcon('fa fa-clock-o')
+                    ->setHeading('Expiring At')
+                    ->setValue(date('d M\'y',strtotime($valid_till)))
+                    ->makeDanger()
+                    ->addClass('col-md-4')
+                    ;                
             $expiry_view->template->trySet('expiry_date',$valid_till);
         }
     }
