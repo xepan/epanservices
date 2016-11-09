@@ -20,30 +20,7 @@ class Initiator extends \Controller_Addon {
             $this->app->side_menu->addItem(['Epans','icon'=>' fa fa-globe','badge'=>[1 ,'swatch'=>' label label-primary pull-right']],'xepan_epanservices_epans')->setAttr(['title'=>'Epans']);
         }
         $this->app->side_menu->addItem([' DB Version Generate','icon'=>' fa fa-edit'],'xepan_epanservices_dbversion')->setAttr(['title'=>'DB Version Generate ']);
-        $this->app->addHook('epan_dashboard_page',[$this,'epanDashboard']);
     	return $this;
-    }
-
-    function epanDashboard($layout,$page){
-        $extra_info = $this->app->recall('epan_extra_info_array',false);
-        $valid_till = $extra_info['valid_till'];
-
-        $post = $this->add('xepan\hr\Model_Post');
-        $post->tryLoadBy('id',$this->app->employee['post_id']);
-        
-        if(!$post->loaded())
-            return;    
-        
-        if($valid_till AND $post['parent_post_id'] == null){
-            $expiry_view = $page->add('xepan\base\View_Widget_SingleInfo',null,'top_bar');
-            $expiry_view->setIcon('fa fa-clock-o')
-                    ->setHeading('Expiring At')
-                    ->setValue(date('d M\'y',strtotime($valid_till)))
-                    ->makeDanger()
-                    ->addClass('col-md-4')
-                    ;                
-            $expiry_view->template->trySet('expiry_date',$valid_till);
-        }
     }
 
     function setup_pre_frontend(){
