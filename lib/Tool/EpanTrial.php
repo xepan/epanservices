@@ -125,7 +125,7 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 					$this->api->db->commit();
 				}catch(\Exception $e){
 					if($this->api->db->inTransaction()) $this->api->db->rollback();
-				// throw $e;
+				throw $e;
 				if(isset($newEpan_inServices))
 					$newEpan_inServices->swipeEverything($epan_name);
     			
@@ -157,8 +157,13 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 		}
 
 		$cat_assocs = $this->add('xepan\marketing\Model_Lead_Category_Association');
-		$cat_assocs['lead_id'] = $customer->id;
-		$cat_assocs['marketing_category_id'] = $marketing_category->id;
+		$cat_assocs->addCondition('lead_id',$customer->id);
+		$cat_assocs->addCondition('marketing_category_id',$marketing_category->id);
+		$cat_assocs->tryLoadAny();
+
+		if($cat_assocs->loaded())
+			return;
+		
 		$cat_assocs->save();
 	}
 
