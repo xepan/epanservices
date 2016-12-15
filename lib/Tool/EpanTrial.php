@@ -136,11 +136,30 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 			}
 
         	$user = $customer->user();
-        	$email_id = $user['username']; 
+        	$email_id = $user['username'];
+
+        	$this->associateCustomerWithCategory($customer);
 			$this->sendGreetingsMail($email_id,$email_settings);
 
         	return $this->app->redirect($this->app->url('greetings',['epan_name'=>$epan_name,'message'=>'We have sent you a welcome mail. Check your email address linked to the account.']));
 		}
+	}
+
+	// Associate customer with "Online Epan Customer" category as soon as Epan is created
+	function associateCustomerWithCategory($customer){
+		$marketing_category = $this->add('xepan\marketing\Model_MarketingCategory');
+		$marketing_category->tryLoadBy('name','Online Epan Customer');
+
+		if(!$marketing_category->loaded()){
+			$marketing_category['name'] = 'Online Epan Customer';
+			$marketing_category['system'] = true;
+			$marketing_category->save();
+		}
+
+		$cat_assocs = $this->add('xepan\marketing\Model_Lead_Category_Association');
+		$cat_assocs['lead_id'] = $customer->id;
+		$cat_assocs['marketing_category_id'] = $marketing_category->id;
+		$cat_assocs->save();
 	}
 
 	function sendGreetingsMail($email_id,$email_settings){
