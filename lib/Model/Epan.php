@@ -16,9 +16,9 @@ class Model_Epan extends \xepan\base\Model_Epan{
 	public $status = ['Trial','Paid','Grace','Expired'];
 	
 	public $actions = [
-		'Trial'=>['view','edit','delete','manage_applications','pay','validity','expire'],
-		'Paid'=>['view','edit','delete','manage_applications','expire'],
-		'Grace'=>['view','edit','delete','manage_applications','pay','expire'],
+		'Trial'=>['view','edit','delete','manage_applications','pay','validity','expire','usage_limit'],
+		'Paid'=>['view','edit','delete','manage_applications','expire','usage_limit'],
+		'Grace'=>['view','edit','delete','manage_applications','pay','expire','usage_limit'],
 		'Expired'=>['view','edit','delete','pay']
 	];
 
@@ -287,6 +287,33 @@ class Model_Epan extends \xepan\base\Model_Epan{
 	function validity($valid_till){
 		$extra_info = json_decode($this['extra_info'],true);
 		$extra_info ['valid_till'] = $valid_till;
+		$this['extra_info'] = $extra_info;
+		$this->save();
+		return true;
+	}
+
+
+	function page_usage_limit($p){
+		$extra_info = json_decode($this['extra_info'],true);
+		$employee_limit = isset($extra_info ['specification']['employee'])?$extra_info ['specification']['employee']:0;
+		
+		$form = $p->add('Form');
+		$form->addField('employee_limit')->set($employee_limit);
+		$form->addSubmit('Save');
+		
+		if($form->isSubmitted()){
+			$this->usage_limit($form['employee_limit']);
+			$this->app->employee
+				->addActivity("Epan '".$this['name']."' usage limit Changed By'".$this->app->employee['name']."'", $this->id, null,null,null,null)
+				->notifyWhoCan('pay,expire,manage_applications','Trial');
+			return $p->js()->univ()->closeDialog();
+		}
+	}
+
+	function usage_limit($employee_limit){
+		$extra_info = json_decode($this['extra_info'],true);
+		$extra_info['specification']['employee'] = $employee_limit; 
+		
 		$this['extra_info'] = $extra_info;
 		$this->save();
 		return true;
