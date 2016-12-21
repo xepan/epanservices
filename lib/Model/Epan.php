@@ -296,13 +296,19 @@ class Model_Epan extends \xepan\base\Model_Epan{
 	function page_usage_limit($p){
 		$extra_info = json_decode($this['extra_info'],true);
 		$employee_limit = isset($extra_info ['specification']['employee'])?$extra_info ['specification']['employee']:0;
+		$email_settings_limit = isset($extra_info ['specification']['email'])?$extra_info ['specification']['email']:0;
+		$email_threshold_limit = isset($extra_info ['specification']['threshold'])?$extra_info ['specification']['threshold']:0;
+		$storage_limit = isset($extra_info ['specification']['storage'])?$extra_info ['specification']['storage']:0;
 		
 		$form = $p->add('Form');
 		$form->addField('employee_limit')->set($employee_limit);
+		$form->addField('email_settings_limit')->set($email_settings_limit);
+		$form->addField('email_threshold_limit')->set($email_threshold_limit);
+		$form->addField('storage_limit')->set($storage_limit);
 		$form->addSubmit('Save');
 		
 		if($form->isSubmitted()){
-			$this->usage_limit($form['employee_limit']);
+			$this->usage_limit($form);
 			$this->app->employee
 				->addActivity("Epan '".$this['name']."' usage limit Changed By'".$this->app->employee['name']."'", $this->id, null,null,null,null)
 				->notifyWhoCan('pay,expire,manage_applications','Trial');
@@ -310,9 +316,12 @@ class Model_Epan extends \xepan\base\Model_Epan{
 		}
 	}
 
-	function usage_limit($employee_limit){
+	function usage_limit($form){
 		$extra_info = json_decode($this['extra_info'],true);
-		$extra_info['specification']['employee'] = $employee_limit; 
+		$extra_info['specification']['employee'] = $form['employee_limit']; 
+		$extra_info['specification']['email'] = $form['email_settings_limit']; 
+		$extra_info['specification']['threshold'] = $form['email_threshold_limit']; 
+		$extra_info['specification']['storage'] = $form['storage_limit']; 
 		
 		$this['extra_info'] = $extra_info;
 		$this->save();
