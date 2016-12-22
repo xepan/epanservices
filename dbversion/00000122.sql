@@ -1,0 +1,1 @@
+ALTER TABLE `salary_ledger_association` ADD `code` VARCHAR (255);
