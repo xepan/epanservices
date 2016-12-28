@@ -1,1 +1,1 @@
-SELECT * FROM contact;
+ALTER TABLE `campaign_category_association` ADD COLUMN `created_at`  datetime NULL DEFAULT NULL;
