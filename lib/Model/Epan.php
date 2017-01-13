@@ -37,7 +37,7 @@ class Model_Epan extends \xepan\base\Model_Epan{
 	function createFromOrder($app,$order){
 		$customer = $this->add('xepan\commerce\Model_Customer');
 		
-		if(!$customer->loadLoggedIn())
+		if(!$customer->loadLoggedIn("Customer"))
 			throw new \Exception("customer/ user not found");
 		
 		$epan_service_category = ['Epan','Templates','Addons','Application'];
@@ -81,7 +81,7 @@ class Model_Epan extends \xepan\base\Model_Epan{
 	function createTrialEpan($epan_item_info, $order_item){
 		
 		$customer = $this->add('xepan\commerce\Model_Customer');
-		$customer->loadLoggedIn();
+		$customer->loadLoggedIn("Customer");
 
 		$new_trial_epan = $this->add('xepan\epanservices\Model_Epan');
 

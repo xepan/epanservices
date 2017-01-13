@@ -8,7 +8,7 @@ class Model_MyTemplates extends \xepan\commerce\Model_Item{
 		parent::init();
 
 		$customer = $this->add('xepan\commerce\Model_Customer');
-        $customer->loadLoggedIn();
+        $customer->loadLoggedIn("Customer");
 
 		$template_cat_model = $this->add('xepan\commerce\Model_Category')->addCondition('name','Templates');
 

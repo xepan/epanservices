@@ -18,7 +18,7 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 		}
 
 		$this->customer = $customer = $this->add('xepan\commerce\Model_Customer');
-        $customer->loadLoggedIn();
+        $customer->loadLoggedIn("Customer");
 
         // check customer is loaded
         if(!$customer->loaded()){
@@ -140,7 +140,7 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 	function showMyTemplates(){
 
 		$customer = $this->add('xepan\commerce\Model_Customer');
-        $customer->loadLoggedIn();
+        $customer->loadLoggedIn("Customer");
 
 		$template_grid = $this->add('xepan\base\Grid',null,'my_template',['view\tool\mytemplate']);
 		$template_grid->setModel('xepan\epanservices\Model_MyTemplates');
@@ -163,7 +163,7 @@ class Tool_MyEpans extends \xepan\cms\View_Tool {
 			}
 
 			$customer = $p->add('xepan\commerce\Model_Customer');
-        	$customer->loadLoggedIn();
+        	$customer->loadLoggedIn("Customer");
 
 			$epan = $p->add('xepan\epanservices\Model_Epan');
 			$epan->addCondition('created_by_id',$customer->id);			
