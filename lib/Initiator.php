@@ -53,7 +53,7 @@ class Initiator extends \Controller_Addon {
             $job1->setSchedule(new \Cron\Schedule\CrontabSchedule('*/5 * * * *'));
             if(!$job1->getSchedule() || $job1->getSchedule()->valid($now)){
                 $urls=[];
-                foreach ($this->add('xepan\base\Model_Epan')->addCondition('id','<>',$this->app->epan->id) as $other_epans) {
+                foreach ($this->add('xepan\base\Model_Epan')->addCondition('id','<>',$this->app->epan->id)->addCondition('is_published',true) as $other_epans) {
                     // $command = 'wget http://'. $other_epans['name'].'.epan.in?page=xepan_base_cron&cut_page=true';
                     // echo "<br/> executing ". $command. '<br/>';
                     // shell_exec($command);
