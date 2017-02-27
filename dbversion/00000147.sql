@@ -1,72 +1,36 @@
--- phpMyAdmin SQL Dump
--- version 4.5.4.1deb2ubuntu2
--- http://www.phpmyadmin.net
---
--- Host: localhost
--- Generation Time: Feb 27, 2017 at 11:50 AM
--- Server version: 10.1.19-MariaDB-1~xenial
--- PHP Version: 7.0.15-0ubuntu0.16.04.2
+/*
+Navicat MySQL Data Transfer
 
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET time_zone = "+00:00";
+Source Server         : localhost
+Source Server Version : 50505
+Source Host           : 127.0.0.1:3306
+Source Database       : epan
 
+Target Server Type    : MYSQL
+Target Server Version : 50505
+File Encoding         : 65001
 
-/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
-/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
-/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
-/*!40101 SET NAMES utf8mb4 */;
+Date: 2017-02-22 19:30:35
+*/
 
---
--- Database: `printonclick`
---
+SET FOREIGN_KEY_CHECKS=0;
 
--- --------------------------------------------------------
+-- ----------------------------
+-- Table structure for `employee_app_associations`
+-- ----------------------------
+DROP TABLE IF EXISTS `employee_app_associations`;
+CREATE TABLE `employee_app_associations` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `employee_id` int(11) DEFAULT NULL,
+  `installed_app_id` int(11) DEFAULT NULL,
+  `post_id` int(11) DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4;
 
---
--- Table structure for table `item_serial`
---
+-- ----------------------------
+-- Records of employee_app_associations
+-- ----------------------------
+INSERT INTO `employee_app_associations` VALUES ('20', '90', '1', '0');
 
-CREATE TABLE `item_serial` (
-  `id` int(11) NOT NULL,
-  `item_id` int(11) DEFAULT NULL,
-  `serial_no` varchar(255) DEFAULT NULL,
-  `is_return` tinyint(4) DEFAULT NULL,
-  `purchase_order_id` int(11) DEFAULT NULL,
-  `purchase_invoice_id` int(11) DEFAULT NULL,
-  `sale_order_id` int(11) DEFAULT NULL,
-  `sale_invoice_id` int(11) DEFAULT NULL,
-  `dispatch_id` int(11) DEFAULT NULL,
-  `transaction_id` int(11) DEFAULT NULL,
-  `is_available` tinyint(4) DEFAULT NULL,
-  `narration` text,
-  `qsp_detail_id` int(11) DEFAULT NULL,
-  `purchase_order_detail_id` int(11) DEFAULT NULL,
-  `purchase_invoice_detail_id` int(11) DEFAULT NULL,
-  `sale_order_detail_id` int(11) DEFAULT NULL,
-  `sale_invoice_detail_id` int(11) DEFAULT NULL,
-  `transaction_row_id` int(11) DEFAULT NULL,
-  `dispatch_row_id` int(11) DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Indexes for dumped tables
---
-
---
--- Indexes for table `item_serial`
---
-ALTER TABLE `item_serial`
-  ADD PRIMARY KEY (`id`);
-
---
--- AUTO_INCREMENT for dumped tables
---
-
---
--- AUTO_INCREMENT for table `item_serial`
---
-ALTER TABLE `item_serial`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
-/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
-/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
-/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+ALTER TABLE `employee` ADD `finacial_permit_limit` INT(11) NULL AFTER `out_time`;
+ALTER TABLE `post` ADD `finacial_permit_limit` INT(11) NULL AFTER `permission_level`;

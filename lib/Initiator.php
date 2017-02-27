@@ -99,6 +99,11 @@ class Initiator extends \Controller_Addon {
         return $result;
     }
 
+    function exportEntities($app,&$array){
+        $array['Epan'] = ['caption'=>'Epan','type'=>'xepan\base\Basic','model'=>'xepan\epanservices\Model_Epan'];
+
+    }
+
 
     function resetDB($write_sql=false){
     }

@@ -1,1 +1,1 @@
-ALTER TABLE `item` ADD COLUMN `is_serializable`  tinyint(4) NULL DEFAULT NULL;
+ALTER TABLE `schedule` ADD `last_communicated_lead_id` INT(11) NULL;
