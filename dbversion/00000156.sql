@@ -43,7 +43,7 @@ CREATE TABLE `carouselimage` (
   `created_by_id` int(11) DEFAULT NULL,
   `file_id` int(11) DEFAULT NULL,
   `title` varchar(255) DEFAULT NULL,
-  `text_to_display` varchar(255) DEFAULT NULL,
+  `text_to_display` text DEFAULT NULL,
   `alt_text` varchar(255) DEFAULT NULL,
   `order` int(11) DEFAULT NULL,
   `link` varchar(255) DEFAULT NULL,
