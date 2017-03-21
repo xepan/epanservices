@@ -1,1 +1,1 @@
-ALTER TABLE `employee_attandance` ADD `present_unit` VARCHAR( 255 ) NULL ;
+ALTER TABLE `employee_attandance` ADD `working_unit_count` VARCHAR( 255 ) NULL ;
