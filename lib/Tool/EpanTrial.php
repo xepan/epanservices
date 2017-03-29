@@ -125,7 +125,7 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 					$this->api->db->commit();
 				}catch(\Exception $e){
 					if($this->api->db->inTransaction()) $this->api->db->rollback();
-				// throw $e;
+				throw $e;
 				if(isset($newEpan_inServices))
 					$newEpan_inServices->swipeEverything($epan_name);
     			
