@@ -1,1 +1,1 @@
-ALTER TABLE `qsp_detail` ADD `recurring_qsp_detail_id` INT(11) NULL;
+ALTER TABLE `qsp_detail` ADD COLUMN `discount`  double(8,4);
