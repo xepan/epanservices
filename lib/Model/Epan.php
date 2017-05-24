@@ -242,8 +242,8 @@ class Model_Epan extends \xepan\base\Model_Epan{
                 );
 
 		$fs = \Nette\Utils\FileSystem::delete('./websites/'.$epan);
-		$this->app->db->dsql()->expr("GRANT ALL PRIVILEGES ON `*`.* To '$matches[2]'@'%';")->execute();
-		$this->app->db->dsql()->expr("DROP USER `$matches[2]`@'%'")->execute();
+		// $this->app->db->dsql()->expr("GRANT ALL PRIVILEGES ON `*`.* To '$matches[2]'@'%';")->execute();
+		// $this->app->db->dsql()->expr("DROP USER `$matches[2]`@'%'")->execute();
 		$this->app->db->dsql()->expr("DROP DATABASE IF EXISTS `$matches[7]`;")->execute();		
 	}
 
