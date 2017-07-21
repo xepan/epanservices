@@ -19,6 +19,13 @@ class Initiator extends \Controller_Addon {
 		if($this->app->getConfig('multi-xepans',false)){
             $this->app->side_menu->addItem(['Epans','icon'=>' fa fa-globe','badge'=>[1 ,'swatch'=>' label label-primary pull-right']],'xepan_epanservices_epans')->setAttr(['title'=>'Epans']);
         }
+
+        if(!$this->app->isAjaxOutput() && !$this->app->getConfig('hidden_xepan_epanservices',false)){
+            $m = $this->app->top_menu->addMenu('Epans');
+            $m->addItem(['epan','icon'=>'fa fa-sitemap'],'xepan_epanservices_epans');
+            $m->addItem(['agency','icon'=>'fa fa-sitemap'],'xepan_epanservices_agency');
+        }
+
         $this->app->side_menu->addItem([' DB Version Generate','icon'=>' fa fa-edit'],'xepan_epanservices_dbversion')->setAttr(['title'=>'DB Version Generate ']);
     	return $this;
     }
@@ -40,6 +47,7 @@ class Initiator extends \Controller_Addon {
 
         $this->app->exportFrontEndTool('xepan\epanservices\Tool_EpanTrial','Epan Trial');
         $this->app->exportFrontEndTool('xepan\epanservices\Tool_AfterCreation','Epan Trial');
+        $this->app->exportFrontEndTool('xepan\epanservices\Tool_AgencyPanel','Epan Trial');
 
         $this->app->addHook('cron_executor',function($app){
             $now = \DateTime::createFromFormat('Y-m-d H:i:s', $this->app->now);
