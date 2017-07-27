@@ -14,8 +14,9 @@ class Initiator extends \Controller_Addon {
     function setup_admin(){
         $this->routePages('xepan_epanservices');
         $this->addLocation(array('template'=>'templates','js'=>'templates/js','css'=>'templates/css'))
-        ->setBaseURL('../vendor/xepan/epanservices/')
-        ;
+            ->setBaseURL('../vendor/xepan/epanservices/')
+            ;
+
 		if($this->app->getConfig('multi-xepans',false)){
             $this->app->side_menu->addItem(['Epans','icon'=>' fa fa-globe','badge'=>[1 ,'swatch'=>' label label-primary pull-right']],'xepan_epanservices_epans')->setAttr(['title'=>'Epans']);
         }
@@ -23,7 +24,8 @@ class Initiator extends \Controller_Addon {
         if(!$this->app->isAjaxOutput() && !$this->app->getConfig('hidden_xepan_epanservices',false)){
             $m = $this->app->top_menu->addMenu('Epans');
             $m->addItem(['epan','icon'=>'fa fa-sitemap'],'xepan_epanservices_epans');
-            $m->addItem(['agency','icon'=>'fa fa-sitemap'],'xepan_epanservices_agency');
+            $m->addItem(['Agency','icon'=>'fa fa-sitemap'],'xepan_epanservices_agency');
+            $m->addItem(['Channel Partner','icon'=>'fa fa-sitemap'],'xepan_epanservices_channelpartner');
         }
 
         $this->app->side_menu->addItem([' DB Version Generate','icon'=>' fa fa-edit'],'xepan_epanservices_dbversion')->setAttr(['title'=>'DB Version Generate ']);
@@ -34,20 +36,26 @@ class Initiator extends \Controller_Addon {
         $this->routePages('xepan_epanservices');
         $this->addLocation(array('template'=>'templates','js'=>'templates/js','css'=>'templates/css'))
         ->setBaseURL('vendor/xepan/epanservices/')
-        ;        
+        ;
 
         return $this;
     }
 
     function setup_frontend(){
+        $this->routePages('xepan_epanservices');
+            $this->addLocation(array('template'=>'templates','js'=>'templates/js','css'=>'templates/css'))
+            ->setBaseURL('./vendor/xepan/epanservices/');
+
 
         $epan_model = $this->add('xepan/epanservices/Model_Epan');
         $this->app->addHook('order_placed',[$epan_model,'createFromOrder']);
         $this->app->addHook('invoice_paid',[$epan_model,'invoicePaid']);
 
-        $this->app->exportFrontEndTool('xepan\epanservices\Tool_EpanTrial','Epan Trial');
-        $this->app->exportFrontEndTool('xepan\epanservices\Tool_AfterCreation','Epan Trial');
-        $this->app->exportFrontEndTool('xepan\epanservices\Tool_AgencyPanel','Epan Trial');
+        if($this->app->isEditing){
+            $this->app->exportFrontEndTool('xepan\epanservices\Tool_EpanTrial','EpanTrial');
+            $this->app->exportFrontEndTool('xepan\epanservices\Tool_AfterCreation','EpanTrial');
+            $this->app->exportFrontEndTool('xepan\epanservices\Tool_AgencyPanel','EpanTrial');
+        }
 
         $this->app->addHook('cron_executor',function($app){
             $now = \DateTime::createFromFormat('Y-m-d H:i:s', $this->app->now);
@@ -71,6 +79,15 @@ class Initiator extends \Controller_Addon {
                     $results = $this->multi_request($urls);
                 }
             }
+        });
+
+        // login hook
+        $this->app->addHook('login_panel_user_loggedin',function($app,$user){            
+            $model = $this->add('xepan\epanservices\Model_Agency');
+            $model->loadLoggedIn('Agency');
+            if($model->loaded())
+                $this->app->redirect($this->app->url('agency-dashboard'));
+
         });
 
     	return $this;

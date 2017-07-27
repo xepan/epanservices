@@ -12,6 +12,7 @@ class View_Panel extends \View{
 	function init(){
 		parent::init();
 		
+		$this->addClass('xepan-panel');
 		$this->template->trySetHTML('theme_class',$this->theme_class);	
 		$this->template->trySetHTML('panel_heading',$this->heading);	
 		$this->template->trySetHTML('panel_footer',$this->footer);	

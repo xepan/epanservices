@@ -17,8 +17,16 @@ class page_agency extends \xepan\base\Page {
 	function init(){
 		parent::init();
 		
-		$crud = $this->add('xepan\hr\CRUD');
+		$model = $this->add('xepan\epanservices\Model_Agency');
+		$model->addCondition('is_channelpartner',false);
 
-		$crud->setModel('xepan\commerce\Store_Warehouse');
+		$crud = $this->add('xepan\hr\CRUD');
+		$crud->setModel($model,['first_name','user_id','channelpartner_id']);
+		
+		// if($crud->isEditing()){
+		// 	$form = $crud->form;
+		// 	$form->getElement('created_by_id')->model();
+		// }
+
 	}
 }
