@@ -82,9 +82,9 @@ class Initiator extends \Controller_Addon {
         });
 
         // login hook
-        $this->app->addHook('login_panel_user_loggedin',function($app,$user){            
+        $this->app->addHook('login_panel_user_loggedin',function($app,$user){
             $model = $this->add('xepan\epanservices\Model_Agency');
-            $model->loadLoggedIn('Agency');
+            $model->loadLoggedIn();
             if($model->loaded())
                 $this->app->redirect($this->app->url('agency-dashboard'));
 

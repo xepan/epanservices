@@ -111,7 +111,7 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
         	try{
         		set_time_limit(60);
 				$this->api->db->beginTransaction();
-	        	$this->createEpan($epan_name); // in epan services database, just a new row with specifications of apps
+	        	$this->createEpan($epan_name) // in epan services database, just a new row with specifications of apps
 	        	$newEpan_inServices = $this->add('xepan\epanservices\Model_Epan')->addCondition('name',$epan_name)->tryLoadAny();
 	        	$newEpan_inServices['is_published']=true;
 	        	

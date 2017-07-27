@@ -87,6 +87,15 @@ class Tool_AgencyPanel extends \xepan\cms\View_Tool {
 										]);
 		
 		
+		$menu_html = '<a class="btn btn-default" href="'.$this->app->url(null,['view'=>'trialepan']).'">New Epan</a>';
+		$this->add('View')->setHtml($menu_html);
+
+		$view = $this->app->stickyGET('view');
+		switch ($view) {
+			case "trialepan":
+				$this->add('xepan\epanservices\View_CreateEpan');
+				break;
+		}
 		// $this->add('View')->set('Expired in next 15 days');
 		// $epan = $this->add('xepan\base\Model_Epan');
 		// $g = $this->add('CRUD');
