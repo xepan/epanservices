@@ -1,0 +1,45 @@
+.agencypanel{
+	background-color: #f5f5f5;
+}
+
+.agency-panel-conatiner{
+	width: 90%;
+	margin-top:20px;
+	margin-bottom:20px;
+	padding-bottom: 20px;
+	min-height: 500px;
+	background-color: white;
+}
+
+.agency-navbar .navbar{
+	background: #FFFFFF;
+    box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3);
+}
+
+.agency-navbar .navbar-right{
+	background-color:#dff0d8;
+}
+
+.agency-navbar .navbar-nav > li{
+	margin-left: 5px !important;
+}
+
+.agency-navbar .nav.navbar-nav li.active{
+    background: #f0f0f0 !important;
+    border-bottom: 3px solid #80AA12;
+}
+
+.agency-epan-form h2.form-heading{
+	padding:10px 0px 10px 0px;
+	text-align:center;
+	border-bottom:1px solid #f3f3f3;
+	color: gray;
+}
+
+.agency-epan-form .row{
+	margin-top:5px; 
+}
+
+.margin-20{
+	margin-top:20px;
+}

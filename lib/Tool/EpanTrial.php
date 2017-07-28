@@ -8,7 +8,10 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 	];
 
 	function init(){
-		parent::init();	
+		parent::init();
+
+		if($this->owner instanceof \AbstractController) return;
+
 		$this->app->addStyleSheet('jquery-ui');
 		$company_m = $this->add('xepan\base\Model_ConfigJsonModel',
 					[
@@ -111,7 +114,7 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
         	try{
         		set_time_limit(60);
 				$this->api->db->beginTransaction();
-	        	$this->createEpan($epan_name) // in epan services database, just a new row with specifications of apps
+	        	$this->createEpan($epan_name); // in epan services database, just a new row with specifications of apps
 	        	$newEpan_inServices = $this->add('xepan\epanservices\Model_Epan')->addCondition('name',$epan_name)->tryLoadAny();
 	        	$newEpan_inServices['is_published']=true;
 	        	
@@ -121,10 +124,10 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 				$newEpan_inServices->save();  	
 
 				$this->api->db->commit();
-				}catch(\Exception_StopInit $e){
-					$this->api->db->commit();
-				}catch(\Exception $e){
-					if($this->api->db->inTransaction()) $this->api->db->rollback();
+			}catch(\Exception_StopInit $e){
+				$this->api->db->commit();
+			}catch(\Exception $e){
+				if($this->api->db->inTransaction()) $this->api->db->rollback();
 				throw $e;
 				if(isset($newEpan_inServices))
 					$newEpan_inServices->swipeEverything($epan_name);

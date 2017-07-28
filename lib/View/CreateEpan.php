@@ -25,6 +25,7 @@ class View_CreateEpan extends \View{
 		$customer = $this->add('xepan\commerce\Model_Customer');
 
 		$form = $this->add('Form');
+		$form->setLayout('form/createepan');
 		$form->setModel($customer,['first_name','last_name','organization','customer_type','country_id','state_id','city','address','pin_code','tin_no','pan_no','gstin']);
 		$form->addField('username');
 		$form->addField('password','password');
@@ -33,25 +34,39 @@ class View_CreateEpan extends \View{
 		$form->addField('Number','contact_no');
 		$form->addField('Line','epan_name');
 
+		$cat_model = $this->add('xepan\commerce\Model_Category')->addCondition('name','Epan Agency');
+		$cat_model->tryLoadAny();
+		$cat_model->save();
+
+		$cat_asso = $this->add("xepan\commerce\Model_CategoryItemAssociation");
+		$cat_asso->addCondition('category_id',$cat_model->id);
+		$item_array = [];
+		foreach ($cat_asso as $cat) {
+			$item_array[$cat['item_id']] = $cat['item'];
+		}
+
+		$product_field = $form->addField('xepan\base\DropDown','item');
+		$product_field->setValueList($item_array);
+
 		$validate_fields = ['first_name','last_name','organization','country_id','state_id','city','address','pin_code','username','password','re_password','email_id','contact_no','epan_name'];
 		foreach ($validate_fields as $key => $field_name) {
 			$form->getElement($field_name)->validate('required');
 		}
 
-		$form->addSubmit('Create Free 14 Day Trial')->addClass('btn btn-primary');
+		$form->addSubmit('Create Free 14 Day Trial')->addClass('btn btn-primary btn-block');
 
 		// $v = $this->add('View')->setHtml('<span>Creating your website and admin panel. Be with us, it will take few minutes.</span> <img src="vendor\xepan\epanservices\templates\images\loader.gif">');
 		// $v->js(true)->hide();
 
 		if($form->isSubmitted()){
-			
+
 			$epan_name = $form['epan_name'];
 			
 			try{
 				$this->api->db->beginTransaction();
 
 				// check user is exist or not
-				$user = $this->add('xepan\base\Model_User');
+				$user = $this->add('xepan\base\Model_User_Active');
 				$user->addCondition('scope','WebsiteUser');
 				$user->addCondition('username',$form['username']);
 				$user->tryLoadAny();
@@ -119,13 +134,26 @@ class View_CreateEpan extends \View{
 	        	$email_settings = $this->add('xepan\communication\Model_Communication_EmailSetting')->tryLoadAny();
 	        	
 	        	set_time_limit(60);
-	        	$this->createSaleOrder($form['epan_name'],$new_customer_model);
+	        	$this->createSaleOrder($form['epan_name'],$form['item'],$new_customer_model);
 
 	        	$new_epan_model = $this->add('xepan\epanservices\Model_Epan')->addCondition('name',$form['epan_name'])->tryLoadAny();
 	        	$new_epan_model['is_published'] = true;
 				$new_epan_model->createFolder($new_epan_model);
 
-				$new_epan_model->userAndDatabaseCreate(); // individual new epan database
+				$new_epan_model->userAndDatabaseCreate($user); // individual new epan database
+				
+				$item = $this->add('xepan\commerce\Model_Item');
+				$item->load($form['item']);
+				$specification = $item->getSpecification('exact');
+
+				$usage_limit = [
+						'employee_limit'=>$specification['Employee Limit'],
+						'email_settings_limit'=>$specification['Email Accounts'],
+						'email_threshold_limit'=>$specification['Email Threshold'],
+						'storage_limit'=>$specification['Storage Limit']
+					];
+
+				$new_epan_model->usage_limit($usage_limit);
 				$new_epan_model->save();
 
 				$this->api->db->commit();
@@ -143,14 +171,13 @@ class View_CreateEpan extends \View{
     			// return;
 			}
 
-			$form->js()->univ()->successMessage('epan created')->execute();
+			$form->js(null,$form->js()->univ()->reload())->univ()->successMessage('epan created')->execute();
 		}
 
 	}
 
-	function createSaleOrder($epan_name,$customer_model=null){
+	function createSaleOrder($epan_name,$item_id,$customer_model=null){
 
-		/* ADDING TRIAL ITEM INTO CART */
 		$cf_genric_model = $this->add('xepan\commerce\Model_Item_CustomField_Generic')->addCondition('name','epan name')->tryLoadAny();
 		if(!$cf_genric_model->loaded())
 			throw new \Exception("please add 'epan name' custom field in epan item");
@@ -164,10 +191,10 @@ class View_CreateEpan extends \View{
 		$cf_array[0][$cf_genric_model->id]['custom_field_value_id'] = $epan_name;
 		$cf_array[0][$cf_genric_model->id]['custom_field_value_name'] = $epan_name;
         
-		$trial_item = $this->add('xepan\commerce\Model_Item')->tryLoadBy('name','EpanTrial');
-		if(!$trial_item->loaded()) throw $this->exception('Please create an item with "EpanTrial" name first');
+		$trial_item = $this->add('xepan\commerce\Model_Item')
+						->load($item_id);
+		if(!$trial_item->loaded()) throw $this->exception('item not found');
 		
-		$item_id = $trial_item->id;
 		$item_count = 1;
 
 		//Load Default TNC

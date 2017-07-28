@@ -10,6 +10,8 @@ class Tool_AgencyPanel extends \xepan\cms\View_Tool {
 
 		if($this->owner instanceof \AbstractController) return;
 
+		$this->api->template->appendHTML('js_include','<link rel="stylesheet" type="text/css" href="'.$this->api->url()->absolute()->getBaseURL().'vendor/xepan/epanservices/templates/css/agency.css" />');
+
 		$this->agency = $agency = $this->add('xepan\epanservices\Model_Agency');
 
 		$agency->addExpression('total_epan')->set(function($m,$q){
@@ -52,48 +54,17 @@ class Tool_AgencyPanel extends \xepan\cms\View_Tool {
 			return;
 		}
 
-		$col = $this->add('Columns')->addClass('row');
-		$col1 = $col->addColumn('3')->addClass('col-md-3 col-sm-3 col-lg-3 col-xs-3');
-		$col2 = $col->addColumn('3')->addClass('col-md-3 col-sm-3 col-lg-3 col-xs-3');
-		$col3 = $col->addColumn('3')->addClass('col-md-3 col-sm-3 col-lg-3 col-xs-3');
-		$col4 = $col->addColumn('3')->addClass('col-md-3 col-sm-3 col-lg-3 col-xs-3');
-				
-		$col1->add('xepan\epanservices\View_Panel',[
-											'theme_class'=>'panel-success',
-											'heading'=>'Total Epan',
-					                    	'content'=>$agency['total_epan'],
-											'footer'=>' '
-										]);
+		$this->menubar();
 
-		$col2->add('xepan\epanservices\View_Panel',[
-											'theme_class'=>'panel-info',
-											'heading'=>'Trial',
-											'content'=>$agency['total_trial_epan'],
-											'footer'=>' '
-										]);
+		$view = $this->app->stickyGET('view')?:"dashbaord";
+		$this->container = $this->add('View')->addClass('container agency-panel-conatiner');
 
-		$col3->add('xepan\epanservices\View_Panel',[
-											'theme_class'=>'panel-success',
-											'heading'=>'Paid',
-											'content'=>$agency['total_paid_epan'],
-											'footer'=>' '
-										]);
-
-		$col4->add('xepan\epanservices\View_Panel',[
-											'theme_class'=>'panel-danger',
-											'heading'=>'Expired',
-											'content'=>$agency['total_expired_epan'],
-											'footer'=>' '
-										]);
-		
-		
-		$menu_html = '<a class="btn btn-default" href="'.$this->app->url(null,['view'=>'trialepan']).'">New Epan</a>';
-		$this->add('View')->setHtml($menu_html);
-
-		$view = $this->app->stickyGET('view');
 		switch ($view) {
-			case "trialepan":
-				$this->add('xepan\epanservices\View_CreateEpan');
+			case "newepan":
+				$this->container->add('xepan\epanservices\View_CreateEpan');
+				break;
+			case "dashboard":
+				$this->dashboard();
 				break;
 		}
 		// $this->add('View')->set('Expired in next 15 days');
@@ -103,6 +74,66 @@ class Tool_AgencyPanel extends \xepan\cms\View_Tool {
 		// $g->setModel($epan);
 		// $g->grid->addQuickSearch(['name']);
 	
+	}
+
+	function dashboard(){
+
+		$col = $this->container->add('Columns')->addClass('row margin-20');
+		$col1 = $col->addColumn('3')->addClass('col-md-3 col-sm-3 col-lg-3 col-xs-3');
+		$col2 = $col->addColumn('3')->addClass('col-md-3 col-sm-3 col-lg-3 col-xs-3');
+		$col3 = $col->addColumn('3')->addClass('col-md-3 col-sm-3 col-lg-3 col-xs-3');
+		$col4 = $col->addColumn('3')->addClass('col-md-3 col-sm-3 col-lg-3 col-xs-3');
+				
+		$col1->add('xepan\epanservices\View_Panel',[
+											'theme_class'=>'panel-success',
+											'heading'=>'Total Epan',
+					                    	'content'=>$this->agency['total_epan'],
+											'footer'=>' '
+										]);
+
+		$col2->add('xepan\epanservices\View_Panel',[
+											'theme_class'=>'panel-info',
+											'heading'=>'Trial',
+											'content'=>$this->agency['total_trial_epan'],
+											'footer'=>' '
+										]);
+
+		$col3->add('xepan\epanservices\View_Panel',[
+											'theme_class'=>'panel-success',
+											'heading'=>'Paid',
+											'content'=>$this->agency['total_paid_epan'],
+											'footer'=>' '
+										]);
+
+		$col4->add('xepan\epanservices\View_Panel',[
+											'theme_class'=>'panel-danger',
+											'heading'=>'Expired',
+											'content'=>$this->agency['total_expired_epan'],
+											'footer'=>' '
+										]);
+	}
+
+	function menubar(){
+		$menu = [
+				['key'=>$this->app->url('agency-dashboard',['view'=>'dashboard']),'name'=>'Dashboard'],
+				['key'=>$this->app->url('agency-dashboard',['view'=>'newepan']), 'name'=>'New Epan'],
+			];
+
+		$this->complete_lister = $cl = $this->add('CompleteLister',null,null,['view/agencymenu']);
+		$cl->setSource($menu);
+		// $page = $this->app->url('agency-dashboard',['view'=>'dashboard']);
+		$page = "view=".$_GET['view']?:"dashboard";
+
+		$cl->addHook('formatRow',function($g)use($page){
+			if(strpos($g->model['key'], $page)){
+				$g->current_row_html['active_menu'] = "active";
+			}else{
+				$g->current_row_html['active_menu'] = "deactive";
+			}
+		});
+
+		$cl->template->trySet('agency_name',$this->agency['name']);
+		$cl->template->trySet('agency_dp',($this->agency['image']?:"shared/apps/xavoc/mlm/templates/img/profile.png"));
 	}
 
 }

@@ -117,7 +117,7 @@ class Model_Epan extends \xepan\base\Model_Epan{
 		// 		mark paid
 	}
 
-	function userAndDatabaseCreate(){
+	function userAndDatabaseCreate($user_model=null){
 		preg_match(
                     '|([a-z]+)://([^:]*)(:(.*))?@([A-Za-z0-9\.-]*)'.
                     '(/([0-9a-zA-Z_/\.-]*))|',
@@ -149,6 +149,7 @@ class Model_Epan extends \xepan\base\Model_Epan{
 
 		try{
 			$user = $this->app->auth->model;
+
 			$this->api->db->beginTransaction();
 			$this->app->db->dsql()->expr('SET FOREIGN_KEY_CHECKS = 0;')->execute();
 			$this->app->resetDB = true;
@@ -160,6 +161,9 @@ class Model_Epan extends \xepan\base\Model_Epan{
 					$this->app->xepan_app_initiators[$addon]->resetDB();
 			}
 
+			if($user_model instanceof \xepan\base\Model_User && $user_model->loaded())
+				$user = $user_model;
+
 			$this->installApplication();
 			
 			$this->add('xepan\base\Model_Epan')->tryLoadAny()
@@ -167,9 +171,12 @@ class Model_Epan extends \xepan\base\Model_Epan{
 						->set('epan_dbversion',$this['epan_dbversion'])
 						->save();
 			
-			$user_new = $this->add('xepan\base\Model_User')->tryLoadAny()->set('username',$user['username'])->save();
+			$user_new = $this->add('xepan\base\Model_User')->tryLoadAny()->set('username',$user['username']);
+			if($user_model instanceof \xepan\base\Model_User && $user_model->loaded())
+				$user_new['password'] = $user_model['password'];
+			$user_new->save();
 
-			$this->app->db->dsql()->expr('SET FOREIGN_KEY_CHECKS = 1;')->execute();        
+			$this->app->db->dsql()->expr('SET FOREIGN_KEY_CHECKS = 1;')->execute();
 
 			$this->api->db->commit();
 			$this->app->db = $saved_db;
@@ -316,13 +323,12 @@ class Model_Epan extends \xepan\base\Model_Epan{
 		}
 	}
 
-	function usage_limit($form){
+	function usage_limit($detail){
 		$extra_info = json_decode($this['extra_info'],true);
-		$extra_info['specification']['employee'] = $form['employee_limit']; 
-		$extra_info['specification']['email'] = $form['email_settings_limit']; 
-		$extra_info['specification']['threshold'] = $form['email_threshold_limit']; 
-		$extra_info['specification']['storage'] = $form['storage_limit']; 
 		
+		foreach ($detail as $key => $value) {
+			$extra_info['specification'][$key] = $value;
+		}
 		$this['extra_info'] = $extra_info;
 		$this->save();
 		return true;

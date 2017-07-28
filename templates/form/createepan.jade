@@ -1,0 +1,96 @@
+div(id="{$_name}" class="{$Class} agency-epan-form" style="{$style}")
+	h2.form-heading Customer Detail
+	.row
+		.col-lg-3.col-md-3.col-sm-3.col-xs-3.atk-form-field.atk-form-row
+			label First Name
+			div
+				{$first_name}
+		.col-lg-3.col-md-3.col-sm-3.col-xs-3.atk-form-field.atk-form-row
+			label Last Name
+			div
+				{$last_name}
+		.col-lg-3.col-md-3.col-sm-3.col-xs-3.atk-form-field.atk-form-row
+			label Organization
+			div
+				{$organization}
+		.col-lg-3.col-md-3.col-sm-3.col-xs-3.atk-form-field.atk-form-row
+			label Customer Type
+			div
+				{$customer_type}
+	.row
+		.col-lg-9.col-md-9.col-sm-9.col-xs-9.atk-form-field.atk-form-row
+			.row
+				.col-lg-4.col-md-4.col-sm-4.col-xs-4.atk-form-field.atk-form-row
+					label Country
+					div
+						{$country_id}
+				.col-lg-4.col-md-4.col-sm-4.col-xs-4.atk-form-field.atk-form-row
+					label State
+					div
+						{$state_id}
+				.col-lg-4.col-md-4.col-sm-4.col-xs-4.atk-form-field.atk-form-row
+					label City
+					div
+						{$city}
+			.row
+				.col-lg-4.col-md-4.col-sm-4.col-xs-4.atk-form-field.atk-form-row
+					label Pin Code
+					div
+						{$pin_code}
+				.col-lg-4.col-md-4.col-sm-4.col-xs-4.atk-form-field.atk-form-row
+					label Tin No.
+					div
+						{$tin_no}
+				.col-lg-4.col-md-4.col-sm-4.col-xs-4.atk-form-field.atk-form-row
+					label Pan No.
+					div
+						{$pan_no}
+				.col-lg-4.col-md-4.col-sm-4.col-xs-4.atk-form-field.atk-form-row
+					label GSTIN
+					div
+						{$gstin}
+				.col-lg-4.col-md-4.col-sm-4.col-xs-4.atk-form-field.atk-form-row
+					label Email id
+					div
+						{$email_id}
+				.col-lg-4.col-md-4.col-sm-4.col-xs-4.atk-form-field.atk-form-row
+					label Contact No
+					div
+						{$contact_no}		
+		.col-lg-3.col-md-3.col-sm-3.col-xs-3.atk-form-field.atk-form-row
+			label Address
+			div
+				{$address}
+	h2.form-heading Customer Account Login Detail
+	.row
+		.col-lg-4.col-md-4.col-sm-4.col-xs-4.atk-form-field.atk-form-row
+			label Username
+			div
+				{$username}
+		.col-lg-4.col-md-4.col-sm-4.col-xs-4.atk-form-field.atk-form-row
+			label Password
+			div
+				{$password}
+		.col-lg-4.col-md-4.col-sm-4.col-xs-4.atk-form-field.atk-form-row
+			label Re-Password
+			div
+				{$re_password}
+	h2.form-heading Epan Detail
+	.row
+		.col-lg-6.col-md-6.col-sm-6.col-xs-6.atk-form-field.atk-form-row
+			label Epan Name
+			div
+				{$epan_name}
+		.col-lg-6.col-md-6.col-sm-6.col-xs-6.atk-form-field.atk-form-row
+			label Product
+			div
+				{$item}
+	hr
+	style.
+		.agency-epan-form input,
+		.agency-epan-form select,
+		.agency-epan-form textarea
+		{
+			width:100%;
+		}
+	{$Content}
