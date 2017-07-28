@@ -56,7 +56,7 @@ class Tool_AgencyPanel extends \xepan\cms\View_Tool {
 
 		$this->menubar();
 
-		$view = $this->app->stickyGET('view')?:"dashbaord";
+		$view = $this->app->stickyGET('view')?:"dashboard";
 		$this->container = $this->add('View')->addClass('container agency-panel-conatiner');
 
 		switch ($view) {
