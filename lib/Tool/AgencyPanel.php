@@ -164,7 +164,7 @@ class Tool_AgencyPanel extends \xepan\cms\View_Tool {
 		});
 
 		$cl->template->trySet('agency_name',$this->agency['name']);
-		$cl->template->trySet('agency_dp',($this->agency['image']?:"shared/apps/xavoc/mlm/templates/img/profile.png"));
+		$cl->template->trySet('agency_dp',($this->agency['image']?:"vendor/xepan/epanservices/templates/images/profile.png"));
 	}
 
 }
