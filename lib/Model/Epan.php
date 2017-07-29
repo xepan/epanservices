@@ -190,8 +190,9 @@ class Model_Epan extends \xepan\base\Model_Epan{
 			$this->api->db->rollback();
 			throw $e;
 		}
-			$this->app->db = $saved_db;
-			$this->app->auth->login($user);
+
+		$this->app->db = $saved_db;
+		$this->app->auth->login($user);
 	}
 
 	function createFolderTest(){

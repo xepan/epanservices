@@ -34,6 +34,15 @@ class View_CreateEpan extends \View{
 		$form->addField('Number','contact_no');
 		$form->addField('Line','epan_name');
 
+		$country_field = $form->getElement('country_id');
+		$state_field = $form->getElement('state_id');
+
+		if($this->app->stickyGET('country_id'))
+			$state_field->getModel()->addCondition('country_id',$_GET['country_id'])->setOrder('name','asc');
+		
+		$country_field->js('change',$state_field->js()->reload(null,null,[$this->app->url(null,['cut_object'=>$state_field->name]),'country_id'=>$country_field->js()->val()]));
+		// $country_field->js('change',$form->js()->atk4_form('reloadField','state_id',[$this->app->url(),'country_id'=>$country_field->js()->val()]));
+
 		$cat_model = $this->add('xepan\commerce\Model_Category')->addCondition('name','Epan Agency');
 		$cat_model->tryLoadAny();
 		$cat_model->save();
@@ -60,18 +69,24 @@ class View_CreateEpan extends \View{
 
 		if($form->isSubmitted()){
 
+			// password and re-password must same
+			if($form['password'] != $form['re_password'])
+				$form->error('re_password','password must match');
+
 			$epan_name = $form['epan_name'];
+			// check user is exist or not
+			$saved_login = $this->app->auth->model;
+
+			$user = $this->add('xepan\base\Model_User_Active');
+			$user->addCondition('scope','WebsiteUser');
+			$user->addCondition('username',$form['username']);
+			$user->tryLoadAny();
+			if($user->loaded())
+				$form->displayError('username','username already exist');
 			
 			try{
 				$this->api->db->beginTransaction();
 
-				// check user is exist or not
-				$user = $this->add('xepan\base\Model_User_Active');
-				$user->addCondition('scope','WebsiteUser');
-				$user->addCondition('username',$form['username']);
-				$user->tryLoadAny();
-				if($user->loaded())
-					$form->displayError('username','username already exist');
 
 				$this->add('BasicAuth')
 					->usePasswordEncryption('md5')
@@ -105,7 +120,12 @@ class View_CreateEpan extends \View{
 					$email['contact_id'] = $new_customer_model->id;
 					$email['head'] = "Official";
 					$email['value'] = $form['email_id'];
-					$new_customer_model->checkEmail($email,$form['email_id'],$new_customer_model,$form);
+					try{
+						$new_customer_model->checkEmail($email,$form['email_id'],$new_customer_model,$form);
+					}catch(\Exception $e){
+						$form->error('email_id','this email already used');
+					}
+
 					$email->save();
 				}
 
@@ -115,7 +135,11 @@ class View_CreateEpan extends \View{
 					$phone['contact_id'] = $new_customer_model->id;
 					$phone['head'] = "Official";
 					$phone['value'] = $form['contact_no'];
-					$new_customer_model->checkPhoneNo($phone,$form['contact_no'],$new_customer_model,$form);
+					try{
+						$new_customer_model->checkPhoneNo($phone,$form['contact_no'],$new_customer_model,$form);
+					}catch(\Exception $e){
+						$form->error('contact_no','this contact_no already used');
+					}
 					$phone->save();
 				}
 
@@ -171,6 +195,7 @@ class View_CreateEpan extends \View{
     			// return;
 			}
 
+			$this->app->auth->login($saved_login);
 			$form->js(null,$form->js()->univ()->reload())->univ()->successMessage('epan created')->execute();
 		}
 
