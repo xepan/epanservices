@@ -1,4 +1,5 @@
-ALTER TABLE `supplier` ADD COLUMN `bank_name` varchar(255) DEFAULT NULL;
-ALTER TABLE `supplier` ADD COLUMN `bank_ifsc_code` varchar(255) DEFAULT NULL;
-ALTER TABLE `supplier` ADD COLUMN `account_no` varchar(255) DEFAULT NULL;
-ALTER TABLE `supplier` ADD COLUMN `account_type` varchar(255) DEFAULT NULL;
+ALTER TABLE `employee_attandance` ADD COLUMN `late_coming` int(11) DEFAULT 0;
+ALTER TABLE `employee_attandance` ADD COLUMN `early_leave` int(11) DEFAULT 0;
+ALTER TABLE `employee_attandance` ADD COLUMN `total_work_in_mintues` int(11) DEFAULT 0;
+ALTER TABLE `employee_attandance` ADD COLUMN `total_movement_in` int(11) DEFAULT 0;
+ALTER TABLE `employee_attandance` ADD COLUMN `total_movement_out` int(11) DEFAULT 0;
