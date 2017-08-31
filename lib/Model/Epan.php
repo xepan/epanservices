@@ -155,8 +155,9 @@ class Model_Epan extends \xepan\base\Model_Epan{
 			$this->app->resetDB = true;
 
 			foreach ($this->app->xepan_addons as $addon) {
-				if($addon==='xepan\base') 
+				if($addon==='xepan\\base' or $addon==='xepan\base') {
 					$this->app->xepan_app_initiators[$addon]->resetDB(null,$install_apps=false);
+				}
 				else
 					$this->app->xepan_app_initiators[$addon]->resetDB();
 			}
@@ -366,8 +367,11 @@ class Model_Epan extends \xepan\base\Model_Epan{
 
         $addons_to_keep = [];
 
+        $spec = [];
+        if(isset($extra_info['specification']))
+        	$spec = $extra_info['specification'];
 
-        foreach ($extra_info['specification'] as $key => $value) {
+        foreach ($spec as $key => $value) {
             if(strtolower($value) === 'yes'){
             	$app = $this->add('xepan\base\Model_Application')->tryLoadBy('namespace','xepan\\'.strtolower($key));
             	if($app->loaded())

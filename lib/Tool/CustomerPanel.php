@@ -36,13 +36,13 @@ class Tool_CustomerPanel extends \xepan\cms\View_Tool {
 		$this->menubar();
 
 		$view = $this->app->stickyGET('view')?:"dashboard";
-		$this->container = $this->add('View')->addClass('container agency-panel-conatiner main-box');
 
 		switch ($view) {
-			case "newepan":
-				$this->container->add('xepan\epanservices\View_CreateEpan');
-				break;
+			// case "newepan":
+			// 	$this->container->add('xepan\epanservices\View_CreateEpan');
+			// 	break;
 			case "dashboard":
+				$this->container = $this->add('View')->addClass('container agency-panel-conatiner main-box');
 				$this->dashboard();
 				break;
 		}
@@ -56,10 +56,10 @@ class Tool_CustomerPanel extends \xepan\cms\View_Tool {
 	}
 
 	function dashboard(){
-		$action = $_GET['action']?:'item';
+		$action = $this->app->stickyGET('action')?:'item';
 		switch ($action) {
 			case 'create-epan':
-				$this->container->add('xepan\epanservices\Tool_EpanTrial');
+				// $this->container->add('xepan\epanservices\Tool_EpanTrial',['options'=>['login_page'=>'login','sale_item_id'=>$_GET['x-select-id'],'button_name'=>'Next']]);
 				break;
 			case 'item':
 				$this->container->add('xepan\epanservices\View_Item');
@@ -69,30 +69,7 @@ class Tool_CustomerPanel extends \xepan\cms\View_Tool {
 	}
 
 	function menubar(){
-		$menu = [
-				['key'=>$this->app->url('customer-dashboard',['view'=>'dashboard']),'name'=>'Dashboard'],
-				['key'=>$this->app->url('customer-dashboard',['view'=>'newepan']), 'name'=>'New Epan'],
-			];
-
-		$this->complete_lister = $cl = $this->add('CompleteLister',null,null,['view/customermenu']);
-		$cl->setSource($menu);
-		// $page = $this->app->url('agency-dashboard',['view'=>'dashboard']);
-		$view = $_GET['view'];
-		if(!$view){
-			$view = "dashboard";
-		}
-		$page = "view=".$view;
-
-		$cl->addHook('formatRow',function($g)use($page){
-			if(strpos($g->model['key'], $page)){
-				$g->current_row_html['active_menu'] = "active";
-			}else{
-				$g->current_row_html['active_menu'] = "deactive";
-			}
-		});
-
-		$cl->template->trySet('customer_name',$this->customer['name']);
-		$cl->template->trySet('customer_dp',($this->customer['image']?:"vendor/xepan/epanservices/templates/images/profile.png"));
+		
 	}
 
 }

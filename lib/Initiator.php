@@ -56,6 +56,9 @@ class Initiator extends \Controller_Addon {
             $this->app->exportFrontEndTool('xepan\epanservices\Tool_AfterCreation','EpanTrial');
             $this->app->exportFrontEndTool('xepan\epanservices\Tool_AgencyPanel','EpanTrial');
             $this->app->exportFrontEndTool('xepan\epanservices\Tool_CustomerPanel','EpanTrial');
+            $this->app->exportFrontEndTool('xepan\epanservices\Tool_CustomerMenu','EpanTrial');
+            $this->app->exportFrontEndTool('xepan\epanservices\Tool_Item','EpanTrial');
+            $this->app->exportFrontEndTool('xepan\epanservices\Tool_Theme','EpanTrial');
         }
 
         $this->app->addHook('cron_executor',function($app){

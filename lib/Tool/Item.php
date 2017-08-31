@@ -3,10 +3,13 @@
 
 namespace xepan\epanservices;
 
-class View_Item extends \View{
+class Tool_Item extends \xepan\cms\View_Tool{
+	public $options = ['next_step_page'=>'new-epan'];
 
 	function init(){
 		parent::init();
+		
+		if($this->owner instanceof \AbstractController) return;
 		
 		$item = $this->add('xepan\commerce\Model_Item_WebsiteDisplay');
 
@@ -16,8 +19,8 @@ class View_Item extends \View{
 		$paginator->setRowsPerPage(4);
 
 		$cl->addHook('formatRow',function($l){
-			$l->current_row_html['description']=$l->model['description'];
-			$l->current_row_html['selection_url']= $this->app->url(null,['action'=>'create-epan','x-select-id'=>$l->model->id]);
+			$l->current_row_html['description'] = $l->model['description'];
+			$l->current_row_html['selection_url'] = $this->app->url($this->options['next_step_page'],['x-new-product'=>$l->model->id]);
 		});
 		// deleting not found templates
 		if($item->count()->getOne()){

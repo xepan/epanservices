@@ -4,13 +4,20 @@ namespace xepan\epanservices;
 
 class Tool_EpanTrial extends \xepan\cms\View_Tool {
 	public $options = [
-		'login_page'=>'login'
+		'login_page'=>'login',
+		'sale_item_id'=>0,
+		'button_name'=>'Free 14 day Trial',
+		'next_page'=>'select-theme'
 	];
 
 	function init(){
 		parent::init();
 
 		if($this->owner instanceof \AbstractController) return;
+		
+		if($item_id = $this->app->stickyGET('x-new-product')){
+			$this->options['sale_item_id'] = $item_id;
+		}
 
 		$this->app->addStyleSheet('jquery-ui');
 		$company_m = $this->add('xepan\base\Model_ConfigJsonModel',
@@ -50,8 +57,9 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 		
 		$this->app->memorize('next_url',$this->app->page);
 		if(!$this->app->auth->isLoggedIn()){
+			
 			$f = $this->add('Form');
-			$f->addSubmit('Free 14 days trial')->addClass('btn btn-primary btn-block xepan-form-free-trial-btn')->addStyle(['font-size'=>'42px','font-family'=>'Lucida Console']);
+			$f->addSubmit('Free 14 day Trial')->addClass('btn btn-primary btn-block xepan-form-free-trial-btn')->addStyle(['font-size'=>'42px','font-family'=>'Lucida Console']);
 
 			if($f->isSubmitted()){
 				$this->app->redirect($this->options['login_page']);
@@ -73,10 +81,11 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 
 		/*FORM TO ASK USER FOR EPAN NAME AND TO CHECK LOGGEDIN*/
 		if($this->app->auth->isLoggedIn()){
+			
 			$form = $this->add('Form',null,'form');
 			$form->setLayout('view\tool\form\epantrial');
 			$form->addField('epan_name')->setAttr(['placeholder'=>'your website name'])->validate('required?Please enter a website name');
-			$submit_button = $form->addSubmit('Free 14 day Trial')->addClass('btn btn-primary');	
+			$submit_button = $form->addSubmit($this->options['button_name'])->addClass('btn btn-primary');
 			$submit_button->js('click',$v->js()->show());
 		}
 
@@ -115,6 +124,7 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
         		set_time_limit(60);
 				$this->api->db->beginTransaction();
 	        	$this->createEpan($epan_name); // in epan services database, just a new row with specifications of apps
+
 	        	$newEpan_inServices = $this->add('xepan\epanservices\Model_Epan')->addCondition('name',$epan_name)->tryLoadAny();
 	        	$newEpan_inServices['is_published']=true;
 	        	
@@ -144,7 +154,16 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
         	$this->associateCustomerWithCategory($customer);
 			$this->sendGreetingsMail($email_id,$email_settings);
 
-        	return $this->app->redirect($this->app->url('greetings',['epan_name'=>$epan_name,'message'=>'We have sent you a welcome mail. Check your email address linked to the account.']));
+			if($this->options['next_page']){
+				$detail = [
+							'epan_name'=>$epan_name,
+							'epan_id'=>(isset($newEpan_inServices)?$newEpan_inServices->id:0)
+						];
+				$this->app->memorize('newepan',$detail);
+        		return $this->app->redirect($this->app->url($this->options['next_page']));
+			}else{
+        		return $this->app->redirect($this->app->url('greetings',['epan_name'=>$epan_name,'message'=>'We have sent you a welcome mail. Check your email address linked to the account.']));
+			}
 		}
 	}
 
@@ -210,8 +229,15 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 		$cf_array[0][$cf_genric_model->id]['custom_field_name'] = $cf_genric_model['name'];
 		$cf_array[0][$cf_genric_model->id]['custom_field_value_id'] = $epan_name;
 		$cf_array[0][$cf_genric_model->id]['custom_field_value_name'] = $epan_name;
-        
-		$trial_item = $this->add('xepan\commerce\Model_Item')->tryLoadBy('name','EpanTrial');
+		
+
+		$trial_item = $this->add('xepan\commerce\Model_Item');
+		if($sale_item_id = $this->options['sale_item_id'])
+			$trial_item->load($sale_item_id);
+		else{
+			$trial_item->tryLoadBy('name','EpanTrial');
+		}
+
 		if(!$trial_item->loaded()) throw $this->exception('Please create an item with "EpanTrial" name first');
 		
 		$trial_item_id = $trial_item->id;
