@@ -16,6 +16,8 @@ class Tool_CustomerMenu extends \xepan\cms\View_Tool {
 		$this->customer = $customer = $this->add('xepan\commerce\Model_Customer')
 							->addCondition('user_id',$this->app->auth->model->id);
 		$this->customer->loadLoggedIn();
+		if(!$this->customer->loaded())
+			$this->app->redirect($this->app->url('login',['layout'=>'new_registration']));
 		$menu = [
 				['key'=>$this->app->url('customer-dashboard'),'name'=>'Dashboard'],
 				// ['key'=>$this->app->url('customer-dashboard',['view'=>'newepan']), 'name'=>'New Epan'],
