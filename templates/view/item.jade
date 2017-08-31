@@ -1,21 +1,22 @@
-div(id='{$_name}' class="{$class} row" style="{$style}")
+div(id='{$_name}' class="{$class} row epan-services-item-list" style="{$style}")
   {$heading}
+  h2.text-center Start with 3 step
   hr
   {rows}{row}
   .col-md-3.col-sm-12.col-lg-3.col-xs-12
-    .thumbnail
+    .thumbnail.text-center
       {image_wrapper}
       div.img-wrapper(style="height:150px;" data-itemid="{$id}" data-name="{$name}")
-        img(src='{$kit_img}', alt='{$alt} we are uploading images ...' style="max-height:150px;" class="center-block img-responsive")
+        img(src='{$first_image}', alt='{$alt} we are uploading images ...' style="max-height:150px;" class="center-block img-responsive")
       {/}
       .caption
         h3 {$name}
-        div.kit-description{$description}
-        .row
-          .col-md-12.col-sm-12.col-lg-12.col-xs-12
-            h4.price
-              i.fa.fa-rupee &nbsp;
-              |{$sale_price}
+        //- div.kit-description{$description}
+        //- .row
+        //-   .col-md-12.col-sm-12.col-lg-12.col-xs-12
+        //-     h4.price
+        //-       i.fa.fa-rupee &nbsp;
+        //-       |{$sale_price}
         div
           {btn_wrapper}
           a.btn.btn-primary.btn-block(href="{$selection_url}" data-xid="{$id}" data-name="{$name}") Select

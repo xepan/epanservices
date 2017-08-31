@@ -16,12 +16,12 @@ div(id="{$_name}" class="{$class} agency-navbar" style="{$style}")
 						a(href='{$key}') {$name}
 					{/}{/}
 				ul.nav.navbar-nav.navbar-right
-					li.bg.bg-info(style="border-radius:5px 0px 0px 5px;") 
+					li(style="border-radius:5px 0px 0px 5px;") 
 						a(href="#" style="padding:10px;float:left;" class="text-center") {$customer_name}<br/>{$user_name}
 						a(href="#" style="padding:10px; box-shadow:inset 0px 0px 1px 2px #ccc;border-radius:50%;float:left;" title="{$customer_name}" class="text-center")
-							img(src="{$customer_dp}" style="max-height:60px;max-width:40px;height:40px;" class="ds-dp")
+							img(src="{$customer_dp}" style="max-height:40px;max-width:40px;height:40px;" class="ds-dp")
 						a(style="padding:10px;float:left;" href="logout")
-							div.btn.btn-danger()
+							div.btn.btn-danger
 								i.glyphicon.glyphicon-off
 								|&nbsp;Logout
 	{$Content}

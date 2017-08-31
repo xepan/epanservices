@@ -10,13 +10,15 @@ class Tool_Item extends \xepan\cms\View_Tool{
 		parent::init();
 		
 		if($this->owner instanceof \AbstractController) return;
-		
+
+		$this->add('xepan\epanservices\View_ProgressBar');
+
 		$item = $this->add('xepan\commerce\Model_Item_WebsiteDisplay');
 
 		$cl = $this->add('CompleteLister',null,null,['view/item']);
 		$cl->setModel($item);
-		$paginator = $cl->add('Paginator',['ipp'=>4]);
-		$paginator->setRowsPerPage(4);
+		$paginator = $cl->add('Paginator',['ipp'=>12]);
+		$paginator->setRowsPerPage(12);
 
 		$cl->addHook('formatRow',function($l){
 			$l->current_row_html['description'] = $l->model['description'];

@@ -1,23 +1,27 @@
 
-<div class="jumbotron container">{$form} {$Content}</div>
-<style type="text/css" media="screen">
-  .jumbotron {
-      position: relative;
-      background: #f5f5f5 center center;
-      width: 100%;
-      height: 100%;
-      background-size: cover;
-      overflow: hidden;
-  }
-  @media screen and (max-device-width: 980px) and (min-device-width: 320px) {
-  	.jumbotron input{width:70%!important;}
-  	.jumbotron{
-  		line-height:1.143!important;
-  		padding:0px!important;
-  		font-size:15px!important;
-  	}
-  	.jumbotron span{
-  		font-size:12px!important;
-  	}
-  }			
-</style>
+<div id="{$_name}" style="{$style}" class="{$class}">
+  <div style="width:90%;" class="container">{$header}
+    <div class="jumbotron">{$form}</div>{$Content}
+  </div>
+  <style type="text/css" media="screen">
+    .jumbotron {
+        position: relative;
+        background: #f5f5f5 center center;
+        width: 100%;
+        height: 100%;
+        background-size: cover;
+        overflow: hidden;
+    }
+    @media screen and (max-device-width: 980px) and (min-device-width: 320px) {
+    	.jumbotron input{width:70%!important;}
+    	.jumbotron{
+    		line-height:1.143!important;
+    		padding:0px!important;
+    		font-size:15px!important;
+    	}
+    	.jumbotron span{
+    		font-size:12px!important;
+    	}
+    }			
+  </style>
+</div>

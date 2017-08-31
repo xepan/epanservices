@@ -1,0 +1,21 @@
+div(id="{$_name}" class="{$Class}" style="{$style}")
+  .container(style="width: 100%;")
+    .row.bs-wizard(style='border-bottom:0;')
+      .col-xs-4.bs-wizard-step(class="{$step1_class}")
+        .text-center.bs-wizard-stepnum Step 1
+        .progress
+          .progress-bar
+        span.bs-wizard-dot
+      .col-xs-4.bs-wizard-step(class="{$step2_class}")
+        // complete
+        .text-center.bs-wizard-stepnum Step 2
+        .progress
+          .progress-bar
+        span.bs-wizard-dot
+      .col-xs-4.bs-wizard-step(class="{$step3_class}")
+        // complete
+        .text-center.bs-wizard-stepnum Step 3
+        .progress
+          .progress-bar
+        span.bs-wizard-dot
+        span.bs-wizard-dot
