@@ -13,7 +13,8 @@ class Tool_Item extends \xepan\cms\View_Tool{
 
 		$this->add('xepan\epanservices\View_ProgressBar');
 
-		$item = $this->add('xepan\commerce\Model_Item_WebsiteDisplay');
+		$item = $this->add('xepan\commerce\Model_Item_WebsiteDisplay')
+			->setOrder('display_sequence','desc');
 
 		$cl = $this->add('CompleteLister',null,null,['view/item']);
 		$cl->setModel($item);
