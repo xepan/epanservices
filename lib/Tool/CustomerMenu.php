@@ -16,22 +16,23 @@ class Tool_CustomerMenu extends \xepan\cms\View_Tool {
 		$this->customer = $customer = $this->add('xepan\commerce\Model_Customer')
 							->addCondition('user_id',$this->app->auth->model->id);
 		$this->customer->loadLoggedIn();
-		if(!$this->customer->loaded())
+
+		$editor = $this->add('xepan\cms\Model_User_CMSEditor');
+		$editor->addCondition('user_id',$this->app->auth->model->id);
+		$editor->tryLoadAny();
+
+		if(!$this->customer->loaded() && !$editor->loaded())
 			$this->app->redirect($this->app->url('login',['layout'=>'new_registration']));
+
 		$menu = [
 				['key'=>$this->app->url('customer-dashboard'),'name'=>'Dashboard'],
-				// ['key'=>$this->app->url('customer-dashboard',['view'=>'newepan']), 'name'=>'New Epan'],
+				['key'=>$this->app->url('new-account'), 'name'=>'New Epan'],
 			];
 
 		$this->complete_lister = $cl = $this->add('CompleteLister',null,null,['view/customermenu']);
 			$cl->setSource($menu);
 
-		$view = $_GET['view'];
-		if(!$view){
-			$view = "dashboard";
-		}
-		$page = "view=".$view;
-
+		$page = $this->app->page;
 		$cl->addHook('formatRow',function($g)use($page){
 			if(strpos($g->model['key'], $page)){
 				$g->current_row_html['active_menu'] = "active";

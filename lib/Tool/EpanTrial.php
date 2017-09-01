@@ -14,7 +14,7 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 		parent::init();
 
 		if($this->owner instanceof \AbstractController) return;
-		
+
 		if($item_id = $this->app->stickyGET('x-new-product')){
 			$this->options['sale_item_id'] = $item_id;
 			$this->options['button_name'] = "Next";
@@ -94,10 +94,12 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 		if($form->isSubmitted()){
 
 			// validate name 
-			if(!preg_match("/[^[:alnum:]\-_]/",$form['epan_name'])){
-				$form->displayError('epan_name','Only AphaNumeric values permitted');
+			if(preg_match("/[^[:alnum:]\-]/",$form['epan_name'])){
+				$form->js(true,$v->js(true)->hide())
+	            	->atk4_form('fieldError','epan_name','Only AphaNumeric values permitted')
+	            	->execute();
 			}
-
+			
         	/* Already Tried */
         	$trial_epan = $this->add('xepan\epanservices\Model_Epan');
         	$trial_epan->addCondition('created_by_id',$customer->id);
