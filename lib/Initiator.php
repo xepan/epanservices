@@ -92,6 +92,11 @@ class Initiator extends \Controller_Addon {
             if($model->loaded())
                 $this->app->redirect($this->app->url('agency-dashboard'));
 
+            $model = $this->add('xepan\commerce\Model_Customer');
+            $model->loadLoggedIn();
+            if($model->loaded())
+                $this->app->redirect($this->app->url('customer-dashboard'));
+
         });
 
     	return $this;
