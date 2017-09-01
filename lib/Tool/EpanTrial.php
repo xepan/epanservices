@@ -92,6 +92,12 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 		}
 
 		if($form->isSubmitted()){
+
+			// validate name 
+			if(!preg_match("/[^[:alnum:]\-_]/",$form['epan_name'])){
+				$form->displayError('epan_name','Only AphaNumeric values permitted');
+			}
+
         	/* Already Tried */
         	$trial_epan = $this->add('xepan\epanservices\Model_Epan');
         	$trial_epan->addCondition('created_by_id',$customer->id);
