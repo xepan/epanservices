@@ -23,7 +23,8 @@ class Initiator extends \Controller_Addon {
 
         if(!$this->app->isAjaxOutput() && !$this->app->getConfig('hidden_xepan_epanservices',false)){
             $m = $this->app->top_menu->addMenu('Epans');
-            $m->addItem(['epan','icon'=>'fa fa-sitemap'],'xepan_epanservices_epans');
+            $m->addItem(['Epans','icon'=>'fa fa-sitemap'],'xepan_epanservices_epans');
+            $m->addItem(['Templates','icon'=>'fa fa-sitemap'],'xepan_epanservices_epantemplates');
             $m->addItem(['Agency','icon'=>'fa fa-sitemap'],'xepan_epanservices_agency');
             $m->addItem(['Channel Partner','icon'=>'fa fa-sitemap'],'xepan_epanservices_channelpartner');
         }
