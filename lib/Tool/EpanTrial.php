@@ -14,7 +14,7 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 		parent::init();
 
 		if($this->owner instanceof \AbstractController) return;
-		
+
 		if($item_id = $this->app->stickyGET('x-new-product')){
 			$this->options['sale_item_id'] = $item_id;
 			$this->options['button_name'] = "Next";

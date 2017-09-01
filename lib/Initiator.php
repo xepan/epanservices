@@ -53,9 +53,10 @@ class Initiator extends \Controller_Addon {
 
         if($this->app->isEditing){
             $this->app->exportFrontEndTool('xepan\epanservices\Tool_EpanTrial','EpanTrial');
+            $this->app->exportFrontEndTool('xepan\epanservices\Tool_EpanDetail','EpanTrial');
             $this->app->exportFrontEndTool('xepan\epanservices\Tool_AfterCreation','EpanTrial');
             $this->app->exportFrontEndTool('xepan\epanservices\Tool_AgencyPanel','EpanTrial');
-            $this->app->exportFrontEndTool('xepan\epanservices\Tool_CustomerPanel','EpanTrial');
+            $this->app->exportFrontEndTool('xepan\epanservices\Tool_CustomerDashboard','EpanTrial');
             $this->app->exportFrontEndTool('xepan\epanservices\Tool_CustomerMenu','EpanTrial');
             $this->app->exportFrontEndTool('xepan\epanservices\Tool_Item','EpanTrial');
             $this->app->exportFrontEndTool('xepan\epanservices\Tool_Theme','EpanTrial');
