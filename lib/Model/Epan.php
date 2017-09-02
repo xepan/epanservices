@@ -110,7 +110,32 @@ class Model_Epan extends \xepan\base\Model_Epan{
 	}
 
 	function invoicePaid($app,$invoice){
-		// get related order 
+		
+		foreach ($invoice->items() as $invoice_item) {
+			// check if oi item belongs to Epan category
+			$item = $this->add('xepan\commerce\Model_Item')->load($invoice_item['item_id']);
+			// update expiry of epan
+			if($item->isInCategory('Epan')){
+				$cf_array = json_decode($invoice_item['extra_info'],true)?:[];
+
+				foreach ($cf_array[0] as $key => $value) {
+					if(!is_numeric($key)) continue;
+					// update epan
+					if($value['custom_field_name'] == "epan name" && $value['custom_field_value_name']){
+
+						$epan_model = $this->add('xepan\epanservices\Model_Epan')->addCondition('name',$value['custom_field_value_name']);
+						$epan_model->tryLoadAny();
+						if($epan_model->loaded()){
+							$epan_model['expiry_date'] = date("Y-m-d H:i:s", strtotime('+ '.$item['renewable_value']." ".$item['renewable_unit'], strtotime($this->app->now)));
+							$epan_model->save();
+						}
+					}
+
+				}
+			}
+
+		}
+		// get related order
 		// 	if item is epan
 		// 		change mode to paid and extend valid_till
 		// 	if item is template

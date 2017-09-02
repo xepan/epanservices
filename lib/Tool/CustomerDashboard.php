@@ -61,11 +61,15 @@ class Tool_CustomerDashboard extends \xepan\cms\View_Tool {
 		$saleorder->setOrder('id','desc');
 		$saleorder->addCondition('invoice_status','Due');
 
-		$grid = $this->add('Grid');
-		$grid->setModel($saleorder,['document_no','invoice_status']);
-		$grid->addColumn('Button','pay_now','Pay Now');
+		if($saleorder->count()->getOne()){
+			$grid = $this->add('Grid');
+			$grid->setModel($saleorder,['document_no','invoice_status']);
+			$grid->addColumn('Button','pay_now','Pay Now');
+				
+		}
 
 		if($pay_now_order = $_GET['pay_now']){
+
 			$payment_url = $this->app->url('customer-checkout',
 										[
 											'step'=>"Address",
@@ -73,9 +77,8 @@ class Tool_CustomerDashboard extends \xepan\cms\View_Tool {
 											'next_step'=>'Payment'
 										]
 									);
-			
 			$this->js()->univ()->redirect($payment_url)->execute();
 		}
-
+		
 	}
 }
