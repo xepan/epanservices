@@ -129,9 +129,9 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 
         	/* IF CUSTOMER IS LOGGED IN AND EPAN NAME IS UNIQUE THEN CREATE EPAN */
         	$epan_name = $form['epan_name'];
-        	$email_settings = $this->add('xepan\communication\Model_Communication_EmailSetting')->tryLoadAny();
+        	$email_settings = $this->add('xepan\communication\Model_Communication_DefaultEmailSetting')->tryLoadAny();
         	try{
-        		set_time_limit(60);
+        		set_time_limit(0);
 				$this->api->db->beginTransaction();
 	        	$this->createEpan($epan_name); // in epan services database, just a new row with specifications of apps
 
