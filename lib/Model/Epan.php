@@ -100,7 +100,7 @@ class Model_Epan extends \xepan\base\Model_Epan{
 
 		$new_trial_epan['created_by_id'] = $customer->id;
 		$new_trial_epan['status'] = "Trial";
-		$new_trial_epan['valid_till'] = date("Y-m-d", strtotime(date("Y-m-d", strtotime($this->app->now)) . " +14 DAY"));
+		$new_trial_epan['expiry_date'] = date("Y-m-d", strtotime(date("Y-m-d", strtotime($this->app->now)) . " +14 DAY"));
 		$new_trial_epan['epan_category_id'] = $this->add('xepan\base\Model_Epan_Category')->tryLoadAny()->id;
 		$new_trial_epan['extra_info'] = $epan_item_info;		
 		$new_trial_epan['epan_dbversion'] = $this->app->epan['epan_dbversion'];		
@@ -281,7 +281,7 @@ class Model_Epan extends \xepan\base\Model_Epan{
 		$extra_info = json_decode($this['extra_info'],true);
 
 		$form = $p->add('Form');
-		$form->addField('DateTimePicker','valid_till')->set($extra_info ['valid_till']);
+		$form->addField('DateTimePicker','valid_till')->set($this['expiry_date']);
 		$form->addSubmit('Save');
 		
 		if($form->isSubmitted()){
@@ -294,9 +294,9 @@ class Model_Epan extends \xepan\base\Model_Epan{
 	}
 
 	function validity($valid_till){
-		$extra_info = json_decode($this['extra_info'],true);
-		$extra_info ['valid_till'] = $valid_till;
-		$this['extra_info'] = $extra_info;
+		// $extra_info = json_decode($this['extra_info'],true);
+		// $extra_info ['valid_till'] = $valid_till;
+		$this['expiry_date'] = $valid_till;
 		$this->save();
 		return true;
 	}

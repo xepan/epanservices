@@ -135,13 +135,15 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 				$this->api->db->beginTransaction();
 	        	$this->createEpan($epan_name); // in epan services database, just a new row with specifications of apps
 
-	        	$newEpan_inServices = $this->add('xepan\epanservices\Model_Epan')->addCondition('name',$epan_name)->tryLoadAny();
-	        	$newEpan_inServices['is_published']=true;
-	        	
+	        	$newEpan_inServices = $this->add('xepan\epanservices\Model_Epan')
+	        						->addCondition('name',$epan_name)->tryLoadAny()
+	        						;
+	        	$newEpan_inServices['is_published'] = true;
+				$newEpan_inServices['expiry_date'] = date("Y-m-d", strtotime(date("Y-m-d", strtotime($this->app->now)) . " +14 DAY"));
 				$newEpan_inServices->createFolder($newEpan_inServices);
 
 				$newEpan_inServices->userAndDatabaseCreate(); // individual new epan database
-				$newEpan_inServices->save();  	
+				$newEpan_inServices->save();
 
 				$this->api->db->commit();
 			}catch(\Exception_StopInit $e){
