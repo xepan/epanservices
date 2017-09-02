@@ -21,7 +21,7 @@ class Tool_CustomerDashboard extends \xepan\cms\View_Tool {
 		$epan->addCondition('created_by_id',$customer->id);
 
 		$grid = $this->add('Grid');
-		$grid->setModel($epan,['name','status']);
+		$grid->setModel($epan,['name','status','created_at','expiry_date']);
 		$grid->addColumn('Button','live_edit','Live Edit');
 		$grid->addColumn('Button','detail','Detail');
 
@@ -47,6 +47,34 @@ class Tool_CustomerDashboard extends \xepan\cms\View_Tool {
 
 		if($detail_id = $_GET['detail']){
 			$this->js(true)->univ()->location($this->app->url('epan-detail',['selected'=>$_GET['detail']]))->execute();
+		}
+
+		// unpaid orders
+		$saleorder = $this->add('xepan\commerce\Model_SalesOrder');
+		$saleorder->addCondition('contact_id',$this->customer->id);
+
+		$saleorder->addExpression('invoice_status',function($m,$q){
+			$i = $m->add('xepan\commerce\Model_SalesInvoice',['table_alias'=>'sale']);
+			$i->addCondition('related_qsp_master_id',$q->getField('id'));
+			return $q->expr('IFNULL([0],"Due")',[$i->fieldQuery('status')]);
+		});
+		$saleorder->setOrder('id','desc');
+		$saleorder->addCondition('invoice_status','Due');
+
+		$grid = $this->add('Grid');
+		$grid->setModel($saleorder,['document_no','invoice_status']);
+		$grid->addColumn('Button','pay_now','Pay Now');
+
+		if($pay_now_order = $_GET['pay_now']){
+			$payment_url = $this->app->url('customer-checkout',
+										[
+											'step'=>"Address",
+											'order_id'=>$pay_now_order,
+											'next_step'=>'Payment'
+										]
+									);
+			
+			$this->js()->univ()->redirect($payment_url)->execute();
 		}
 
 	}
