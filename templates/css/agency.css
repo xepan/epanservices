@@ -135,3 +135,21 @@
     box-shadow: 0 2px 0px 0 rgba(0, 0, 0, 0.16), 0 2px 10px 0 rgba(0, 0, 0, 0.12);
     margin: 20px 0;
 }
+
+.panel.panel-heading.xepan-grid-heading{
+	margin-bottom: 0px;
+	font-size: 18px;
+	font-weight: bold;
+}
+
+.agency-panel-conatiner .atk4_grid{
+	margin-bottom: 20px;
+}
+
+.agency-panel-conatiner .atk-align-center{
+	text-align: center;
+}
+
+.agency-panel-conatiner .pagination.pull-left{
+	float: none !important;
+}

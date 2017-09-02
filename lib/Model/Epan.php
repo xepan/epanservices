@@ -110,7 +110,8 @@ class Model_Epan extends \xepan\base\Model_Epan{
 	}
 
 	function invoicePaid($app,$invoice){
-		
+		if($invoice['status'] != "Paid") return;
+
 		foreach ($invoice->items() as $invoice_item) {
 			// check if oi item belongs to Epan category
 			$item = $this->add('xepan\commerce\Model_Item')->load($invoice_item['item_id']);
@@ -127,6 +128,7 @@ class Model_Epan extends \xepan\base\Model_Epan{
 						$epan_model->tryLoadAny();
 						if($epan_model->loaded()){
 							$epan_model['expiry_date'] = date("Y-m-d H:i:s", strtotime('+ '.$item['renewable_value']." ".$item['renewable_unit'], strtotime($this->app->now)));
+							$epan_model['status'] = "Paid";
 							$epan_model->save();
 						}
 					}
