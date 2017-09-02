@@ -24,7 +24,7 @@ class page_epantemplates extends \xepan\base\Page {
 	}
 
 	function page_addTemplate(){
-		$form = $this->add('Form');
+		$form = $this->add('Form',['js_widget'=>null]);
 		$form->add('xepan\base\Controller_FLC')
 			->layout([
 				'name'=>'Epan Name~c1~6',
@@ -32,19 +32,21 @@ class page_epantemplates extends \xepan\base\Page {
 				'zip_file'=>'Upload File~c1~12'
 				]);
 
-		$form->addField('name');
+		$epan_name = $form->addField('name');
 		$form->layout->add('H1',null,'domain_extension')->set('.epan.in');
-		$file = $form->addField('xepan\base\Upload','zip_file');
+		$file = $form->addField('xepan\base\Upload',['name'=>'zip_file','mode'=>'plain']);
 
 		$form->addSubmit('Create Epan Template')->addClass('btn btn-primary');
 
-		if($form->isSubmitted()){
-			if($file->isUploaded()){
-				$file->iploadComplete(['filename'=>$file['temp']]);
+		if($_POST){
+			var_dump($_POST);
+			var_dump($_FILES);
+			var_dump($file->name);
+			var_dump($_POST[$epan_name->name]);
+			// $this->add('View')->set('sdfsdfsdfsd');
+			// throw new \Exception("Error Processing Request", 1);
 			
-			}else{
-
-			}
+			$this->app->redirect($this->app->url('xepan_epanservices_epantemplates'));
 		}
 
 	}
