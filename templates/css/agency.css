@@ -153,3 +153,9 @@
 .agency-panel-conatiner .pagination.pull-left{
 	float: none !important;
 }
+
+.agency-panel-conatiner input,
+.agency-panel-conatiner textarea,
+.agency-panel-conatiner select{
+	width: 100% !important;	
+}

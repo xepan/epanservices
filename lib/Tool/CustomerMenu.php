@@ -27,6 +27,7 @@ class Tool_CustomerMenu extends \xepan\cms\View_Tool {
 		$menu = [
 				['key'=>$this->app->url('customer-dashboard'),'name'=>'Dashboard'],
 				['key'=>$this->app->url('new-account'), 'name'=>'New Epan'],
+				['key'=>$this->app->url('customer-setting'), 'name'=>'Setting'],
 			];
 
 		$this->complete_lister = $cl = $this->add('CompleteLister',null,null,['view/customermenu']);
