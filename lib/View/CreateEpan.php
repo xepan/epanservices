@@ -43,7 +43,7 @@ class View_CreateEpan extends \View{
 		$country_field->js('change',$state_field->js()->reload(null,null,[$this->app->url(null,['cut_object'=>$state_field->name]),'country_id'=>$country_field->js()->val()]));
 		// $country_field->js('change',$form->js()->atk4_form('reloadField','state_id',[$this->app->url(),'country_id'=>$country_field->js()->val()]));
 
-		$cat_model = $this->add('xepan\commerce\Model_Category')->addCondition('name','Epan Agency');
+		$cat_model = $this->add('xepan\commerce\Model_Category')->addCondition('name','Epan Agency Products');
 		$cat_model->tryLoadAny();
 		$cat_model->save();
 
