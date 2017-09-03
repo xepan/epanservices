@@ -60,6 +60,7 @@ class Initiator extends \Controller_Addon {
             $this->app->exportFrontEndTool('xepan\epanservices\Tool_CustomerDashboard','EpanTrial');
             $this->app->exportFrontEndTool('xepan\epanservices\Tool_CustomerMenu','EpanTrial');
             $this->app->exportFrontEndTool('xepan\epanservices\Tool_CustomerSetting','EpanTrial');
+            $this->app->exportFrontEndTool('xepan\epanservices\Tool_CustomerOrderHistory','EpanTrial');
             $this->app->exportFrontEndTool('xepan\epanservices\Tool_Item','EpanTrial');
             $this->app->exportFrontEndTool('xepan\epanservices\Tool_Theme','EpanTrial');
         }
