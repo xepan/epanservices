@@ -43,7 +43,7 @@ class View_CreateEpan extends \View{
 		$country_field->js('change',$state_field->js()->reload(null,null,[$this->app->url(null,['cut_object'=>$state_field->name]),'country_id'=>$country_field->js()->val()]));
 		// $country_field->js('change',$form->js()->atk4_form('reloadField','state_id',[$this->app->url(),'country_id'=>$country_field->js()->val()]));
 
-		$cat_model = $this->add('xepan\commerce\Model_Category')->addCondition('name','Epan Agency Products');
+		$cat_model = $this->add('xepan\commerce\Model_Category')->addCondition('name','Epan Agency');
 		$cat_model->tryLoadAny();
 		$cat_model->save();
 
@@ -116,30 +116,23 @@ class View_CreateEpan extends \View{
 
 				// check email id
 				if($form['email_id']){
+					$new_customer_model->checkEmail($form['email_id'],null,'email_id');
+
 					$email = $this->add('xepan\base\Model_Contact_Email',['bypass_hook'=>true]);
 					$email['contact_id'] = $new_customer_model->id;
 					$email['head'] = "Official";
 					$email['value'] = $form['email_id'];
-					try{
-						$new_customer_model->checkEmail($email,$form['email_id'],$new_customer_model,$form);
-					}catch(\Exception $e){
-						$form->error('email_id','this email already used');
-					}
-
 					$email->save();
 				}
 
 				// check phone no
 				if($form['contact_no']){
+					$new_customer_model->checkPhone($form['contact_no'],null,'contact_no');
+
 					$phone = $this->add('xepan\base\Model_Contact_Phone',['bypass_hook'=>true]);
 					$phone['contact_id'] = $new_customer_model->id;
 					$phone['head'] = "Official";
 					$phone['value'] = $form['contact_no'];
-					try{
-						$new_customer_model->checkPhoneNo($phone,$form['contact_no'],$new_customer_model,$form);
-					}catch(\Exception $e){
-						$form->error('contact_no','this contact_no already used');
-					}
 					$phone->save();
 				}
 
