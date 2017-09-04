@@ -38,13 +38,24 @@ class page_epantemplates extends \xepan\base\Page {
 
 		$form->addSubmit('Create Epan Template')->addClass('btn btn-primary');
 
-		if($_POST){
-			var_dump($_POST);
-			var_dump($_FILES);
-			var_dump($file->name);
-			var_dump($_POST[$epan_name->name]);
-			// $this->add('View')->set('sdfsdfsdfsd');
-			// throw new \Exception("Error Processing Request", 1);
+		if($_POST){			
+
+			$newEpan_inServices = $this->add('xepan\epanservices\Model_Epan')
+	        						->addCondition('name',$_POST[$epan_name->name])->tryLoadAny()
+	        						;
+			// add extra_info with specifications ... 
+	    	$newEpan_inServices['is_published'] = true;
+	    	$newEpan_inServices['is_template'] = true;
+			$newEpan_inServices['expiry_date'] = date("Y-m-d", strtotime(date("Y-m-d", strtotime($this->app->now)) . " +14 DAY"));
+			$newEpan_inServices->createFolder($newEpan_inServices);
+
+			$newEpan_inServices->userAndDatabaseCreate(); // individual new epan database
+			$newEpan_inServices->save();
+			
+			$zip = new \xepan\base\zip;
+
+			$fs = \Nette\Utils\FileSystem::rename('./websites/'.$_POST[$epan_name->name].'/www','./websites/'.$_POST[$epan_name->name].'/_www',true);
+			$zip->extractZip($_FILES[$file->name]['tmp_name'], './websites/'.$_POST[$epan_name->name].'/www');
 			
 			$this->app->redirect($this->app->url('xepan_epanservices_epantemplates'));
 		}
