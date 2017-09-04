@@ -95,7 +95,10 @@ class Tool_EpanDetail extends \xepan\cms\View_Tool {
 				]);
 		
 		$domain_info->add('Grid',null,'parked_doamins')->setSource([]);
-		$domain_info->add('Grid',null,'epan_aliases')->setSource([]);
+
+		$grid = $domain_info->add('Grid',null,'epan_aliases')->setSource(explode(",",$this->selected_epan['aliases']));
+		$grid->addColumn('name');
+		$grid->removeColumn('id');
 
 		$form_aliases = $domain_info->add('Form',null,'new_epan_alias');
 		$form_aliases->add('xepan\base\Controller_FLC')
