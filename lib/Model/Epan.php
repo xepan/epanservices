@@ -109,31 +109,56 @@ class Model_Epan extends \xepan\base\Model_Epan{
 		return $new_trial_epan;
 	}
 
+	function getCfAndValue($cf_json){
+		$cf_array = json_decode($cf_json,true)?:[];
+
+		$return_array = [];
+		foreach ($cf_array as $data_array) {
+			foreach ($data_array as $key => $value) {
+				if(!is_numeric($key)) continue;
+
+				$return_array[strtolower(trim($value['custom_field_name']))] = strtolower(trim($value['custom_field_value_name']));
+			}
+		}
+		
+		return $return_array;
+	}
+
 	function invoicePaid($app,$invoice){
 		if($invoice['status'] != "Paid") return;
 
 		foreach ($invoice->items() as $invoice_item) {
 			// check if oi item belongs to Epan category
 			$item = $this->add('xepan\commerce\Model_Item')->load($invoice_item['item_id']);
-			// update expiry of epan
-			if($item->isInCategory('Epan')){
-				$cf_array = json_decode($invoice_item['extra_info'],true)?:[];
+			$cf_value_array = $this->getCfAndValue($invoice_item['extra_info']);
+			
+			if($item->isInCategory('Epan Alias Purchase') AND $cf_value_array['epan name'] AND $cf_value_array['epan alias']){
+				$epan_name = $cf_value_array['epan name'];
+				$alias_name = $cf_value_array['epan alias'];
 
-				foreach ($cf_array[0] as $key => $value) {
-					if(!is_numeric($key)) continue;
-					// update epan
-					if($value['custom_field_name'] == "epan name" && $value['custom_field_value_name']){
+				$epan_model = $this->add('xepan\epanservices\Model_Epan')
+								->tryLoadBy('name',$epan_name);
+				
+				$temp = explode(",", $epan_model['aliases']);
+				$temp[] = '"'.$alias_name.'"';
+				$epan_model['aliases'] = trim(implode(",", $temp),",");
+				$epan_model->save();
 
-						$epan_model = $this->add('xepan\epanservices\Model_Epan')->addCondition('name',$value['custom_field_value_name']);
-						$epan_model->tryLoadAny();
-						if($epan_model->loaded()){
-							$epan_model['expiry_date'] = date("Y-m-d H:i:s", strtotime('+ '.$item['renewable_value']." ".$item['renewable_unit'], strtotime($this->app->now)));
-							$epan_model['status'] = "Paid";
-							$epan_model->save();
-						}
+			}elseif($item->isInCategory('Epan')){
+				
+				// update expiry of epan
+				if($cf_value_array['epan name']){
+					$cf_value = $cf_value_array['epan name'];
+
+					$epan_model = $this->add('xepan\epanservices\Model_Epan')->addCondition('name',$cf_value);
+					$epan_model->tryLoadAny();
+					if($epan_model->loaded()){
+						$epan_model['expiry_date'] = date("Y-m-d H:i:s", strtotime('+ '.$item['renewable_value']." ".$item['renewable_unit'], strtotime($this->app->now)));
+						$epan_model['status'] = "Paid";
+						$epan_model->save();
 					}
-
 				}
+
 			}
 
 		}
@@ -407,4 +432,117 @@ class Model_Epan extends \xepan\base\Model_Epan{
         }
 
 	}
+
+
+	function checkAliasExist($epan_name){
+		$epan_model = $this->add('xepan\epanservices\Model_Epan');
+		$epan_model->addCondition([['name',$epan_name],['aliases','like','%"'.$epan_name.'"%']]);
+		$epan_model->tryLoadAny();
+		
+		return $epan_model->loaded();
+	}
+
+	function purchaseEpanAlias($epan_alias_name,$customer=null,$check_existing=true,$redirect_to_payment=true){
+		if(!$this->loaded()) throw new \Exception("epan must loaded");
+
+		if($check_existing && $this->checkAliasExist($epan_alias_name))
+			throw new \Exception($epan_alias_name.".epan.in already exists, select another one.");
+				
+		// load alias item
+		$item = $this->add('xepan\commerce\Model_Item');
+		$item->tryLoadBy('name','Epan Alias Purchase');
+		if(!$item->loaded()) throw new \Exception("alias product not found, contact to epan.in");
+		
+		// create sale order
+		$new_order = $this->placeOrder($customer,$item,$epan_alias_name);
+		
+		$payment_url = $this->app->url('customer-checkout',
+										[
+											'step'=>"Address",
+											'order_id'=>$new_order->id,
+											'next_step'=>'Payment'
+										]
+									);
+		$this->app->js()->univ()->redirect($payment_url)->execute();
+
+	}
+
+	/*
+	** Item_detail_array = [
+						0=>[
+								'id'=>,
+								'qty'=>,
+								'custom_field'=>[]
+							],
+						....
+				]
+	*/
+
+	function placeOrder($customer=null,$item_detail,$epan_alias_name=null){
+		$this->customer = $customer;
+		if(!$customer){
+			$this->customer = $customer = $this->add('xepan\commerce\Model_Customer');
+			$customer->loadLoggedIn();
+			if(!$customer->loaded()) throw new \Exception("customer not found");
+		}
+
+		$selected_item = [];
+		if($item_detail instanceof \xepan\commerce\Model_Item){
+
+			if(!$item_detail->loaded()) throw new \Exception("item model not loaded");
+
+			$cf_array = [];
+			$cf_list = $item_detail->activeAssociateCustomField()->getRows();
+
+			$temp = [];
+			foreach ($cf_list as $key => $cf) {
+
+				if(!isset($temp[$cf['department_id']])){
+					$temp[$cf['department_id']] = [];
+					$temp[$cf['department_id']]['department_name'] = $cf['department'];
+				}
+				$temp[$cf['department_id']][$cf['customfield_generic_id']] = [];
+				$temp[$cf['department_id']][$cf['customfield_generic_id']]['custom_field_name'] = $cf['name'];
+
+				$cf_value = "";
+				$cf_value_id = "";
+				switch (strtolower($cf['customfield_generic'])) {
+					case 'epan name':
+						$cf_value_id = $cf_value = $this['name'];
+						break;
+					case 'epan alias':
+						$cf_value_id = $cf_value = $epan_alias_name;
+						break;
+				}	
+				$temp[$cf['department_id']][$cf['customfield_generic_id']]['custom_field_value_id'] = $cf_value_id;
+				$temp[$cf['department_id']][$cf['customfield_generic_id']]['custom_field_value_name'] = $cf_value;
+			}
+			$cf_array = $temp;
+			
+			$selected_item[0]['id'] = $item_detail->id;
+			$selected_item[0]['qty'] = 1;
+			$selected_item[0]['custom_field'] = $cf_array;
+
+		}elseif(is_array($item_detail) AND count($item_detail)){
+			$selected_item = $item_detail;
+		}else{
+			throw new \Exception("must pass select item detail");
+		}
+
+		$cart_model = $this->add('xepan\commerce\Model_Cart');
+		$cart_model->emptyCart();
+
+		foreach($selected_item as $key => $item) {
+			$cart_model->addItem($item['id'],$item['qty'],null,$item['custom_field']);
+		}
+
+		$address = $customer->getAddress();
+
+		$order = $this->add('xepan\commerce\Model_SalesOrder');
+		$order->placeOrderFromCart($address,false);
+		$this->app->hook('order_placed',[$order]);
+		return $order;
+
+	}
+
 }
