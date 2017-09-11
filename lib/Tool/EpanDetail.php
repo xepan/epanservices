@@ -86,20 +86,39 @@ class Tool_EpanDetail extends \xepan\cms\View_Tool {
 		$domain_info->add('xepan\base\Controller_FLC')
 			->makePanelsCoppalsible()
 			->layout([
-					'new_domain~'=>'Add Domains to your Epan~c1~12~Parked Domains are for Top level domains like .com .in etc. You can park existing domain also.',
-					'parked_doamins~Existing Parked Domains'=>'Add Parked Domain~c1~12',
+					'new_domain~'=>'Add Domains to your Epan~c1~12~closed~Domains are for Top level domains like .com .in etc. You can purchase from here. we are launching soon.',
+					'parked_doamins~Existing Parked Domains'=>'Add Parked Domain~c1~12~Parked Domains are for Top level domains like .com .in etc. You can park existing domain also.',
 					'new_epan_alias~'=>'Add Epan Aliases~c2~12~Multiple subdomains for same website erp.epan.in, best-erp.epan.in, crm.epan.in etc. useful for SEO',
 					'epan_aliases~Existing Epan Aliases'=>'c2~12',
 					'park_existing_domain~'=>'Park Existing Domain~c1~12',
 					'how_to_park_domain~'=>'c2~12~Just change your domain DNS A Setting to xx.xx.xx.xx to just change website to epan.in <br/>Change nameserver to ns1.epan.in and ns2.epan.in if you wish to let epan server manage your emails also.',
 				]);
 		
+		// Park Domain
+		$form_park_domain = $domain_info->add('Form',null,'parked_doamins');
+		$form_park_domain->add('xepan\base\Controller_FLC')
+			->layout([
+					'domain_name'=>'c1~6',
+					'epan~'=>'c1~3~.epan.in',
+					'FormButtons~'=>'c1~3'
+				])
+			;
+		$form_park_domain->addField('domain_name')->validate('Required');
+		$form_park_domain->addSubmit('Park Domain Now');
+		if($form_park_domain->isSubmitted()){
+
+			if($this->selected_epan->checkAliasExist($form_park_domain['domain_name']))
+				$form_park_domain->error('domain_name',$form_park_domain['domain_name'].' is already parked.');
+			
+			$this->selected_epan->parkDomain($form_park_domain['domain_name'],$this->customer,$check_existing=false,$redirect_to_payment=true);
+		}
+
 		$domain_info->add('Grid',null,'parked_doamins')->setSource([]);
 
+		// Epan Alias
 		$grid = $domain_info->add('Grid',null,'epan_aliases')->setSource(explode(",",$this->selected_epan['aliases']));
 		$grid->addColumn('name');
 		$grid->removeColumn('id');
-
 		$form_aliases = $domain_info->add('Form',null,'new_epan_alias');
 		$form_aliases->add('xepan\base\Controller_FLC')
 			->layout([
@@ -109,14 +128,13 @@ class Tool_EpanDetail extends \xepan\cms\View_Tool {
 				])
 			;
 		$form_aliases->addField('epan_alias_name')->validate('Required');
-		$form_aliases->addSubmit('Purchase Now');
-		if($form_aliases->isSubmitted()){
+		$form_aliases->addSubmit('Purchase Now')->addClass('btn btn-primary');
 
+		if($form_aliases->isSubmitted()){
 			if($this->selected_epan->checkAliasExist($form_aliases['epan_alias_name']))
 				$form_aliases->error('epan_alias_name',$form_aliases['epan_alias_name'].'.epan.in Already used, select another one.');
-								
+
 			$this->selected_epan->purchaseEpanAlias($form_aliases['epan_alias_name'],$this->customer,$check_existing=false,$redirect_to_payment=true);
-						
 		}
 
 		// $domain_info->add('Button',null,'new_domain')->set('PURCHASE NEW DOMAIN')->addClass('btn btn-success btn-block')->js('click',$this->js()->univ()->frameURL('Purchase Domain',$purchase_domain_vp->getURL()));

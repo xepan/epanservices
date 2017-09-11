@@ -125,14 +125,18 @@ class Model_Epan extends \xepan\base\Model_Epan{
 	}
 
 	function invoicePaid($app,$invoice){
+		
 		if($invoice['status'] != "Paid") return;
 
+		
 		foreach ($invoice->items() as $invoice_item) {
 			// check if oi item belongs to Epan category
 			$item = $this->add('xepan\commerce\Model_Item')->load($invoice_item['item_id']);
 			$cf_value_array = $this->getCfAndValue($invoice_item['extra_info']);
 			
+			// epan alias purchase
 			if($item->isInCategory('Epan Alias Purchase') AND $cf_value_array['epan name'] AND $cf_value_array['epan alias']){
+				
 				$epan_name = $cf_value_array['epan name'];
 				$alias_name = $cf_value_array['epan alias'];
 
@@ -141,6 +145,22 @@ class Model_Epan extends \xepan\base\Model_Epan{
 				
 				$temp = explode(",", $epan_model['aliases']);
 				$temp[] = '"'.$alias_name.'"';
+				$epan_model['aliases'] = trim(implode(",", $temp),",");
+				$epan_model->save();
+			}elseif($item->isInCategory('Epan Domain Park') AND $cf_value_array['epan name'] AND $cf_value_array['epan domain park name']) {
+				// epan domain name parked purchase
+				$epan_name = $cf_value_array['epan name'];
+				$park_domain_name = $cf_value_array['epan domain park name'];
+
+				// check if domain is already parked
+				if($this->checkAliasExist($park_domain_name)){
+					throw new \Exception("this domain ".$park_domain_name." is already parked");
+				}
+
+				$epan_model = $this->add('xepan\epanservices\Model_Epan')
+								->tryLoadBy('name',$epan_name);
+				$temp = explode(",", $epan_model['aliases']);
+				$temp[] = '"'.$park_domain_name.'"';
 				$epan_model['aliases'] = trim(implode(",", $temp),",");
 				$epan_model->save();
 
@@ -454,7 +474,7 @@ class Model_Epan extends \xepan\base\Model_Epan{
 		if(!$item->loaded()) throw new \Exception("alias product not found, contact to epan.in");
 		
 		// create sale order
-		$new_order = $this->placeOrder($customer,$item,$epan_alias_name);
+		$new_order = $this->placeOrder($customer,$item,['epan alias'=>$epan_alias_name]);
 		
 		$payment_url = $this->app->url('customer-checkout',
 										[
@@ -467,6 +487,29 @@ class Model_Epan extends \xepan\base\Model_Epan{
 
 	}
 
+	function parkDomain($domain_name,$customer=null,$check_existing=true,$redirect_to_payment=true){
+		if(!$this->loaded()) throw new \Exception("epan must loaded");
+
+		if($check_existing && $this->checkAliasExist($domain_name))
+			throw new \Exception($domain_name."is already parked, try with another one");
+				
+		// load park domain item
+		$item = $this->add('xepan\commerce\Model_Item');
+		$item->tryLoadBy('name','Epan Domain Park');
+		if(!$item->loaded()) throw new \Exception("Domain Park product not found, contact to epan.in");
+		
+		// create sale order
+		$new_order = $this->placeOrder($customer,$item,['epan domain park name'=>$domain_name]);
+		$payment_url = $this->app->url('customer-checkout',
+										[
+											'step'=>"Address",
+											'order_id'=>$new_order->id,
+											'next_step'=>'Payment'
+										]
+									);
+		$this->app->js()->univ()->redirect($payment_url)->execute();
+	}
+
 	/*
 	** Item_detail_array = [
 						0=>[
@@ -476,9 +519,11 @@ class Model_Epan extends \xepan\base\Model_Epan{
 							],
 						....
 				]
+	
+		$cf_value_array = ['cf_name'=>'value']
 	*/
 
-	function placeOrder($customer=null,$item_detail,$epan_alias_name=null){
+	function placeOrder($customer=null,$item_detail,$cf_value_array=[]){
 		$this->customer = $customer;
 		if(!$customer){
 			$this->customer = $customer = $this->add('xepan\commerce\Model_Customer');
@@ -506,14 +551,21 @@ class Model_Epan extends \xepan\base\Model_Epan{
 
 				$cf_value = "";
 				$cf_value_id = "";
-				switch (strtolower($cf['customfield_generic'])) {
+				switch (trim(strtolower($cf['customfield_generic']))) {
 					case 'epan name':
 						$cf_value_id = $cf_value = $this['name'];
 						break;
 					case 'epan alias':
-						$cf_value_id = $cf_value = $epan_alias_name;
+						if(!isset($cf_value_array['epan alias'])) throw new \Exception("epan alias value name not found");
+
+						$cf_value_id = $cf_value = $cf_value_array['epan alias'];
 						break;
-				}	
+					case 'epan domain park name':
+						if(!isset($cf_value_array['epan domain park name'])) throw new \Exception("domain name is not defined, how to park ?");
+						$cf_value_id = $cf_value = $cf_value_array['epan domain park name'];
+						break;
+				}
+
 				$temp[$cf['department_id']][$cf['customfield_generic_id']]['custom_field_value_id'] = $cf_value_id;
 				$temp[$cf['department_id']][$cf['customfield_generic_id']]['custom_field_value_name'] = $cf_value;
 			}
