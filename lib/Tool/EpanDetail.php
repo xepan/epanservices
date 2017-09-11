@@ -106,7 +106,12 @@ class Tool_EpanDetail extends \xepan\cms\View_Tool {
 		$form_park_domain->addField('domain_name')->validate('Required');
 		$form_park_domain->addSubmit('Park Domain Now');
 		if($form_park_domain->isSubmitted()){
+			// domain validation
 
+			$re = '/^(?!\-)(?:[a-zA-Z\d\-]{0,62}[a-zA-Z\d]\.){1,126}(?!\d+)[a-zA-Z\d]{1,63}$/m';
+			preg_match_all($re, $form_park_domain['domain_name'], $matches, PREG_SET_ORDER, 0);
+			if(!count($matches)) $form_park_domain->error('domain_name','must be a valide domain name ie. xavoc.com, www.epan.in');
+						
 			if($this->selected_epan->checkAliasExist($form_park_domain['domain_name']))
 				$form_park_domain->error('domain_name',$form_park_domain['domain_name'].' is already parked.');
 			
