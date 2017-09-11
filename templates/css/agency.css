@@ -16,6 +16,7 @@
 	padding-bottom: 20px;
 }
 
+
 /*table propeties*/
 .agency-panel-conatiner table{
     width:100%;
@@ -50,6 +51,14 @@
 .agency-navbar .navbar{
 	background: #FFFFFF;
     box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.3);
+}
+
+.agency-navbar .navbar-brand{
+  	background-color: black;
+    height: auto;
+}
+.agency-navbar .navbar-brand img{
+    width: 120px;
 }
 
 .agency-navbar .navbar-right{
