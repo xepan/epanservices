@@ -21,18 +21,6 @@ class Tool_EpanDetail extends \xepan\cms\View_Tool {
 		$customer->loadLoggedIn();
 		if(!$customer->loaded()) throw new \Exception("customer not found");
 
-		if($customer['country_id'])
-			$this->app->country = $this->add('xepan\base\Model_Country')->load($customer['country_id']);
-		else
-			$this->app->redirect($this->app->url('customer-setting'));
-
-		if($customer['state_id'])
-			$this->app->state = $this->add('xepan\base\Model_State')->load($customer['state_id']);
-		else
-			$this->app->redirect($this->app->url('customer-setting'));
-
-		
-
 		$this->selected_epan = $epan = $this->add('xepan\epanservices\Model_Epan');
 		$this->selected_epan = $epan->tryLoad($epan_id);
 

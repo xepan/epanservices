@@ -478,7 +478,7 @@ class Model_Epan extends \xepan\base\Model_Epan{
 		
 		$payment_url = $this->app->url('customer-checkout',
 										[
-											'step'=>"Address",
+											'step'=>"Payment",
 											'order_id'=>$new_order->id,
 											'next_step'=>'Payment'
 										]
@@ -502,7 +502,7 @@ class Model_Epan extends \xepan\base\Model_Epan{
 		$new_order = $this->placeOrder($customer,$item,['epan domain park name'=>$domain_name]);
 		$payment_url = $this->app->url('customer-checkout',
 										[
-											'step'=>"Address",
+											'step'=>"Payment",
 											'order_id'=>$new_order->id,
 											'next_step'=>'Payment'
 										]

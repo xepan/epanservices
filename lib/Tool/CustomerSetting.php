@@ -21,6 +21,9 @@ class Tool_CustomerSetting extends \xepan\cms\View_Tool {
 			return;
 		}
 
+		if($_GET['profile'] == "incomplete")
+			$this->add('View_Info')->set('Update Your Profile First')->addClass('alert alert-info text-center');
+
 		$col = $this->add('Columns');
 		$col1 = $col->addColumn(8);
 		$col2 = $col->addColumn(4);
@@ -41,14 +44,15 @@ class Tool_CustomerSetting extends \xepan\cms\View_Tool {
 						'email_id'=>'Contact Detail~c8~6',
 						'phone_no'=>'c9~6',
 					]);
-		$form->setModel($customer,['first_name','last_name','country_id','state_id','organization','address','city','pin_code']);
+		$fields = ['first_name','last_name','country_id','state_id','organization','address','city','pin_code'];
+		$form->setModel($customer,$fields);
 		$email_field = $form->addField('email_id')->validate('email');
 		$phone_no_field = $form->addField('phone_no')->validate('required');
 
-		$country_field = $form->getElement('country_id');
+		$country_field = $form->getElement('country_id')->validate('required');
 		$country_field->getModel()->addCondition('status','Active');
 
-		$state_field = $form->getElement('state_id');
+		$state_field = $form->getElement('state_id')->validate('required');
 		$state_field->getModel()->addCondition('status','Active');
 
 		if($_GET['country_id']){
@@ -60,10 +64,14 @@ class Tool_CustomerSetting extends \xepan\cms\View_Tool {
 		$email_field->set($customer->getEmails()[0]);
 		$phone_no_field->set($customer->getPhones()[0]);
 
+		foreach ($fields as $key => $field_name) {
+			$form->getElement($field_name)->validate('required');
+		}
 
 		$form->addSubmit('Update Profile')->addClass('btn btn-primary');
 
 		if($form->isSubmitted()){
+
 			$form->save();
 			$form->model->addEmail($form['email_id'],'Personal',true,true,'email_id',true);
 			$form->model->addPhone($form['phone_no'],'Personal',true,true,'phone_no',true);

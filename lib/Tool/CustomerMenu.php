@@ -11,11 +11,21 @@ class Tool_CustomerMenu extends \xepan\cms\View_Tool {
 		parent::init();
 
 		if($this->owner instanceof \AbstractController) return;
-		
+
 		$this->api->template->appendHTML('js_include','<link rel="stylesheet" type="text/css" href="'.$this->api->url()->absolute()->getBaseURL().'vendor/xepan/epanservices/templates/css/agency.css" />');
 		$this->customer = $customer = $this->add('xepan\commerce\Model_Customer')
 							->addCondition('user_id',$this->app->auth->model->id);
 		$this->customer->loadLoggedIn();
+
+		// update your profile first		
+		if( $this->app->page != "customer-setting" && (!$customer['country_id'] OR !$customer['state_id'] OR !$customer['city'] OR !$customer['pin_code'] OR !$customer['address'] OR !$customer['first_name']) ){
+			$this->app->redirect($this->app->url('customer-setting',['profile'=>'incomplete']));
+		}
+
+		if($customer['country_id'])
+			$this->app->country = $this->add('xepan\base\Model_Country')->load($customer['country_id']);
+		if($customer['state_id'])
+			$this->app->state = $this->add('xepan\base\Model_State')->load($customer['state_id']);
 
 		$editor = $this->add('xepan\cms\Model_User_CMSEditor');
 		$editor->addCondition('user_id',$this->app->auth->model->id);
