@@ -11,6 +11,7 @@ class Tool_EpanDetail extends \xepan\cms\View_Tool {
 		
 		if($this->owner instanceof \AbstractController) return;
 
+
 		$purchase_domain_vp = $this->add('VirtualPage');
 		$this->manageDomainPurchase($purchase_domain_vp);
 
@@ -19,6 +20,18 @@ class Tool_EpanDetail extends \xepan\cms\View_Tool {
 		$this->customer = $customer = $this->add('xepan\commerce\Model_Customer');
 		$customer->loadLoggedIn();
 		if(!$customer->loaded()) throw new \Exception("customer not found");
+
+		if($customer['country_id'])
+			$this->app->country = $this->add('xepan\base\Model_Country')->load($customer['country_id']);
+		else
+			$this->app->redirect($this->app->url('customer-setting'));
+
+		if($customer['state_id'])
+			$this->app->state = $this->add('xepan\base\Model_State')->load($customer['state_id']);
+		else
+			$this->app->redirect($this->app->url('customer-setting'));
+
+		
 
 		$this->selected_epan = $epan = $this->add('xepan\epanservices\Model_Epan');
 		$this->selected_epan = $epan->tryLoad($epan_id);
@@ -81,6 +94,7 @@ class Tool_EpanDetail extends \xepan\cms\View_Tool {
 	}
 
 	function domainInfo($tab){
+		
 
 		$domain_info = $tab->add('View');
 		$domain_info->add('xepan\base\Controller_FLC')
@@ -107,7 +121,7 @@ class Tool_EpanDetail extends \xepan\cms\View_Tool {
 		$form_park_domain->addSubmit('Park Domain Now');
 		if($form_park_domain->isSubmitted()){
 			// domain validation
-
+			
 			$re = '/^(?!\-)(?:[a-zA-Z\d\-]{0,62}[a-zA-Z\d]\.){1,126}(?!\d+)[a-zA-Z\d]{1,63}$/m';
 			preg_match_all($re, $form_park_domain['domain_name'], $matches, PREG_SET_ORDER, 0);
 			if(!count($matches)) $form_park_domain->error('domain_name','must be a valide domain name ie. xavoc.com, www.epan.in');

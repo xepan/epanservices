@@ -45,16 +45,18 @@ class Tool_CustomerSetting extends \xepan\cms\View_Tool {
 		$email_field = $form->addField('email_id')->validate('email');
 		$phone_no_field = $form->addField('phone_no')->validate('required');
 
-		$country_field = $form->getElement('country_id')->set(100);
+		$country_field = $form->getElement('country_id');
+		$country_field->getModel()->addCondition('status','Active');
+
 		$state_field = $form->getElement('state_id');
+		$state_field->getModel()->addCondition('status','Active');
+
 		if($_GET['country_id']){
 			$state_field->getModel()->addCondition('country_id',$_GET['country_id']);
-		}else{
-			$state_field->getModel()->addCondition('country_id',100);// india
 		}
 		$country_field->js('change',$state_field->js()->reload(null,null,[$this->app->url(null,['cut_object'=>$state_field->name]),'country_id'=>$country_field->js()->val()]));
 
-		// load email 
+		// load email
 		$email_field->set($customer->getEmails()[0]);
 		$phone_no_field->set($customer->getPhones()[0]);
 
