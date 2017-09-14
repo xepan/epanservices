@@ -33,7 +33,7 @@ class Tool_EpanDetail extends \xepan\cms\View_Tool {
 		$basic_info_tab = $tabs->addTab('Basic info');
 		$domains_tab = $tabs->addTab('Domains');
 		$emails_tab = $tabs->addTab('Emails');
-		$limits_tab = $tabs->addTab('Limits');
+		// $limits_tab = $tabs->addTab('Limits');
 
 		$basic_info = $basic_info_tab->add('View');
 		$basic_info->add('xepan\base\Controller_FLC')
@@ -49,6 +49,7 @@ class Tool_EpanDetail extends \xepan\cms\View_Tool {
 		$basic_info->add('View',null,'renewal_date')->set($epan['created_at']);
 
 		$this->domainInfo($domains_tab);
+		$this->emailPurchase($emails_tab);
 		// $email_info = $emails_tab->add('View');
 		// $email_info->add('xepan\base\Controller_FLC')
 		// 	// ->makePanelsCoppalsible()
@@ -83,30 +84,35 @@ class Tool_EpanDetail extends \xepan\cms\View_Tool {
 
 	function domainInfo($tab){
 		
-
-		$domain_info = $tab->add('View');
-		$domain_info->add('xepan\base\Controller_FLC')
+		
+		$col = $tab->add('Columns');
+		$col1 = $col->addColumn(6);
+		$col2 = $col->addColumn(6);
+		
+		$view = $col2->add('View');
+		$view->add('xepan\base\Controller_FLC')
 			->makePanelsCoppalsible()
 			->layout([
-					'new_domain~'=>'Add Domains to your Epan~c1~12~closed~Domains are for Top level domains like .com .in etc. You can purchase from here. we are launching soon.',
-					'parked_doamins~Existing Parked Domains'=>'Add Parked Domain~c1~12~Parked Domains are for Top level domains like .com .in etc. You can park existing domain also.',
-					'new_epan_alias~'=>'Add Epan Aliases~c2~12~Multiple subdomains for same website erp.epan.in, best-erp.epan.in, crm.epan.in etc. useful for SEO',
-					'epan_aliases~Existing Epan Aliases'=>'c2~12',
-					'park_existing_domain~'=>'Park Existing Domain~c1~12',
-					'how_to_park_domain~'=>'c2~12~Just change your domain DNS A Setting to xx.xx.xx.xx to just change website to epan.in <br/>Change nameserver to ns1.epan.in and ns2.epan.in if you wish to let epan server manage your emails also.',
-				]);
-		
+				'aliases~'=>'Existing Epan Aliases/ Parked Domain~c2~12'
+			]);
+
+		$aliases_array = explode(",",$this->selected_epan['aliases']);
+		$grid = $view->add('Grid',null,'aliases')->setSource($aliases_array);
+		$grid->addColumn('name');
+		$grid->removeColumn('id');
+
+
+		$domain_info = $col1->add('View');
 		// Park Domain
-		$form_park_domain = $domain_info->add('Form',null,'parked_doamins');
+		$form_park_domain = $domain_info->add('Form');
 		$form_park_domain->add('xepan\base\Controller_FLC')
 			->layout([
-					'domain_name'=>'c1~6',
-					'epan~'=>'c1~3~.epan.in',
-					'FormButtons~'=>'c1~3'
+					'domain_name'=>'Parking Domain Price: <i class="fa fa-rupee"></i> 200 per/domain~c1~12',
+					'FormButtons~'=>'c2~12'
 				])
 			;
 		$form_park_domain->addField('domain_name')->validate('Required');
-		$form_park_domain->addSubmit('Park Domain Now');
+		$form_park_domain->addSubmit('Park Domain Now')->addClass('btn btn-primary btn-block');
 		if($form_park_domain->isSubmitted()){
 			// domain validation
 			
@@ -120,22 +126,18 @@ class Tool_EpanDetail extends \xepan\cms\View_Tool {
 			$this->selected_epan->parkDomain($form_park_domain['domain_name'],$this->customer,$check_existing=false,$redirect_to_payment=true);
 		}
 
-		$domain_info->add('Grid',null,'parked_doamins')->setSource([]);
-
+		
 		// Epan Alias
-		$grid = $domain_info->add('Grid',null,'epan_aliases')->setSource(explode(",",$this->selected_epan['aliases']));
-		$grid->addColumn('name');
-		$grid->removeColumn('id');
-		$form_aliases = $domain_info->add('Form',null,'new_epan_alias');
+		$form_aliases = $domain_info->add('Form');
 		$form_aliases->add('xepan\base\Controller_FLC')
 			->layout([
-					'epan_alias_name'=>'c1~6',
-					'epan~'=>'c1~3~.epan.in',
-					'FormButtons~'=>'c1~3'
+					'epan_alias_name'=>'Epan Aliases Price: <i class="fa fa-rupee"></i> 200 per/aliase~c1~8',
+					'epan~'=>'c2~4~<h2>.epan.in</h2>',
+					'FormButtons~'=>'c3~12'
 				])
 			;
 		$form_aliases->addField('epan_alias_name')->validate('Required');
-		$form_aliases->addSubmit('Purchase Now')->addClass('btn btn-primary');
+		$form_aliases->addSubmit('Purchase Now')->addClass('btn btn-primary btn-block');
 
 		if($form_aliases->isSubmitted()){
 			if($this->selected_epan->checkAliasExist($form_aliases['epan_alias_name']))
@@ -149,4 +151,11 @@ class Tool_EpanDetail extends \xepan\cms\View_Tool {
 		// $domain_info->add('Button',null,'park_existing_domain')->set('Park Existing Domain')->addClass('btn btn-success btn-block');
 
 	}
+
+
+	function emailPurchase($tab){
+		$tab->add('View_Info')->addClass('alert alert-success text-center')->setHtml("You can configure any 3rd party email accounts in your EPAN, but if you need emails from Epan Services, use this panel and book some emails");
+		$tab->add('View_Info')->addClass('alert alert-info text-center')->setHtml("comming soon, for now, send request to <strong>support@xavoc.com</strong>");
+	}
+
 }
