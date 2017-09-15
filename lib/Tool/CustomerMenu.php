@@ -35,25 +35,51 @@ class Tool_CustomerMenu extends \xepan\cms\View_Tool {
 			$this->app->redirect($this->app->url('login',['layout'=>'new_registration']));
 
 		$menu = [
-				['key'=>$this->app->url('customer-dashboard'),'name'=>'Dashboard'],
-				['key'=>$this->app->url('new-account'), 'name'=>'New Epan'],
-				['key'=>$this->app->url('customer-orderhistory'), 'name'=>'Order History'],
-				['key'=>$this->app->url('customer-setting'), 'name'=>'Setting']
+				['key'=>'customer-dashboard','name'=>'Dashboard'],
+				['key'=>'new-account', 'name'=>'New Epan'],
+				['key'=>'customer-orderhistory', 'name'=>'Order History'],
+				['key'=>'customer-setting', 'name'=>'Setting']
 			];
+		$this->submenu_list = [
+					'customer-setting'=>[
+								'index.php?page=customer-setting&action=profile'=>'Profile',
+								'index.php?page=customer-setting&action=changepassword'=>'Change Password',
+							]
+					];
 
 		$this->complete_lister = $cl = $this->add('CompleteLister',null,null,['view/customermenu']);
-			$cl->setSource($menu);
+		$cl->setSource($menu);
 
 		$page = $this->app->page;
 		$cl->addHook('formatRow',function($g)use($page){
-			if(strpos($g->model['key'], $page)){
-				$g->current_row_html['active_menu'] = "active";
+			$submenu_html = "";
+			$submenu_class = "";
+
+			if(isset($this->submenu_list[$g->model['key']])){
+				$submenu_html = '<ul class="dropdown-menu">';
+				foreach ($this->submenu_list[$g->model['key']] as $s_key => $s_value) {
+					$submenu_html .= '<li><a class="dropdown-item" href="'.$s_key.'">'.$s_value.'</a></li>';
+				}
+				$submenu_html .= '</ul>';
+				$submenu_class = "dropdown";
+
+				$g->current_row_html['list'] = '<a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false">'.$g->model['name'].' <span class="caret"></span></a>';
 			}else{
-				$g->current_row_html['active_menu'] = "deactive";
+				$g->current_row_html['list'] = '<a href="'.$g->model['key'].'">'.$g->model['name'].'</a>';
 			}
+
+			if($g->model['key'] == $page)
+				$g->current_row_html['active_menu'] = "active ".$submenu_class;
+			else
+				$g->current_row_html['active_menu'] = "deactive ".$submenu_class;
+			
+			$g->current_row_html['submenu'] = $submenu_html;
+
 		});
 
 		$cl->template->trySet('customer_name',$this->customer['name']);
 		$cl->template->trySet('customer_dp',($this->customer['image']?:"vendor/xepan/epanservices/templates/images/profile.png"));	
+		
+		$this->js(true)->_selector('.dropdown-toggle')->dropdown();		
 	}
 }

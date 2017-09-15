@@ -13,12 +13,13 @@ div(id="{$_name}" class="{$class} agency-navbar" style="{$style}")
 				ul.nav.navbar-nav
 					{rows}{row}
 					li(data-page='{$key}' class="{$active_menu}")
-						a(href='{$key}') {$name}
+						{list} {$name} {/}
+						|{$submenu}
 					{/}{/}
 				ul.nav.navbar-nav.navbar-right
 					li(style="border-radius:5px 0px 0px 5px;") 
-						a(href="#" style="padding:10px;float:left;" class="text-center") {$customer_name}<br/>{$user_name}
-						a(href="#" style="padding:10px; box-shadow:inset 0px 0px 1px 2px #ccc;border-radius:50%;float:left;" title="{$customer_name}" class="text-center")
+						a(href="index.php?page=customer-setting&action=profile" style="padding:10px;float:left;" class="text-center") {$customer_name}<br/>{$user_name}
+						a(href="index.php?page=customer-setting&action=profile" style="padding:10px; box-shadow:inset 0px 0px 1px 2px #ccc;border-radius:50%;float:left;" title="{$customer_name}" class="text-center")
 							img(src="{$customer_dp}" style="max-height:40px;max-width:40px;height:40px;" class="ds-dp")
 						a(style="padding:10px;float:left;" href="logout")
 							div.btn.btn-danger
