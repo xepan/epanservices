@@ -48,7 +48,9 @@ class Tool_CustomerSetting extends \xepan\cms\View_Tool {
 		$i_form = $col1->add('Form');
 		$attachment_field = $i_form->addField('xepan\base\Upload','profile_image_id','Profile Image')->addClass('well well-sm');
 		$attachment_field->setModel('xepan\filestore\Image');
-		$attachment_field->set($this->customer['image_id']);
+
+		if($this->customer['image_id'] && $this->customer['image'])
+			$attachment_field->set($this->customer['image_id']);
 
 		$i_form->addSubmit('Save Image')->addClass('btn btn-primary');
 
@@ -56,7 +58,7 @@ class Tool_CustomerSetting extends \xepan\cms\View_Tool {
 			$this->customer['image_id'] = $i_form['profile_image_id'];
 			$this->customer->save();
 			$this->customer->reload();
-			
+
 			$i_form->js(null,[$img_view->js()->reload(),$i_form->js(true)->_selector('img.ds-dp')->attr('src',$this->customer['image'])])->univ()->successMessage('Profile Photo Updated')->execute();
 		}
 
