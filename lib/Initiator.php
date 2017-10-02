@@ -30,6 +30,8 @@ class Initiator extends \Controller_Addon {
         }
 
         $this->app->side_menu->addItem([' DB Version Generate','icon'=>' fa fa-edit'],'xepan_epanservices_dbversion')->setAttr(['title'=>'DB Version Generate ']);
+        
+        $this->app->addHook('entity_collection',[$this,'exportEntities']);        
     	return $this;
     }
 
@@ -139,7 +141,7 @@ class Initiator extends \Controller_Addon {
 
     function exportEntities($app,&$array){
         $array['Epan'] = ['caption'=>'Epan','type'=>'xepan\base\Basic','model'=>'xepan\epanservices\Model_Epan'];
-
+        // $array['Employee'] = ['caption'=>'Employee', 'type'=>'xepan\base\Basic','model'=>'xepan\hr\Model_Employee'];
     }
 
 
