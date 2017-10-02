@@ -32,7 +32,7 @@ class Initiator extends \Controller_Addon {
         $this->app->side_menu->addItem([' DB Version Generate','icon'=>' fa fa-edit'],'xepan_epanservices_dbversion')->setAttr(['title'=>'DB Version Generate ']);
         
         $this->app->addHook('entity_collection',[$this,'exportEntities']);        
-    	return $this;
+    	return $this; 
     }
 
     function setup_pre_frontend(){
