@@ -10,6 +10,8 @@ class Tool_CustomerSetting extends \xepan\cms\View_Tool {
 	function init(){
 		parent::init();
 		
+		$this->app->stickyGET('action');
+
 		if($this->owner instanceof \AbstractController) return;
 
 		$this->customer = $customer = $this->add('xepan\commerce\Model_Customer')
@@ -19,9 +21,15 @@ class Tool_CustomerSetting extends \xepan\cms\View_Tool {
 		if(!$customer->loaded()){
 			$this->add('View_Error')->set('you are not a customer.');
 			return;
-		}		
+		}
 
-		switch ($this->app->stickyGET('action')) {
+		$action = $this->app->stickyGET('action');
+		$this->app->stickyGET('profile');
+		if($_GET['profile'] == "incomplete"){
+			$action = "profile";
+		}
+
+		switch ($action) {
 			case 'profile':
 				$this->profileUpdate();
 				break;
@@ -57,8 +65,8 @@ class Tool_CustomerSetting extends \xepan\cms\View_Tool {
 		if($i_form->isSubmitted()){
 			$this->customer['image_id'] = $i_form['profile_image_id'];
 			$this->customer->save();
-			$this->customer->reload();
 
+			$this->customer->reload();
 			$i_form->js(null,[$img_view->js()->reload(),$i_form->js(true)->_selector('img.ds-dp')->attr('src',$this->customer['image'])])->univ()->successMessage('Profile Photo Updated')->execute();
 		}
 
@@ -114,10 +122,10 @@ class Tool_CustomerSetting extends \xepan\cms\View_Tool {
 			$form->model->addEmail($form['email_id'],'Personal',true,true,'email_id',true);
 			$form->model->addPhone($form['phone_no'],'Personal',true,true,'phone_no',true);
 
-			$this->app->stickyForget('action');
-
-			if(!$epan_count)
+			if(!$epan_count OR ($_GET['profile'] == "incomplete")){
+				$this->app->stickyforget('profile');
 				$form->js()->univ()->redirect($this->app->url('new-account'))->execute();
+			}
 				
 			$form->js(null,$form->js()->reload())->univ()->successMessage('Profile Updated Successfully')->execute();
 		}
