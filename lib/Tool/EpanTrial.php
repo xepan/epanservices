@@ -259,21 +259,26 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 		$model_cart->emptyCart();
 		$model_cart->addItem($trial_item_id,$trial_item_count,null,$cf_array);
 
-		/*CREATING ORDER FROM CART*/					
-		$billing_detail = [
-							'billing_address' => ' ',
-							'billing_city'=>' ',
-							'billing_state_id'=>' ',
-							'billing_country_id'=>' ',
-							'billing_pincode'=>' ',
+		/*CREATING ORDER FROM CART*/
+		$customer = $this->add('xepan\commerce\Model_Customer');
 
-							'shipping_address' =>' ',
-							'shipping_city'=>' ',
-							'shipping_state_id'=>' ',
-							'shipping_country_id'=>' ',
-							'shipping_pincode'=>' ',
-							];
-							
+		if(!$customer->loadLoggedIn("Customer"))
+			throw new \Exception("you logout or session out try again");
+
+		$billing_detail = $customer->getAddress();
+		// $billing_detail = [
+		// 					'billing_address' => ' ',
+		// 					'billing_city'=>' ',
+		// 					'billing_state_id'=>' ',
+		// 					'billing_country_id'=>' ',
+		// 					'billing_pincode'=>' ',
+
+		// 					'shipping_address' =>' ',
+		// 					'shipping_city'=>' ',
+		// 					'shipping_state_id'=>' ',
+		// 					'shipping_country_id'=>' ',
+		// 					'shipping_pincode'=>' ',
+		// 					];
 		$order = $this->add('xepan\commerce\Model_SalesOrder');
 		$order = $order->placeOrderFromCart($billing_detail,false);
 		$this->app->hook('order_placed',[$order]);
