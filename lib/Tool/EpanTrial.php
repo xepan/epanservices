@@ -142,7 +142,8 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 				$newEpan_inServices['expiry_date'] = date("Y-m-d", strtotime(date("Y-m-d", strtotime($this->app->now)) . " +14 DAY"));
 				$newEpan_inServices->createFolder($newEpan_inServices);
 
-				$newEpan_inServices->userAndDatabaseCreate(); // individual new epan database
+				$current_user = $this->add('xepan\base\Model_User')->load($this->app->auth->model->id);
+				$newEpan_inServices->userAndDatabaseCreate($current_user); // individual new epan database
 				$newEpan_inServices->save();
 
 				$this->api->db->commit();
