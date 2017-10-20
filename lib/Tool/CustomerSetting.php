@@ -118,9 +118,33 @@ class Tool_CustomerSetting extends \xepan\cms\View_Tool {
 			$epan->addCondition('created_by_id',$this->customer->id);
 			$epan_count = $epan->count()->getOne();
 
+			$form->model['billing_address'] = $form['address'];
+			$form->model['billing_city'] = $form['city'];
+			$form->model['billing_state_id'] = $form['state_id'];
+			$form->model['billing_country_id'] = $form['country_id'];
+			$form->model['billing_pincode'] = $form['pin_code'];
+			$form->model['same_as_billing_address'] = 1;
+			$form->model['shipping_address'] = $form['address'];
+			$form->model['shipping_city'] = $form['city'];
+			$form->model['shipping_state_id'] = $form['state_id'];
+			$form->model['shipping_country_id'] = $form['country_id'];
+			$form->model['shipping_pincode'] = $form['pin_code'];
+
 			$form->save();
-			$form->model->addEmail($form['email_id'],'Personal',true,true,'email_id',true);
-			$form->model->addPhone($form['phone_no'],'Personal',true,true,'phone_no',true);
+
+			$em = $this->add('xepan\base\Model_Contact_Email');
+			$em->addCondition('value',$form['email_id']);
+			$em->addCondition('contact_id',$this->customer->id);
+			$em->tryLoadAny();
+			if(!$em->loaded())
+				$form->model->addEmail($form['email_id'],'Personal',true,true,'email_id',true);
+
+			$pm = $this->add('xepan\base\Model_Contact_Phone');
+			$pm->addCondition('value',$form['phone_no']);
+			$pm->addCondition('contact_id',$this->customer->id);
+			$pm->tryLoadAny();
+			if(!$pm->loaded())
+				$form->model->addPhone($form['phone_no'],'Personal',true,true,'phone_no',true);
 
 			if(!$epan_count OR ($_GET['profile'] == "incomplete")){
 				$this->app->stickyforget('profile');
