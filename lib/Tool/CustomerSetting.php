@@ -10,6 +10,8 @@ class Tool_CustomerSetting extends \xepan\cms\View_Tool {
 	function init(){
 		parent::init();
 		
+		$this->app->stickyGET('action');
+
 		if($this->owner instanceof \AbstractController) return;
 
 		$this->customer = $customer = $this->add('xepan\commerce\Model_Customer')
@@ -19,9 +21,15 @@ class Tool_CustomerSetting extends \xepan\cms\View_Tool {
 		if(!$customer->loaded()){
 			$this->add('View_Error')->set('you are not a customer.');
 			return;
-		}		
+		}
 
-		switch ($this->app->stickyGET('action')) {
+		$action = $this->app->stickyGET('action');
+		$this->app->stickyGET('profile');
+		if($_GET['profile'] == "incomplete"){
+			$action = "profile";
+		}
+
+		switch ($action) {
 			case 'profile':
 				$this->profileUpdate();
 				break;
@@ -57,8 +65,8 @@ class Tool_CustomerSetting extends \xepan\cms\View_Tool {
 		if($i_form->isSubmitted()){
 			$this->customer['image_id'] = $i_form['profile_image_id'];
 			$this->customer->save();
-			$this->customer->reload();
 
+			$this->customer->reload();
 			$i_form->js(null,[$img_view->js()->reload(),$i_form->js(true)->_selector('img.ds-dp')->attr('src',$this->customer['image'])])->univ()->successMessage('Profile Photo Updated')->execute();
 		}
 
@@ -110,14 +118,38 @@ class Tool_CustomerSetting extends \xepan\cms\View_Tool {
 			$epan->addCondition('created_by_id',$this->customer->id);
 			$epan_count = $epan->count()->getOne();
 
+			$form->model['billing_address'] = $form['address'];
+			$form->model['billing_city'] = $form['city'];
+			$form->model['billing_state_id'] = $form['state_id'];
+			$form->model['billing_country_id'] = $form['country_id'];
+			$form->model['billing_pincode'] = $form['pin_code'];
+			$form->model['same_as_billing_address'] = 1;
+			$form->model['shipping_address'] = $form['address'];
+			$form->model['shipping_city'] = $form['city'];
+			$form->model['shipping_state_id'] = $form['state_id'];
+			$form->model['shipping_country_id'] = $form['country_id'];
+			$form->model['shipping_pincode'] = $form['pin_code'];
+
 			$form->save();
-			$form->model->addEmail($form['email_id'],'Personal',true,true,'email_id',true);
-			$form->model->addPhone($form['phone_no'],'Personal',true,true,'phone_no',true);
 
-			$this->app->stickyForget('action');
+			$em = $this->add('xepan\base\Model_Contact_Email');
+			$em->addCondition('value',$form['email_id']);
+			$em->addCondition('contact_id',$this->customer->id);
+			$em->tryLoadAny();
+			if(!$em->loaded())
+				$form->model->addEmail($form['email_id'],'Personal',true,true,'email_id',true);
 
-			if(!$epan_count)
+			$pm = $this->add('xepan\base\Model_Contact_Phone');
+			$pm->addCondition('value',$form['phone_no']);
+			$pm->addCondition('contact_id',$this->customer->id);
+			$pm->tryLoadAny();
+			if(!$pm->loaded())
+				$form->model->addPhone($form['phone_no'],'Personal',true,true,'phone_no',true);
+
+			if(!$epan_count OR ($_GET['profile'] == "incomplete")){
+				$this->app->stickyforget('profile');
 				$form->js()->univ()->redirect($this->app->url('new-account'))->execute();
+			}
 				
 			$form->js(null,$form->js()->reload())->univ()->successMessage('Profile Updated Successfully')->execute();
 		}
