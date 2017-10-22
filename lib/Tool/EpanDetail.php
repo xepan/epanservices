@@ -84,7 +84,6 @@ class Tool_EpanDetail extends \xepan\cms\View_Tool {
 
 	function domainInfo($tab){
 		
-		
 		$col = $tab->add('Columns');
 		$col1 = $col->addColumn(6);
 		$col2 = $col->addColumn(6);
@@ -144,6 +143,28 @@ class Tool_EpanDetail extends \xepan\cms\View_Tool {
 				$form_aliases->error('epan_alias_name',$form_aliases['epan_alias_name'].'.epan.in Already used, select another one.');
 
 			$this->selected_epan->purchaseEpanAlias($form_aliases['epan_alias_name'],$this->customer,$check_existing=false,$redirect_to_payment=true);
+		}
+
+
+		// Purchase New Domain
+		$form = $domain_info->add('Form');
+		$form->add('xepan\base\Controller_FLC')
+			->layout([
+					'domain_name'=>'Find Your Perfect Domain Name~c1~8',
+					'tld~TLD'=>'c2~4',
+					'FormButtons~<br/>'=>'c3~12'
+				])
+			;
+		$form->addField('domain_name')->validate('to_trim|required|alpha');
+		$form->addField('DropDown','tld')
+			->validate('required')
+			->setValueList(['.com'=>'.COM','.in'=>'.IN']);
+		$form->addSubmit('Check Avalibility')->addClass('btn btn-primary btn-block');
+		if($form->isSubmitted()){
+			$form->js()->univ()->frameURL(
+					'Domain Purchase',
+					$this->app->url('xepan\epanservices\domaincheck',['domain_name'=>$form['domain_name'],'tld'=>$form['tld'],'current_epan_id'=>$this->selected_epan->id])
+				)->execute();
 		}
 
 		// $domain_info->add('Button',null,'new_domain')->set('PURCHASE NEW DOMAIN')->addClass('btn btn-success btn-block')->js('click',$this->js()->univ()->frameURL('Purchase Domain',$purchase_domain_vp->getURL()));

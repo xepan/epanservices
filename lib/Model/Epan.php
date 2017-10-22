@@ -134,9 +134,24 @@ class Model_Epan extends \xepan\base\Model_Epan{
 			$item = $this->add('xepan\commerce\Model_Item')->load($invoice_item['item_id']);
 			$cf_value_array = $this->getCfAndValue($invoice_item['extra_info']);
 			
-			// epan alias purchase
-			if($item->isInCategory('Epan Alias Purchase') AND $cf_value_array['epan name'] AND $cf_value_array['epan alias']){
-				
+			if($item->isInCategory('Hosting') AND isset($cf_value_array['domain name']) AND isset($cf_value_array['epan name']) AND isset($cf_value_array['year'])){
+				// add domain entry
+				$epan_model = $this->add('xepan\epanservices\Model_Epan')->loadBy('name',$cf_value_array['epan name']);
+				$epan_model->addDomain($cf_value_array['domain name'],$cf_value_array['year'],$invoice['contact_id']);
+
+				//update aliases
+				$epan_name = $cf_value_array['epan name'];
+				$alias_name = $cf_value_array['domain name'];
+
+				$epan_model = $this->add('xepan\epanservices\Model_Epan')
+								->tryLoadBy('name',$epan_name);
+				$temp = explode(",", $epan_model['aliases']);
+				$temp[] = '"'.$alias_name.'"';
+				$epan_model['aliases'] = trim(implode(",", $temp),",");
+				$epan_model->save();
+
+			}elseif($item->isInCategory('Epan Alias Purchase') AND $cf_value_array['epan name'] AND $cf_value_array['epan alias']){
+				// epan alias purchase
 				$epan_name = $cf_value_array['epan name'];
 				$alias_name = $cf_value_array['epan alias'];
 
@@ -564,6 +579,18 @@ class Model_Epan extends \xepan\base\Model_Epan{
 						if(!isset($cf_value_array['epan domain park name'])) throw new \Exception("domain name is not defined, how to park ?");
 						$cf_value_id = $cf_value = $cf_value_array['epan domain park name'];
 						break;
+					case 'domain name':
+						if(!isset($cf_value_array['domain name'])) throw new \Exception("domain name is not defined, how to purchase ?");
+						$cf_value_id = $cf_value = $cf_value_array['domain name'];
+						break;
+					case 'tld':
+						if(!isset($cf_value_array['tld'])) throw new \Exception("tld is not defined");
+						$cf_value_id = $cf_value = $cf_value_array['tld'];
+						break;
+					case 'year':
+						if(!isset($cf_value_array['year'])) throw new \Exception("year");
+						$cf_value_id = $cf_value = $cf_value_array['year'];
+						break;
 				}
 
 				$temp[$cf['department_id']][$cf['customfield_generic_id']]['custom_field_value_id'] = $cf_value_id;
@@ -597,4 +624,66 @@ class Model_Epan extends \xepan\base\Model_Epan{
 
 	}
 
+	function checkDomain($domain_name){
+		$d = $this->add('xepan\epanservices\Model_DomainDetails');
+		$d->addCondition('name',$domain_name);
+		$d->tryLoadAny();
+		return $d->loaded();
+
+	}
+
+	function purchaseDomain($domain_name,$domain_tld,$year=1,$customer=null,$check_existing=true,$redirect_to_payment=true){
+		if(!$this->loaded()) throw new \Exception("epan must loaded");
+
+		if(!$domain_tld)
+			throw new \Exception("Top level domain ie. .com, .in etc. must define");
+
+		if($check_existing && $this->checkDomain($domain_name))
+			throw new \Exception($domain_name." already exists, select another one.");
+				
+		// load Domain item
+		$item = $this->add('xepan\commerce\Model_Item');
+		$item->tryLoadBy('name','Domain');
+		if(!$item->loaded()) throw new \Exception("domain product not found, contact to epan.in");
+		
+		// create sale order
+		$cf = [
+				'domain name'=>$domain_name,
+				'tld'=>$domain_tld,
+				'epan name'=>$this['name'],
+				'year'=>$year
+			];
+		$new_order = $this->placeOrder($customer,$item,$cf);
+		
+		$payment_url = $this->app->url('customer-checkout',
+										[
+											'step'=>"Payment",
+											'order_id'=>$new_order->id,
+											'next_step'=>'Payment'
+										]
+									);
+		$this->app->js()->univ()->redirect($payment_url)->execute();
+
+	}
+
+	function addDomain($domain_name,$year=1,$customer_id){
+		if(!$this->loaded()) throw new \Exception("epan model must loaded ");
+
+		if($this->checkDomain($domain_name))
+			throw new \Exception("domain not available");
+		
+		$created_at = $this->app->now;
+		$expire_date = date('Y-m-d H:i:s',strtotime("+".$year." year", strtotime($created_at)));
+
+		$d = $this->add('xepan\epanservices\Model_DomainDetails');
+		$d['name'] = $domain_name;
+		$d['park_for_epan_id'] = $this->id;
+		$d['created_by_id'] = $customer_id;
+		$d['created_at'] = $created_at;
+		$d['last_renew_at'] = $created_at;
+		$d['expire_date'] = $expire_date;
+		$d['vendor'] = $this->app->getConfig('DomianVendor','Generic');
+		$d->save();
+		return $d;
+	}
 }
