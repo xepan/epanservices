@@ -155,12 +155,21 @@ class Tool_EpanDetail extends \xepan\cms\View_Tool {
 					'FormButtons~<br/>'=>'c3~12'
 				])
 			;
-		$form->addField('domain_name')->validate('to_trim|required|alpha');
+		$form->addField('domain_name')->validate('to_trim|required');
 		$form->addField('DropDown','tld')
 			->validate('required')
 			->setValueList(['.com'=>'.COM','.in'=>'.IN']);
 		$form->addSubmit('Check Avalibility')->addClass('btn btn-primary btn-block');
 		if($form->isSubmitted()){
+
+			$allowed = array("-", "_");
+			if (!ctype_alnum( str_replace($allowed, '', $form['domain_name'] ) ) ) {
+				$form->error('domain_name','must be a valide domain name ie. xavoc.com');
+			}
+
+			if($this->selected_epan->checkDomain($form['domain_name'].$form['tld']))
+				$form->error('domain_name',$form['domain_name'].$form['tld'].' is taken');
+
 			$form->js()->univ()->frameURL(
 					'Domain Purchase',
 					$this->app->url('xepan\epanservices\domaincheck',['domain_name'=>$form['domain_name'],'tld'=>$form['tld'],'current_epan_id'=>$this->selected_epan->id])
