@@ -52,5 +52,6 @@ class page_epans extends \xepan\base\Page {
 
 		$crud->grid->addColumn('Button','live_edit',['descr'=>'Frontend Edit','button_class'=>'btn btn-primary']);
 		$crud->grid->removeColumn('status');
+		$crud->noAttachment();
 	}
 }
