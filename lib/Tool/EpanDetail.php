@@ -145,37 +145,39 @@ class Tool_EpanDetail extends \xepan\cms\View_Tool {
 			$this->selected_epan->purchaseEpanAlias($form_aliases['epan_alias_name'],$this->customer,$check_existing=false,$redirect_to_payment=true);
 		}
 
-
 		// Purchase New Domain
-		$form = $domain_info->add('Form');
-		$form->add('xepan\base\Controller_FLC')
-			->layout([
-					'domain_name'=>'Find Your Perfect Domain Name~c1~8',
-					'tld~TLD'=>'c2~4',
-					'FormButtons~<br/>'=>'c3~12'
-				])
-			;
-		$form->addField('domain_name')->validate('to_trim|required');
-		$form->addField('DropDown','tld')
-			->validate('required')
-			->setValueList(['.com'=>'.COM','.in'=>'.IN']);
-		$form->addSubmit('Check Avalibility')->addClass('btn btn-primary btn-block');
-		if($form->isSubmitted()){
+		// $form = $domain_info->add('Form');
+		// $form->add('xepan\base\Controller_FLC')
+		// 	->layout([
+		// 			'domain_name'=>'Find Your Perfect Domain Name~c1~8',
+		// 			'tld~TLD'=>'c2~4',
+		// 			'FormButtons~<br/>'=>'c3~12'
+		// 		]);
 
-			$allowed = array("-", "_");
-			if (!ctype_alnum( str_replace($allowed, '', $form['domain_name'] ) ) ) {
-				$form->error('domain_name','must be a valide domain name ie. xavoc.com');
-			}
+		// $form->addField('domain_name')->validate('to_trim|required');
+		// $form->addField('DropDown','tld')
+		// 	->validate('required')
+		// 	->setValueList(['.com'=>'.COM','.in'=>'.IN']);
+		// $form->addSubmit('Check Avalibility')->addClass('btn btn-primary btn-block');
+		// if($form->isSubmitted()){
 
-			if($this->selected_epan->checkDomain($form['domain_name'].$form['tld']))
-				$form->error('domain_name',$form['domain_name'].$form['tld'].' is taken');
+		// 	$allowed = array("-", "_");
+		// 	if (!ctype_alnum( str_replace($allowed, '', $form['domain_name'] ) ) ) {
+		// 		$form->error('domain_name','must be a valide domain name ie. xavoc.com');
+		// 	}
 
-			$form->js()->univ()->frameURL(
-					'Domain Purchase',
-					$this->app->url('xepan\epanservices\domaincheck',['domain_name'=>$form['domain_name'],'tld'=>$form['tld'],'current_epan_id'=>$this->selected_epan->id])
-				)->execute();
-		}
+		// 	if($this->selected_epan->checkDomain($form['domain_name'].$form['tld']))
+		// 		$form->error('domain_name',$form['domain_name'].$form['tld'].' is taken');
 
+		// 	$form->js()->univ()->frameURL(
+		// 			'Domain Purchase',
+		// 			$this->app->url('xepan\epanservices\domaincheck',['domain_name'=>$form['domain_name'],'tld'=>$form['tld'],'current_epan_id'=>$this->selected_epan->id])
+		// 		)->execute();
+		// }
+
+		$domain_info->add('View_Info')
+				->addClass('alert alert-success text-center')
+				->setHtml("Top Level Domain comming soon, for now, send request to <strong>support@xavoc.com</strong>");
 		// $domain_info->add('Button',null,'new_domain')->set('PURCHASE NEW DOMAIN')->addClass('btn btn-success btn-block')->js('click',$this->js()->univ()->frameURL('Purchase Domain',$purchase_domain_vp->getURL()));
 		// $domain_info->add('Button',null,'new_epan_alias')->set('PURCHASE NEW ALIAS')->addClass('btn btn-success btn-block');
 		// $domain_info->add('Button',null,'park_existing_domain')->set('Park Existing Domain')->addClass('btn btn-success btn-block');
