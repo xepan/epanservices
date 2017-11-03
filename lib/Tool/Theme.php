@@ -20,7 +20,7 @@ class Tool_Theme extends \xepan\cms\View_Tool{
 		$epan_detail = $this->app->recall('newepan');
 
 		if($this->options['show_progress_bar']){
-			$this->add('xepan\epanservices\View_ProgressBar',['active_step'=>($_GET['active_step']?:3)]);
+			$this->add('xepan\epanservices\View_ProgressBar',['active_step'=>($_GET['active_step']?:2)]);
 		}
 				
 		$this->add('xepan\cms\View_Theme',[

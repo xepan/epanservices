@@ -18,7 +18,7 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 		if($item_id = $this->app->stickyGET('x-new-product')){
 			$this->options['sale_item_id'] = $item_id;
 			$this->options['button_name'] = "Next";
-			$this->add('xepan\epanservices\View_ProgressBar',['active_step'=>2],'header');
+			$this->add('xepan\epanservices\View_ProgressBar',['active_step'=>1],'header');
 		}
 
 		$this->app->addStyleSheet('jquery-ui');
