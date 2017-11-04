@@ -16,10 +16,10 @@ class Model_Epan extends \xepan\base\Model_Epan{
 	public $status = ['Trial','Paid','Grace','Expired'];
 	
 	public $actions = [
-		'Trial'=>['view','edit','delete','manage_applications','pay','validity','expire','usage_limit'],
-		'Paid'=>['view','edit','delete','manage_applications','expire','usage_limit'],
-		'Grace'=>['view','edit','delete','manage_applications','pay','expire','usage_limit'],
-		'Expired'=>['view','edit','delete','pay']
+		'Trial'=>['view','edit','delete','manage_applications','pay','validity','expire','usage_limit','associate_with_category'],
+		'Paid'=>['view','edit','delete','manage_applications','expire','usage_limit','associate_with_category'],
+		'Grace'=>['view','edit','delete','manage_applications','pay','expire','usage_limit','associate_with_category'],
+		'Expired'=>['view','edit','delete','pay','associate_with_category']
 	];
 
 	function init(){
@@ -686,4 +686,16 @@ class Model_Epan extends \xepan\base\Model_Epan{
 		$d->save();
 		return $d;
 	}
+
+	function page_associate_with_category($page){
+
+		$m = $this->add('xepan\base\Model_EpanCategoryAssociation');
+		$m->addCondition('epan_id',$this->id);
+		
+		$crud = $page->add('xepan\hr\CRUD');
+		$crud->setModel($m,['epan_category_id'],['epan_category']);
+		$crud->grid->removeAttachment();
+		$crud->grid->removeColumn('action');
+	}
+
 }
