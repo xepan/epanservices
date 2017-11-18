@@ -287,24 +287,6 @@ class Model_Epan extends \xepan\base\Model_Epan{
 
 	}
 
-	function createFolder($m){
-		if(file_exists(realpath($this->app->pathfinder->base_location->base_path.'/websites/'.$this['name']))){
-			throw $this->exception('Epan cannot be created, folder already exists','ValidityCheck')
-						->setField('name')
-						->addMoreInfo('epan',$this['name']);
-		}
-
-		if(file_exists(realpath($this->app->pathfinder->base_location->base_path.'/websites/default/www'))){
-			$fs = \Nette\Utils\FileSystem::createDir('./websites/'.$this['name']);
-			$fs = \Nette\Utils\FileSystem::copy('./websites/default/www','./websites/'.$this['name'].'/www',true);
-		}else{
-			$fs = \Nette\Utils\FileSystem::createDir('./websites/'.$this['name']);
-			$fs = \Nette\Utils\FileSystem::copy('./vendor/xepan/cms/templates/defaultlayout','./websites/'.$this['name'],true);
-		}
-		$fs = \Nette\Utils\FileSystem::createDir('./websites/'.$this['name'].'/assets');
-		$fs = \Nette\Utils\FileSystem::createDir('./websites/'.$this['name'].'/upload');
-	}
-
 	function createSuperUser($m,$new_id){
 		$user = $this->add('xepan\base\Model_User_SuperUser');
         $this->app->auth->addEncryptionHook($user);
