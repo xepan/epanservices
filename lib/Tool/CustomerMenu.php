@@ -38,7 +38,8 @@ class Tool_CustomerMenu extends \xepan\cms\View_Tool {
 				['key'=>'customer-dashboard','name'=>'Dashboard'],
 				['key'=>'new-account', 'name'=>'New Epan'],
 				['key'=>'customer-orderhistory', 'name'=>'Order History'],
-				['key'=>'customer-setting', 'name'=>'Setting']
+				['key'=>'customer-setting', 'name'=>'Setting'],
+				['key'=>'customer-download', 'name'=>'Download']
 			];
 		$this->submenu_list = [
 					'customer-setting'=>[
