@@ -239,6 +239,8 @@ class Model_Epan extends \xepan\base\Model_Epan{
 			$new_db->dsql()->expr(file_get_contents(getcwd().'/install.sql'))->execute();
 
 		if($cnsl = $this->app->getConfig('View_Console',false)) $cnsl->out(' - Importing database done');
+		
+		if($cnsl = $this->app->getConfig('View_Console',false)) $cnsl->out('Preparing for first use ...');
 
 		$saved_db = clone $this->app->db;
 		$this->app->db = $new_db;
