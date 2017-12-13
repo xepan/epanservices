@@ -217,19 +217,28 @@ class Model_Epan extends \xepan\base\Model_Epan{
 		$host = $matches[5];
 		$password = md5(uniqid());
 		
+		if($cnsl = $this->app->getConfig('View_Console',false)) $cnsl->out('Creating Config File');
 		$dsn = "mysql://$username:$password@$host/$database";
 		$config_file = "<?php \n\n\t\$config['dsn'] = '".$dsn."';\n\n";
 
 		file_put_contents(realpath($this->app->pathfinder->base_location->base_path.'/websites/'.$this['name']).'/config.php', $config_file);
+		
+		if($cnsl = $this->app->getConfig('View_Console',false)) $cnsl->out('Creating database');
+		
 		$this->app->db->dsql()->expr("CREATE database `$database`;")->execute();
 		$this->app->db->dsql()->expr("GRANT ALL PRIVILEGES ON `$database`.* To '$username'@'%' IDENTIFIED BY '$password';")->execute();
 
 		$new_db = $this->add('DB');
 		$new_db->connect($dsn);
+
+		if($cnsl = $this->app->getConfig('View_Console',false)) $cnsl->out('Importing database, please wait ... this may take time');
+
 		if($this->app->is_admin)
 			$new_db->dsql()->expr(file_get_contents(getcwd().'/../install.sql'))->execute();
 		else
 			$new_db->dsql()->expr(file_get_contents(getcwd().'/install.sql'))->execute();
+
+		if($cnsl = $this->app->getConfig('View_Console',false)) $cnsl->out(' - Importing database done');
 
 		$saved_db = clone $this->app->db;
 		$this->app->db = $new_db;
@@ -252,12 +261,15 @@ class Model_Epan extends \xepan\base\Model_Epan{
 			if($user_model instanceof \xepan\base\Model_User && $user_model->loaded())
 				$user = $user_model;
 
+			if($cnsl = $this->app->getConfig('View_Console',false)) $cnsl->out('Installing Applications');
 			$this->installApplication();
 			
 			$this->add('xepan\base\Model_Epan')->tryLoadAny()
 						->set('name',$this['name'])
 						->set('epan_dbversion',$this['epan_dbversion'])
 						->save();
+			
+			if($cnsl = $this->app->getConfig('View_Console',false)) $cnsl->out('Creating default user');
 			
 			$user_new = $this->add('xepan\base\Model_User')->tryLoadAny()->set('username',$user['username']);
 			if($user_model instanceof \xepan\base\Model_User && $user_model->loaded())

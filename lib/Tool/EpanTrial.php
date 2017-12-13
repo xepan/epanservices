@@ -15,11 +15,18 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 
 		if($this->owner instanceof \AbstractController) return;
 
+
 		if($item_id = $this->app->stickyGET('x-new-product')){
 			$this->options['sale_item_id'] = $item_id;
 			$this->options['button_name'] = "Next";
 			$this->add('xepan\epanservices\View_ProgressBar',['active_step'=>1],'header');
 		}
+
+		$this->customer = $customer = $this->add('xepan\commerce\Model_Customer');
+        $customer->loadLoggedIn("Customer");
+
+		$this->create_trial_vp = $this->add('VirtualPage');
+		$this->create_trial_vp->set([$this,'create_trial_vp']);
 
 		$this->app->addStyleSheet('jquery-ui');
 		$company_m = $this->add('xepan\base\Model_ConfigJsonModel',
@@ -69,9 +76,6 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 			}
 			return;
 		}
-
-		$this->customer = $customer = $this->add('xepan\commerce\Model_Customer');
-        $customer->loadLoggedIn("Customer");
 
 	    if(!$customer->loaded()){
 	    	$this->add('View')->addClass('panel panel-danger')->set('You are not a registered customer');
@@ -127,24 +131,41 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
         	}
 
 
+
         	/* IF CUSTOMER IS LOGGED IN AND EPAN NAME IS UNIQUE THEN CREATE EPAN */
         	$epan_name = $form['epan_name'];
-        	$email_settings = $this->add('xepan\communication\Model_Communication_DefaultEmailSetting')->tryLoadAny();
+        	$form->js()->univ()->frameURL('Please wait, creating your system',$this->app->url($this->create_trial_vp->getURL(),['epan_name'=>$epan_name]))->execute();
+		}
+	}
+
+	function create_trial_vp($page){
+		$this->app->stickyGET('epan_name');
+		$page->add('View_Console')->set(function($c){
+        	$this->app->setConfig('View_Console',$c);
+			$epan_name = $_GET['epan_name'];
+			$c->out('Initiating Creating System for \''.$_GET['epan_name'].'\'');
+			// $c->jsEval($this->js()->univ()->successMessage($this->options['next_page']));
+			// return;
+			$email_settings = $this->add('xepan\communication\Model_Communication_DefaultEmailSetting')->tryLoadAny();
         	try{
         		set_time_limit(0);
 				$this->api->db->beginTransaction();
+				$c->out('Registering sub-domain  \''.$_GET['epan_name'].'\'');
 	        	$this->createEpan($epan_name); // in epan services database, just a new row with specifications of apps
-
+	        	$c->out(' - sub-domain registered');
 	        	$newEpan_inServices = $this->add('xepan\epanservices\Model_Epan')
 	        						->addCondition('name',$epan_name)->tryLoadAny()
 	        						;
 	        	$newEpan_inServices['is_published'] = true;
 				$newEpan_inServices['expiry_date'] = date("Y-m-d", strtotime(date("Y-m-d", strtotime($this->app->now)) . " +14 DAY"));
+	        	$c->out('Creating directory structure');
 				$newEpan_inServices->createFolder($newEpan_inServices);
+	        	$c->out(' - Directory structure created');
 
 				$current_user = $this->add('xepan\base\Model_User_Active')->load($this->app->auth->model->id);
 				$newEpan_inServices->userAndDatabaseCreate($current_user); // individual new epan database
 				$newEpan_inServices->save();
+	        	$c->out(' - Database and initial user created');
 
 				$this->api->db->commit();
 			}catch(\Exception_StopInit $e){
@@ -161,23 +182,29 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
         		return;
 			}
 
+			$customer = $this->customer;
         	$user = $customer->user();
         	$email_id = $user['username'];
 
+        	$c->out('Setting up your new Epan');
         	$this->associateCustomerWithCategory($customer);
+        	$c->out(' - Setting up done');
 			$this->sendGreetingsMail($email_id,$email_settings);
+        	$c->out('Send you a greeting email on '.$email_id);
 
+        	$c->out('Redirecting to new created epan');
 			if($this->options['next_page']){
 				$detail = [
 							'epan_name'=>$epan_name,
 							'epan_id'=>(isset($newEpan_inServices)?$newEpan_inServices->id:0)
 						];
 				$this->app->memorize('newepan',$detail);
-        		return $this->app->redirect($this->app->url($this->options['next_page']));
+        		$c->jsEval($this->js()->univ()->location($this->app->url($this->options['next_page'])));
 			}else{
-        		return $this->app->redirect($this->app->url('greetings',['epan_name'=>$epan_name,'message'=>'We have sent you a welcome mail. Check your email address linked to the account.']));
+        		$c->jsEval($this->js()->univ()->location($this->app->url('greetings',['epan_name'=>$epan_name,'message'=>'We have sent you a welcome mail. Check your email address linked to the account.'])));
 			}
-		}
+
+		});
 	}
 
 	// Associate customer with "Online Epan Customer" category as soon as Epan is created
