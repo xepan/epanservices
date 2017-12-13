@@ -17,6 +17,9 @@ class page_epans extends \xepan\base\Page {
 	function init(){
 		parent::init();
 
+		$this->updateEpansDB = $this->add('VirtualPage');
+		$this->updateEpansDB->set([$this,'updateEpansDB']);
+
 		if(($live_edit_id = $_GET['live_edit']) OR ($live_edit_id = $_GET['admin_login'])){
 			$epan = $this->add('xepan\base\Model_Epan')->tryLoadBy('id',$live_edit_id);
 			$token = md5(uniqid());
@@ -53,9 +56,42 @@ class page_epans extends \xepan\base\Page {
 		
 		$crud->grid->addQuickSearch(['name']);
 
+		$crud->grid->add('Button',null,'grid_buttons')->addClass('btn btn-primary')->set('Update DB')->js('click',$this->js()->univ()->frameURL($this->updateEpansDB->getURL()));
+
 		$crud->grid->addColumn('Button','live_edit',['descr'=>'Frontend Edit','button_class'=>'btn btn-primary']);
 		$crud->grid->removeColumn('status');
 		$crud->grid->addFormatter('name','template')->setTemplate('<a href="http://{$name}.epan.in" target="_blank">{$name}</a>','name');
 		$crud->noAttachment();
+	}
+
+	function updateEpansDB($page){
+		$page->add('View_Console')->set(function($x){
+			$epans = $this->add('xepan\base\Model_Epan');
+
+			$url=parse_url($this->app->url()->absolute());
+
+	        $scheme   = isset($url['scheme']) ? $url['scheme'] . '://' : '';
+	        $host     = isset($url['host']) ? $url['host'] : '';
+	        $port     = isset($url['port']) ? ':' . $url['port'] : '';
+	        $user     = isset($url['user']) ? $url['user'] : '';
+	        $pass     = isset($url['pass']) ? ':' . $url['pass']  : '';
+	        $pass     = ($user || $pass) ? "$pass@" : '';
+	        $path     = isset($url['path']) ? $url['path'] : '';
+
+	        if (substr($path,-1) != '/') {
+	            $path.='/';
+	        }
+
+			foreach ($epans as $e) {
+				try{
+					file_get_contents($scheme.$user.$pass.$e['name'].'.'.$host.$port.$path);				
+				}catch(\Exception $err){
+					$x->err("Error: " . $scheme.$user.$pass.$e['name'].'.'.$host.$port.$path);
+					continue;
+				}
+				$x->out("Done: " . $scheme.$user.$pass.$e['name'].'.'.$host.$port.$path);
+			}
+		});
+		$page->add('Text')->set('After console');
 	}
 }
