@@ -28,6 +28,7 @@ class Initiator extends \Controller_Addon {
             $m->addItem(['Templates','icon'=>'fa fa-sitemap'],'xepan_epanservices_epantemplates');
             $m->addItem(['Agency','icon'=>'fa fa-sitemap'],'xepan_epanservices_agency');
             $m->addItem(['Channel Partner','icon'=>'fa fa-sitemap'],'xepan_epanservices_channelpartner');
+            $m->addItem(['Applications','icon'=>'fa fa-sitemap'],'xepan_epanservices_applications');
         }
 
         $this->app->side_menu->addItem([' DB Version Generate','icon'=>' fa fa-edit'],'xepan_epanservices_dbversion')->setAttr(['title'=>'DB Version Generate ']);
