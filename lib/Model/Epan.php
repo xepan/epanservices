@@ -457,8 +457,11 @@ class Model_Epan extends \xepan\base\Model_Epan{
         foreach ($spec as $key => $value) {
             if(strtolower($value) === 'yes'){
             	$app = $this->add('xepan\base\Model_Application')->tryLoadBy('namespace','xepan\\'.strtolower($key));
-            	if($app->loaded())
-	            	$epan->installApp($app);
+            	if($app->loaded()){
+            		if($app['user_installable']){
+	            		$epan->installApp($app);
+            		}
+            	}
             }
         }
 
