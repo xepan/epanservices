@@ -252,7 +252,9 @@ class Model_Epan extends \xepan\base\Model_Epan{
 			$this->app->db->dsql()->expr('SET FOREIGN_KEY_CHECKS = 0;')->execute();
 			$this->app->resetDB = true;
 
-			foreach ($this->app->xepan_addons as $addon) {
+			$addons = ['xepan\\base','xepan\\communication', 'xepan\\hr','xepan\\projects','xepan\\marketing','xepan\\accounts','xepan\\commerce','xepan\\production','xepan\\crm','xepan\\cms','xepan\\blog'/*,'xepan\\epanservices'*/];
+
+			foreach ($addons as $addon) {
 				if($addon==='xepan\\base' or $addon==='xepan\base') {
 					$this->app->xepan_app_initiators[$addon]->resetDB(null,$install_apps=false);
 				}
@@ -264,7 +266,7 @@ class Model_Epan extends \xepan\base\Model_Epan{
 				$user = $user_model;
 
 			if($cnsl = $this->app->getConfig('View_Console',false)) $cnsl->out('Installing Applications');
-			$this->installApplication();
+			$installed_apps_namespaces = $this->installApplication();
 			
 			$this->add('xepan\base\Model_Epan')->tryLoadAny()
 						->set('name',$this['name'])
@@ -442,7 +444,8 @@ class Model_Epan extends \xepan\base\Model_Epan{
 		return true;
 	}
 
-	function installApplication(){		
+	function installApplication(){	
+		$installed_apps_namespaces	=[];
 		$epan = $this->add('xepan\base\Model_Epan')->tryLoadAny();		
 
         $extra_info = $this['extra_info']; // loaded from old app->db  (changed in called function btw)
@@ -460,11 +463,13 @@ class Model_Epan extends \xepan\base\Model_Epan{
             	if($app->loaded()){
             		if($app['user_installable']){
 	            		$epan->installApp($app);
+	            		$installed_apps_namespaces[] = $app['namespace'];
             		}
             	}
             }
         }
 
+        return $installed_apps_namespaces;
 	}
 
 
