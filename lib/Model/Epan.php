@@ -16,10 +16,10 @@ class Model_Epan extends \xepan\base\Model_Epan{
 	public $status = ['Trial','Paid','Grace','Expired'];
 	
 	public $actions = [
-		'Trial'=>['view','edit','delete','manage_applications','pay','validity','expire','usage_limit','associate_with_category'],
-		'Paid'=>['view','edit','delete','manage_applications','expire','usage_limit','associate_with_category'],
-		'Grace'=>['view','edit','delete','manage_applications','pay','expire','usage_limit','associate_with_category'],
-		'Expired'=>['view','edit','delete','pay','associate_with_category']
+		'Trial'=>['view','edit','delete','manage_applications','pay','validity','expire','usage_limit','associate_with_category','copy_website_and_db_from'],
+		'Paid'=>['view','edit','delete','manage_applications','expire','usage_limit','associate_with_category','copy_website_and_db_from'],
+		'Grace'=>['view','edit','delete','manage_applications','pay','expire','usage_limit','associate_with_category','copy_website_and_db_from'],
+		'Expired'=>['view','edit','delete','pay','associate_with_category','copy_website_and_db_from']
 	];
 
 	function init(){
@@ -442,6 +442,74 @@ class Model_Epan extends \xepan\base\Model_Epan{
 		$this['extra_info']= $extra_info;
 		$this->save();
 		return true;
+	}
+
+
+	function page_copy_website_and_db_from($page){
+		$form = $page->add('Form');
+		$form->addField('xepan\epanservices\Epan','copy_from');
+		$form->addField('CheckBox','copy_website');
+		$form->addField('CheckBox','copy_db')->setFieldHint('Will also copy upload folder');
+		$form->addSubmit('Start Copy');
+
+		if($form->isSubmitted()){
+			$this->copy_website_and_db_from($form['copy_from'],$form['copy_website'],$form['copy_db']);
+			return $form->js()->univ()->successMessage('Copied');
+		}
+	}
+
+	function copy_website_and_db_from($from_epan,$website,$db){
+
+		$from_epan = $this->add('xepan\base\Model_Epan')->load($from_epan)->get('name');
+
+		if($website){
+			\Nette\Utils\FileSystem::delete('./websites/'.$this['name'].'/www');
+			\Nette\Utils\FileSystem::copy('./websites/'.$from_epan.'/www','./websites/'.$this['name'].'/www',true);
+		}
+
+		if($db){
+			
+			// dump from_epan database
+			
+			$bk = $this->add('xepan\base\Controller_Backup');
+
+			$config = file_get_contents($this->app->pathfinder->base_location->base_path.'/websites/'.$from_epan.'/config.php');
+			$config = preg_match('/.*config.*dsn.*=(.*);/i', $config, $dsn_config);
+			$dsn = $dsn_config[1];
+
+            preg_match(
+                '|([a-z]+)://([^:]*)(:(.*))?@([A-Za-z0-9\.-]*)'.
+                '(/([0-9a-zA-Z_/\.-]*))|',
+                $dsn,
+                $matches
+            );
+
+      		$bk->setDBUser($matches[2]);
+      		$bk->setDBPassword($matches[4]);
+      		$bk->setDBHost($matches[5]);
+      		$bk->setDBName($matches[7]);
+
+            $bk->file_name = $this->api->pathfinder->base_location->base_path.'/./websites/'.$from_epan.'/xepan-copy-dump.sql';
+            $bk->export();
+			// DO READ COMMENTS AT LAST -- import in `this` epan database -- (remember, we are in epan's main db connected mode, this still means another epan)
+
+            $config = file_get_contents($this->app->pathfinder->base_location->base_path.'/websites/'.$this['name'].'/config.php');
+			$config = preg_match('/.*config.*dsn.*=(.*);/i', $config, $dsn_config);
+			$dsn = $dsn_config[1];
+			
+			$new_db = $this->add('DB');
+			$new_db->connect($dsn);
+
+			$new_db->dsql()->expr(file_get_contents($bk->file_name))->execute();
+			$new_db->dsql()->expr('UPDATE epan SET name="'.$this['name'].'"')->execute();
+
+			// copy upload folder from from_epan
+			\Nette\Utils\FileSystem::delete('./websites/'.$this['name'].'/upload');
+			\Nette\Utils\FileSystem::copy('./websites/'.$from_epan.'/upload','./websites/'.$this['name'].'/upload',true);
+			// remove dump file to save space
+			\Nette\Utils\FileSystem::delete($bk->file_name);
+
+		}
 	}
 
 	function installApplication(){	
