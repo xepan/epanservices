@@ -33,11 +33,15 @@ class Controller_RemoteEpan extends \AbstractController{
 		$new_db->connect($dsn);
 
 		$saved_db = clone $this->app->db;
+		$saved_currenct_website_name = $this->app->current_website_name;
+		
 		$this->app->db = $new_db;
+		$this->app->current_website_name = $this->epan['name'];
 
 		call_user_func($method, $this->app);
 
 		$this->app->db = $saved_db;
+		$this->app->current_website_name = $saved_currenct_website_name;
 		// restore $this->app->db 
 	}
 
