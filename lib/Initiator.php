@@ -33,8 +33,18 @@ class Initiator extends \Controller_Addon {
 
         $this->app->side_menu->addItem([' DB Version Generate','icon'=>' fa fa-edit'],'xepan_epanservices_dbversion')->setAttr(['title'=>'DB Version Generate ']);
         
-        $this->app->addHook('entity_collection',[$this,'exportEntities']);        
+        $this->app->addHook('entity_collection',[$this,'exportEntities']);
+        $this->app->addHook('collect_shortcuts',[$this,'collect_shortcuts']);        
     	return $this; 
+    }
+
+    function collect_shortcuts($app,&$shortcuts){
+        $shortcuts[]=["title"=>"Epan Categories","keywords"=>"epan categories","description"=>"Manage Epan Categories","normal_access"=>"Epans -> Category","url"=>$this->app->url('xepan_epanservices_category'),'mode'=>'frame'];
+        $shortcuts[]=["title"=>"Epans","keywords"=>"epan epans websites","description"=>"Manage Epans","normal_access"=>"Epans -> Epans","url"=>$this->app->url('xepan_epanservices_epans'),'mode'=>'frame'];
+        $shortcuts[]=["title"=>"Epan Templates","keywords"=>"epan templates","description"=>"Manage Epan Templates","normal_access"=>"Epans -> Templates","url"=>$this->app->url('xepan_epanservices_epantemplates'),'mode'=>'frame'];
+        $shortcuts[]=["title"=>"Epan Agency","keywords"=>"epan agency","description"=>"Manage Epan Agency","normal_access"=>"Epans -> Agency","url"=>$this->app->url('xepan_epanservices_agency'),'mode'=>'frame'];
+        $shortcuts[]=["title"=>"Epan Channel Partner","keywords"=>"epan channel partner","description"=>"Manage Epan Channel Partners","normal_access"=>"Epans -> Channel Partners","url"=>$this->app->url('xepan_epanservices_channelpartner'),'mode'=>'frame'];
+        $shortcuts[]=["title"=>"Epan Application","keywords"=>"epan applications","description"=>"Manage Epan Application","normal_access"=>"Epans -> Applications","url"=>$this->app->url('xepan_epanservices_applications'),'mode'=>'frame'];
     }
 
     function setup_pre_frontend(){
