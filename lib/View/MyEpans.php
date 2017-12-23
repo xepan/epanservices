@@ -15,8 +15,9 @@ class View_MyEpans extends \View{
 
 		$epan = $this->add('xepan\epanservices\Model_Epan');
 		$epan->addCondition('created_by_id',$customer->id);
+		$epan->setOrder('created_at','desc');
 
-		$this->add('View')->set('My Epans')->addClass(' panel panel-heading xepan-grid-heading');
+		$this->add('View')->set('My Epans (Websites / Online Stores / ERP Installations)')->addClass(' panel panel-heading xepan-grid-heading');
 		$grid = $this->add('xepan\base\Grid');
 		$grid->setModel($epan,['name','status','created_at','expiry_date']);
 		$grid->addColumn('Button','live_edit',['descr'=>'Frontend Edit','button_class'=>'btn btn-primary']);

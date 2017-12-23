@@ -33,7 +33,7 @@ class Tool_Theme extends \xepan\cms\View_Tool{
 					]);
 
 		if($this->options['show_progress_bar']){
-			$this->add('View',null,'skip')->setElement('a')->setAttr('href',$this->app->url($this->options['dashboard_page']))->set('Skip Step');
+			$this->add('View',null,'skip')->setElement('a')->setAttr('href',$this->app->url($this->options['dashboard_page'],['message'=>'New Epan Created, Visit or Edit from the below list']))->set('Skip Step');
 		}
 	}
 
