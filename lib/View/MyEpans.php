@@ -20,7 +20,8 @@ class View_MyEpans extends \View{
 		$this->add('View')->set('My Epans (Websites / Online Stores / ERP Installations)')->addClass(' panel panel-heading xepan-grid-heading');
 		$grid = $this->add('xepan\base\Grid');
 		$grid->setModel($epan,['name','status','created_at','expiry_date']);
-		$grid->addColumn('Button','live_edit',['descr'=>'Frontend Edit','button_class'=>'btn btn-primary']);
+		$grid->addColumn('Button','visit',['descr'=>'Visit Website','button_class'=>'btn btn-primary']);
+		$grid->addColumn('Button','live_edit',['descr'=>'Edit Website','button_class'=>'btn btn-primary']);
 		$grid->addColumn('Button','admin_login',['descr'=>'Admin Login','button_class'=>'btn btn-primary']);
 		$grid->addColumn('Button','detail',['descr'=>'Detail','button_class'=>'btn btn-success']);
 		$grid->addPaginator($ipp=10);
@@ -49,6 +50,16 @@ class View_MyEpans extends \View{
 	        if($_GET['admin_login'])
 				$this->js()->univ()->newWindow($this->app->url($this->protocol.$epan['name'].".".$this->domain.$this->app->pathfinder->base_location->base_url."admin"),'adminpanel')->execute();
 
+		}
+
+		if($_GET['visit']){
+			$epan->load($_GET['visit']);
+			$this->url = $url = "{$_SERVER['HTTP_HOST']}";        
+	        $this->protocol = stripos($_SERVER['SERVER_PROTOCOL'],'https') === true ? 'https://' : 'http://';
+	        $this->domain = $domain = str_replace('www.','',$this->app->extract_domain($url))?:'www';
+	        $this->sub_domain = $sub_domain = str_replace('www.','',$this->app->extract_subdomains($url))?:'www';
+	        
+			$this->js()->univ()->newWindow($this->app->url($this->protocol.$epan['name'].".".$this->domain.$this->app->pathfinder->base_location->base_url),'YourWebsite')->execute();
 		}
 
 		if($detail_id = $_GET['detail']){
