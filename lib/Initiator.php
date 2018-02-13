@@ -109,7 +109,7 @@ class Initiator extends \Controller_Addon {
                     $demo_finished->expire('Demo Expiered');
                 }
             }
-        });
+        },[],3);
 
         // login hook
         $this->app->addHook('login_panel_user_loggedin',function($app,$user){

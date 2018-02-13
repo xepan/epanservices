@@ -510,7 +510,7 @@ class Model_Epan extends \xepan\base\Model_Epan{
 		$extra_info ['reason_for_expire'] = $narration;
 		$this['status']='Expired';
 		$this['extra_info']= $extra_info;
-		$this->save();
+		$this->saveAs('xepan\epanservices\Model_Epan');
 		return true;
 	}
 
