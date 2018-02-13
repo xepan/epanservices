@@ -16,8 +16,8 @@ class Model_Epan extends \xepan\base\Model_Epan{
 	public $status = ['Trial','Paid','Grace','Expired'];
 	
 	public $actions = [
-		'Trial'=>['view','edit','delete','manage_applications','pay','validity','expire','usage_limit','associate_with_category','copy_website_and_db_from'],
-		'Paid'=>['view','edit','delete','manage_applications','expire','usage_limit','associate_with_category','copy_website_and_db_from'],
+		'Trial'=>['view','edit','manage_applications','pay','validity','expire','usage_limit','associate_with_category','copy_website_and_db_from'],
+		'Paid'=>['view','edit','manage_applications','expire','usage_limit','associate_with_category','copy_website_and_db_from'],
 		'Grace'=>['view','edit','delete','manage_applications','pay','expire','usage_limit','associate_with_category','copy_website_and_db_from'],
 		'Expired'=>['view','edit','delete','pay','associate_with_category','copy_website_and_db_from']
 	];
