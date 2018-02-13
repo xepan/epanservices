@@ -101,6 +101,14 @@ class Initiator extends \Controller_Addon {
                     $results = $this->multi_request($urls);
                 }
             }
+
+            $job2 = new \Cron\Job\ShellJob();
+            $job2->setSchedule(new \Cron\Schedule\CrontabSchedule('0 0 * * *'));
+            if(!$job2->getSchedule() || $job2->getSchedule()->valid($now)){
+                foreach ($this->add('xepan\epanservices\Model_Epan')->addCondition('created_at','<',date('Y-m-d',strtotime('-14 days')))->addCondition('status','Trial') as $demo_finished) {
+                    $demo_finished->expire('Demo Expiered');
+                }
+            }
         });
 
         // login hook
