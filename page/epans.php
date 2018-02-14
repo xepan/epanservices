@@ -44,9 +44,11 @@ class page_epans extends \xepan\base\Page {
 
 		}
 
+		$epan_model= $this->add('xepan\epanservices\Model_Epan');
+		$epan_model->add('xepan\epanservices\Controller_SideBarStatusFilter');
 		
 		$crud = $this->add('xepan\hr\CRUD',null,null,null);
-		$crud->setModel('xepan\epanservices\Epan',
+		$crud->setModel($epan_model,
 				['name','created_by_id','created_at','expiry_date','status','is_template','aliases'],
 				['name','created_by','created_at','expiry_date','status','is_template']
 			)

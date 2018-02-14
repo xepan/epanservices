@@ -16,8 +16,8 @@ class Model_Epan extends \xepan\base\Model_Epan{
 	public $status = ['Trial','Paid','Grace','Expired'];
 	
 	public $actions = [
-		'Trial'=>['view','edit','delete','manage_applications','pay','validity','expire','usage_limit','associate_with_category','copy_website_and_db_from'],
-		'Paid'=>['view','edit','delete','manage_applications','expire','usage_limit','associate_with_category','copy_website_and_db_from'],
+		'Trial'=>['view','edit','manage_applications','pay','validity','expire','usage_limit','associate_with_category','copy_website_and_db_from'],
+		'Paid'=>['view','edit','manage_applications','expire','usage_limit','associate_with_category','copy_website_and_db_from'],
 		'Grace'=>['view','edit','delete','manage_applications','pay','expire','usage_limit','associate_with_category','copy_website_and_db_from'],
 		'Expired'=>['view','edit','delete','pay','associate_with_category','copy_website_and_db_from']
 	];
@@ -343,13 +343,83 @@ class Model_Epan extends \xepan\base\Model_Epan{
 
 	function page_manage_applications($p){
 
-			$this->add('View')->set('ReCreate with CompleteLIster, ACL transaction query with crud problem, may be form and grid can work');
+			$applications=[
+				'communication'=>['namespace'=>'xepan\communication','user_installable'=>1],
+				'Hr'=>['namespace'=>'xepan\hr','user_installable'=>1],
+				'projects'=>['namespace'=>'xepan\projects','user_installable'=>1],
+				'marketing'=>['namespace'=>'xepan\marketing','user_installable'=>1],
+				'accounts'=>['namespace'=>'xepan\accounts','user_installable'=>1],
+				'cms'=>['namespace'=>'xepan\cms','user_installable'=>1],
+				'blog'=>['namespace'=>'xepan\blog','user_installable'=>1],
+				'commerce'=>['namespace'=>'xepan\commerce','user_installable'=>1],
+				'production'=>['namespace'=>'xepan\production','user_installable'=>1],
+				'crm'=>['namespace'=>'xepan\crm','user_installable'=>1],
+				'epanservices'=>['namespace'=>'xepan\epanservices','user_installable'=>1],
+				'ispmanager'=>['namespace'=>'xavoc\ispmanager','user_installable'=>1],
+				'listing'=>['namespace'=>'xepan\listing','user_installable'=>1],
+				'ivf'=>['namespace'=>'xavoc\ivf','user_installable'=>1],
+			];
 
-			$installed_apps = $this->add('xepan\base\Model_Epan_InstalledApplication',['skip_epan_condition'=>true]);
-			$installed_apps->addCondition('epan_id',$this->id);
+			$installed_apps_array=[];
 
-			$crud = $p->add('xepan\hr\CRUD');
-			$crud->setModel($installed_apps);
+			$remote_epan = $this->add('xepan\epanservices\Controller_RemoteEpan');
+			$remote_epan->setEpan($this->id);
+
+			$remote_epan->do(function($app)use(&$installed_apps_array){
+				$installed_apps = $this->add('xepan\base\Model_Epan_InstalledApplication',['skip_epan_condition'=>true]);
+				$installed_apps_array = $installed_apps->getRows();
+			});
+
+
+			$p->add('View')->set('Available Applications')->addClass('alert alert-info');
+			$form = $p->add('Form');
+
+			foreach ($applications as $name => $details) {
+				$f = $form->addField('CheckBox',$name);
+				if(in_array($details['namespace'], array_column($installed_apps_array, 'application_namespace'))){
+					$f->set(true);
+				}
+			}
+
+			$form->addSubmit();
+
+			if($form->isSubmitted()){
+				
+				$selection = $form->getAllFields();
+				$to_remove = [];
+				$remote_epan->do(function($app) use($remote_epan, &$selection, &$applications, &$to_remove){
+					$remote_epan_id = $this->add('xepan\base\Model_Epan')->tryLoadBy('name',$this['name'])->get('id');
+					foreach ($applications as $name => $details) {
+						$apps_added = $this->add('xepan\base\Model_Application');
+						$apps_added->tryLoadBy('name',$name);
+						if($selection[$name] && !$apps_added->loaded()){
+							$apps_added['namespace']= $details['namespace'];
+							$apps_added['user_installable']=1;
+							$apps_added->save();
+						}
+
+						$installed_apps = $this->add('xepan\base\Model_Epan_InstalledApplication');
+						$installed_apps->tryLoadBy('application_id',$apps_added->id);
+
+						if($selection[$name]){
+							$installed_apps['epan_id']= $remote_epan_id;
+							$installed_apps['is_active']= 1;
+							$installed_apps->save();
+						}else{
+							if(!$selection[$name] && $installed_apps->loaded()) $installed_apps->delete();
+							if(!$selection[$name] && $apps_added->loaded()) $apps_added->delete();
+						}
+					}
+				});
+				// throw new \Exception(print_r($to_remove,true), 1);
+				$form->js()->univ()->successMessage('hurreyy')->execute();
+			}
+
+			// $this->add('View')->set('ReCreate with CompleteLIster, ACL transaction query with crud problem, may be form and grid can work');
+
+
+			// $crud = $p->add('xepan\hr\CRUD');
+			// $crud->setModel($installed_apps);
 
 	}
 
@@ -440,7 +510,7 @@ class Model_Epan extends \xepan\base\Model_Epan{
 		$extra_info ['reason_for_expire'] = $narration;
 		$this['status']='Expired';
 		$this['extra_info']= $extra_info;
-		$this->save();
+		$this->saveAs('xepan\epanservices\Model_Epan');
 		return true;
 	}
 

@@ -24,7 +24,7 @@ class Initiator extends \Controller_Addon {
         if(!$this->app->isAjaxOutput() && !$this->app->getConfig('hidden_xepan_epanservices',false)){
             $m = $this->app->top_menu->addMenu('Epans');
             $m->addItem(['Category','icon'=>'fa fa-sitemap'],'xepan_epanservices_category');
-            $m->addItem(['Epans','icon'=>'fa fa-sitemap'],'xepan_epanservices_epans');
+            $m->addItem(['Epans','icon'=>'fa fa-sitemap'],$this->app->url('xepan_epanservices_epans',['status'=>'Trial,Paid']));
             $m->addItem(['Templates','icon'=>'fa fa-sitemap'],'xepan_epanservices_epantemplates');
             $m->addItem(['Agency','icon'=>'fa fa-sitemap'],'xepan_epanservices_agency');
             $m->addItem(['Channel Partner','icon'=>'fa fa-sitemap'],'xepan_epanservices_channelpartner');
@@ -101,7 +101,15 @@ class Initiator extends \Controller_Addon {
                     $results = $this->multi_request($urls);
                 }
             }
-        });
+
+            $job2 = new \Cron\Job\ShellJob();
+            $job2->setSchedule(new \Cron\Schedule\CrontabSchedule('0 0 * * *'));
+            if(!$job2->getSchedule() || $job2->getSchedule()->valid($now)){
+                foreach ($this->add('xepan\epanservices\Model_Epan')->addCondition('created_at','<',date('Y-m-d',strtotime('-14 days')))->addCondition('status','Trial') as $demo_finished) {
+                    $demo_finished->expire('Demo Expiered');
+                }
+            }
+        },[],3);
 
         // login hook
         $this->app->addHook('login_panel_user_loggedin',function($app,$user){
