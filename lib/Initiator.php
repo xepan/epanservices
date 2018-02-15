@@ -91,11 +91,16 @@ class Initiator extends \Controller_Addon {
             $job1->setSchedule(new \Cron\Schedule\CrontabSchedule('*/5 * * * *'));
             if(!$job1->getSchedule() || $job1->getSchedule()->valid($now)){
                 $urls=[];
-                foreach ($this->add('xepan\base\Model_Epan')->addCondition('id','<>',$this->app->epan->id)->addCondition('is_published',true) as $other_epans) {
+                $other_epans = $this->add('xepan\base\Model_Epan')
+                                    ->addCondition('id','<>',$this->app->epan->id)
+                                    ->addCondition('is_published',true)
+                                    ->addCondition('status',['Trial','Paid'])
+                                    ;
+                foreach ($other_epans as $other_epan) {
                     // $command = 'wget http://'. $other_epans['name'].'.epan.in?page=xepan_base_cron&cut_page=true';
                     // echo "<br/> executing ". $command. '<br/>';
                     // shell_exec($command);
-                    $urls[] = 'http://'. $other_epans['name'].'.epan.in?page=xepan_base_cron&cut_page=true&now='.urlencode($this->app->now);
+                    $urls[] = 'http://'. $other_epan['name'].'.epan.in?page=xepan_base_cron&cut_page=true&now='.urlencode($this->app->now);
                 }
                 if(count($urls)){
                     $results = $this->multi_request($urls);
