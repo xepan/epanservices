@@ -15,7 +15,6 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 
 		if($this->owner instanceof \AbstractController) return;
 
-
 		if($item_id = $this->app->stickyGET('x-new-product')){
 			$this->options['sale_item_id'] = $item_id;
 			$this->options['button_name'] = "Next";
@@ -98,7 +97,7 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 		if($form->isSubmitted()){
 
 			// validate name 
-			if(preg_match("/[^[:alnum:]\-]/",$form['epan_name'])){
+			if(preg_match("/[^[:alnum:]\-]/",strtolower($form['epan_name']))){
 				$form->js(true,$v->js(true)->hide())
 	            	->atk4_form('fieldError','epan_name','Only AphaNumeric values permitted')
 	            	->execute();
@@ -118,9 +117,10 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
         	}
         	
         	/* DO EPAN WITH THE SAME NAME EXIST */
-        	$epan_name = $form['epan_name'];
+        	$epan_name = strtolower($form['epan_name']);
+
         	$myEpans = $this->add('xepan\epanservices\Model_Epan');
-        	$myEpans->addCondition('name',strtolower($epan_name));
+        	$myEpans->addCondition('name',$epan_name);
         	$myEpans->tryLoadAny();
 
         	if($myEpans->loaded()){
@@ -133,7 +133,6 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 
 
         	/* IF CUSTOMER IS LOGGED IN AND EPAN NAME IS UNIQUE THEN CREATE EPAN */
-        	$epan_name = $form['epan_name'];
         	$form->js()->univ()->frameURL('Please wait, creating your system',$this->app->url($this->create_trial_vp->getURL(),['epan_name'=>$epan_name]))->execute();
 		}
 	}
