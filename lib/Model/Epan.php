@@ -252,7 +252,7 @@ class Model_Epan extends \xepan\base\Model_Epan{
 			$this->app->db->dsql()->expr('SET FOREIGN_KEY_CHECKS = 0;')->execute();
 			$this->app->resetDB = true;
 
-			$addons = ['xepan\\base','xepan\\communication', 'xepan\\hr','xepan\\projects','xepan\\marketing','xepan\\accounts','xepan\\commerce','xepan\\production','xepan\\crm','xepan\\cms','xepan\\blog'/*,'xepan\\epanservices'*/];
+			$addons = $this->app->getConfig('xepan_available_addons',['xepan\\base','xepan\\communication', 'xepan\\hr','xepan\\projects','xepan\\marketing','xepan\\accounts','xepan\\commerce','xepan\\production','xepan\\crm','xepan\\cms','xepan\\blog'/*,'xepan\\epanservices'*/]);
 
 			foreach ($addons as $addon) {
 				if($addon==='xepan\\base' or $addon==='xepan\base') {
