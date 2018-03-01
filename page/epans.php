@@ -50,7 +50,7 @@ class page_epans extends \xepan\base\Page {
 		$crud = $this->add('xepan\hr\CRUD',null,null,null);
 		$crud->setModel($epan_model,
 				['name','created_by_id','created_at','expiry_date','status','is_template','aliases'],
-				['name','created_by','created_at','expiry_date','status','is_template']
+				['name','created_by','created_at','expiry_date','status','is_template','is_published']
 			)
 			->addCondition([['is_template',false],['is_template',null]])
 			->setOrder('created_at','desc')

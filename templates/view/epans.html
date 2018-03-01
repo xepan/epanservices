@@ -17,7 +17,6 @@
         <th><span>Created_By</span></th>
         <th><span>Template</span></th>
         <th><span>Publish</span></th>
-        <th> <span>UnPublish</span></th>
         <th></th>{/}{/}
       </thead>{/}
       {$subheader}
@@ -30,8 +29,7 @@
           <td><span>{$created_at}</span></td>
           <td><span>{$created_by}</span></td>
           <td><span>{$xepan_template_id}</span></td>
-          <td>{$Publish}</td>
-          <td><span>{$UnPublish}</span></td>
+          <td>{$is_published}</td>
           <td style="width: 15%;">
             {$edit}
             {$delete}
