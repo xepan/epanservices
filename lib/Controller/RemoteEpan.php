@@ -24,11 +24,11 @@ class Controller_RemoteEpan extends \AbstractController{
 			throw $this->exception('Must be callable - '.$method);
 		}				
 
-		
+		$xepan_mysql_host = $this->app->getConfig('xepan-mysql-host','127.0.0.1');
 		$config = file_get_contents($this->app->pathfinder->base_location->base_path.'/websites/'.$this->epan['name'].'/config.php');
 		$config = preg_match('/.*config.*dsn.*=(.*);/i', $config, $dsn_config);
 		$dsn = $dsn_config[1];
-		
+		$dsn = str_replace("'.\$config['xepan-mysql-host'].'", $xepan_mysql_host, $dsn);
 		$new_db = $this->add('DB');
 		$new_db->connect($dsn);
 
