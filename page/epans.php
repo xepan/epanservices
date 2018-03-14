@@ -27,6 +27,7 @@ class page_epans extends \xepan\base\Page {
 				->setEpan($epan)
 				->do(function($app)use($token){
 					$app->add('xepan\base\Model_User')
+						->addCondition('scope','SuperUser')
 						->tryLoadAny()
 						->set('access_token',$token)
 						->set('access_token_expiry',date('Y-m-d H:i:s',strtotime($app->now.' +10 seconds')))
@@ -39,8 +40,9 @@ class page_epans extends \xepan\base\Page {
 	        if($_GET['live_edit'])
 				$this->js()->univ()->newWindow($this->app->url($this->protocol.$epan['name'].".".$this->domain.str_replace('/admin/','',(string)$this->app->pathfinder->base_location->base_url),['access_token'=>$token]),'LiveEdit')->execute();
 						
-	        if($_GET['admin_login'])
-				$this->js()->univ()->newWindow($this->app->url($this->protocol.$epan['name'].".".$this->domain.$this->app->pathfinder->base_location->base_url."admin"),'adminpanel')->execute();
+	        if($_GET['admin_login']){
+				$this->js()->univ()->newWindow($this->app->url($this->protocol.$epan['name'].".".$this->domain.$this->app->pathfinder->base_location->base_url,['access_token'=>$token]),'adminpanel')->execute();
+	        }
 
 		}
 
@@ -60,7 +62,8 @@ class page_epans extends \xepan\base\Page {
 
 		$crud->grid->add('Button',null,'grid_buttons')->addClass('btn btn-primary')->set('Update DB')->js('click',$this->js()->univ()->frameURL($this->updateEpansDB->getURL()));
 
-		$crud->grid->addColumn('Button','live_edit',['descr'=>'Frontend Edit','button_class'=>'btn btn-primary']);
+		$crud->grid->addColumn('Button','live_edit',['descr'=>'Frontend Edit','button_class'=>'btn btn-danger']);
+		$crud->grid->addColumn('Button','admin_login',['descr'=>'Admin Login','button_class'=>'btn btn-danger']);
 		$crud->grid->removeColumn('status');
 		$crud->grid->addFormatter('name','template')->setTemplate('<a href="http://{$name}.epan.in" target="_blank">{$name}</a>','name');
 		$crud->noAttachment();
