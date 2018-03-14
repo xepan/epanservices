@@ -16,10 +16,10 @@ class Model_Epan extends \xepan\base\Model_Epan{
 	public $status = ['Trial','Paid','Grace','Expired'];
 	
 	public $actions = [
-		'Trial'=>['view','edit','manage_applications','pay','validity','expire','usage_limit','associate_with_category','copy_website_and_db_from','change_publish_status'],
-		'Paid'=>['view','edit','manage_applications','expire','usage_limit','associate_with_category','copy_website_and_db_from','change_publish_status'],
-		'Grace'=>['view','edit','delete','manage_applications','pay','expire','usage_limit','associate_with_category','copy_website_and_db_from','change_publish_status'],
-		'Expired'=>['view','edit','delete','pay','associate_with_category','copy_website_and_db_from','change_publish_status']
+		'Trial'=>['view','edit','manage_applications','pay','validity','expire','usage_limit','associate_with_category','copy_website_and_db_from','change_publish_status','previous_themes_folders'],
+		'Paid'=>['view','edit','manage_applications','expire','usage_limit','associate_with_category','copy_website_and_db_from','change_publish_status','previous_themes_folders'],
+		'Grace'=>['view','edit','delete','manage_applications','pay','expire','usage_limit','associate_with_category','copy_website_and_db_from','change_publish_status','previous_themes_folders'],
+		'Expired'=>['view','edit','delete','pay','associate_with_category','copy_website_and_db_from','change_publish_status','previous_themes_folders']
 	];
 
 	function init(){
@@ -843,6 +843,42 @@ class Model_Epan extends \xepan\base\Model_Epan{
 	function change_publish_status(){
 		$this['is_published'] = !$this['is_published'];
 		$this->save();
+	}
+
+	function page_previous_themes_folders($page){
+
+		$m = $page->add('Model');
+		$m->addField('name');
+
+		$m->addHook('beforeDelete',function($m){
+	        if(file_exists($m['name'])){	        	
+	            \Nette\Utils\FileSystem::delete($m['name']);
+	        }
+    	});
+
+		// $p = scandir('websites/'.$this->app->current_website_name);
+		$p = glob('websites/'.$this['name'].'/*',GLOB_ONLYDIR);
+		$p =array_filter($p,function($v){
+			return strpos($v, 'www-') !== false;
+		});
+        arsort($p);
+        $m->setSource('Array',$p);
+
+		$crud = $page->add('xepan\hr\CRUD',['allow_add'=>false,'allow_edit'=>false]);
+		$crud->setModel($m);
+		$crud->grid->removeColumn('id');
+		$crud->grid->addColumn('Button','Revert');
+
+		if($_GET['Revert']){
+			$this->js()->univ()->errorMessage("This facility is stopped from admin for security reasons")->execute();
+			$m->load($_GET['Revert']);
+			\Nette\Utils\FileSystem::delete('./websites/'.$this['name'].'/www-before_revert');
+			\Nette\Utils\FileSystem::rename('./websites/'.$this['name'].'/www','./websites/'.$this->app->current_website_name.'/www-before_revert');
+			\Nette\Utils\FileSystem::createDir('./websites/'.$this['name'].'/www');
+			\Nette\Utils\FileSystem::copy($m['name'],'./websites/'.$this['name'].'/www',true);
+			$this->js()->univ()->successMessage($m['name'].' Is copied to www and old www is saved in www-before_revert')->execute();
+		}
+
 	}
 
 }
