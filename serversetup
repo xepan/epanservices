@@ -124,7 +124,7 @@ git remote add origin https://github.com/xepan/marketing.git
 git branch -f master HEAD && git checkout master
 git pull origin master
 
-cd /var/www/html/vendor/xepan/omnipay-instalmojo
+cd /var/www/html/vendor/xepan/omnipay-instamojo
 git remote remove origin
 git remote add origin https://github.com/xepan/omnipay-instalmojo.git
 git branch -f master HEAD && git checkout master
