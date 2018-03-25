@@ -1,4 +1,4 @@
-# wget https://raw.githubusercontent.com/xepan/xepan2/master/serversetup -O xepan-install.sh && chmod +x xepan-install.sh && ./xepan-install.sh
+# wget https://raw.githubusercontent.com/xepan/epanservices/master/serversetup -O xepan-install.sh && chmod +x xepan-install.sh && ./xepan-install.sh
 
 echo "======== XEPAN IS ASKING ============"
 echo What is mysql password you want to set
