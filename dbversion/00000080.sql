@@ -1,1 +1,0 @@
-ALTER TABLE `graphical_report_widget` ADD COLUMN `col_width` int(11) DEFAULT NULL;

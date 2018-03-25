@@ -1,1 +1,0 @@
-ALTER TABLE `store_transaction_row` Add COLUMN `narration` text;

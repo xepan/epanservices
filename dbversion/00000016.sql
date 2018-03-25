@@ -1,1 +1,0 @@
-ALTER TABLE `custom_account_entries_templates` ADD COLUMN `created_by_id`  int(11) NULL DEFAULT NULL AFTER `is_system_default`;

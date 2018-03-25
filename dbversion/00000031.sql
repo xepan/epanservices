@@ -1,1 +1,0 @@
-DROP TABLE `employee_allowed_leave`, `employee_attandance`, `employee_transaction`, `employee_transaction_row`, `leave`, `leave_template`, `official_holidays`, `payment_and_deduction`, `salary_template`;

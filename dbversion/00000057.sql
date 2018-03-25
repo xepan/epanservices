@@ -1,1 +1,0 @@
-ALTER TABLE `ledger` ADD COLUMN `created_by_id`  int(11) NULL DEFAULT NULL AFTER `related_id`;

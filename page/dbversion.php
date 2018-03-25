@@ -6,13 +6,15 @@ namespace xepan\epanservices;
 * 
 */
 class page_dbversion extends \xepan\base\Page{
+
 	public $title='xEpan Database Version';
 	public $dir='dbversion';
     public $namespace = __NAMESPACE__;
+
 	function init(){
 		parent::init();
 		// throw new \Exception($this->namespace, 1);
-        $m=$this->add('xepan\epanservices\Model_DbVersion',array('dir'=>$this->dir,'namespace'=>$this->namespace));
+        $m=$this->add('xepan\base\Model_DbVersion',array('dir'=>$this->dir,'namespace'=>'xepan\base'));
   		// foreach ($m as $mi) {
   		// 	var_dump($mi['']);
   		// 	echo "values = " .$mi['code']."<br/>";

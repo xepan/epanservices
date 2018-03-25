@@ -1,1 +1,0 @@
-ALTER TABLE `blog_post_category` ADD `slug_url` VARCHAR(255) NULL ;

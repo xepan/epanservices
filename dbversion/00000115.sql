@@ -1,1 +1,0 @@
-ALTER TABLE `salary_abstract` ADD `status` VARCHAR(255) NOT NULL;

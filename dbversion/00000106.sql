@@ -1,1 +1,0 @@
-ALTER TABLE `jobcard_detail` CHANGE `quantity` `quantity` DECIMAL(10,4) NULL DEFAULT NULL;

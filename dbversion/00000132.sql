@@ -1,1 +1,0 @@
-ALTER TABLE `task_attachment` ADD COLUMN `created_at`  datetime NULL DEFAULT NULL;

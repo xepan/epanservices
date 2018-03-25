@@ -1,1 +1,0 @@
-ALTER TABLE `qsp_detail` ADD COLUMN `qty_unit_id` int(11) DEFAULT NULL;

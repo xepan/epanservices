@@ -1,1 +1,0 @@
-ALTER TABLE `employee_attandance` ADD UNIQUE `unique_index`(`employee_id`, `from_date`);

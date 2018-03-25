@@ -1,1 +1,0 @@
-ALTER TABLE `item_image` ADD `sequence_no` INT(11) NULL AFTER `auto_generated`;

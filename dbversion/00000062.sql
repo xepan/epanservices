@@ -1,1 +1,0 @@
-ALTER TABLE `support_ticket` ADD `task_id` INT(11) NULL AFTER `id`;

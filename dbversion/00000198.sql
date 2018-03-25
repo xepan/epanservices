@@ -1,1 +1,0 @@
-ALTER TABLE `epan_category` Add COLUMN `status`  varchar(255) DEFAULT NULL;

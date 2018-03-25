@@ -1,1 +1,0 @@
-ALTER TABLE `graphical_report` ADD `created_by_id` int(11) NOT NULL;

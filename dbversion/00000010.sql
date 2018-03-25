@@ -1,1 +1,0 @@
-ALTER TABLE `emailsetting` MODIFY COLUMN `last_emailed_at`  datetime NULL DEFAULT NULL AFTER `emails_in_BCC`;

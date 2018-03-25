@@ -1,1 +1,0 @@
-ALTER TABLE item_template_design CHANGE `is_ordered` order_id INT(11);

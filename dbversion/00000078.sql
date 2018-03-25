@@ -1,1 +1,0 @@
-ALTER TABLE `marketingcategory` ADD COLUMN `system`  tinyint(4) NULL DEFAULT NULL;

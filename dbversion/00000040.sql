@@ -1,1 +1,0 @@
-ALTER TABLE `customfield_association` ADD `is_optional` INT(11) NULL AFTER `order`;

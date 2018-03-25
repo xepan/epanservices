@@ -1,1 +1,0 @@
-ALTER TABLE `communication` ADD COLUMN `communication_channel_id` int(11) DEFAULT NULL after `created_by_id`

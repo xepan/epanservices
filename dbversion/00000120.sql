@@ -1,1 +1,0 @@
-ALTER TABLE `department` ADD `simultaneous_no_process_allowed` INT NULL;

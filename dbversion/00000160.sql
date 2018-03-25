@@ -1,1 +1,0 @@
-ALTER TABLE `employee_attandance` ADD `working_unit_count` VARCHAR( 255 ) NULL ;

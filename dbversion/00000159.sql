@@ -1,1 +1,0 @@
-ALTER TABLE `employee` ADD `salary_payment_type` VARCHAR( 255 ) NULL ;

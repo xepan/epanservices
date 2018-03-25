@@ -1,1 +1,0 @@
-ALTER TABLE `comments` CHANGE `created_by` `created_by_id` INT(11) NULL DEFAULT NULL;

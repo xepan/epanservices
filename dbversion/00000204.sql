@@ -1,1 +1,0 @@
-ALTER TABLE `webpage` Add COLUMN `icon_class`  VARCHAR(255);

@@ -1,1 +1,0 @@
-ALTER TABLE `employee_attandance` ADD INDEX `employee_id_index` (`id`);

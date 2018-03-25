@@ -1,1 +1,0 @@
-ALTER TABLE `employee_movement` CHANGE `time` `movement_at` DATETIME NULL DEFAULT NULL;

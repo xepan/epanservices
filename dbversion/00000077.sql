@@ -1,1 +1,0 @@
-ALTER TABLE `lead_category_association` ADD COLUMN `created_at`  datetime NULL DEFAULT NULL;

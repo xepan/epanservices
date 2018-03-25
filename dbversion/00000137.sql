@@ -1,1 +1,0 @@
-ALTER TABLE `salary_template` ADD `created_by_id` INT(11) NULL AFTER `name`; 

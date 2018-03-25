@@ -1,1 +1,0 @@
-ALTER TABLE `graphical_report` MODIFY COLUMN `created_by_id`  int(11) NULL DEFAULT NULL;

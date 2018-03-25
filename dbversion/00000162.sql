@@ -1,1 +1,0 @@
-ALTER TABLE `official_holiday` ADD `status` VARCHAR(255) NOT NULL AFTER `created_by_id`; 

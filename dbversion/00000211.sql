@@ -1,1 +1,0 @@
-ALTER TABLE carouselimage MODIFY COLUMN text_to_display text;

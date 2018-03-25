@@ -1,1 +1,0 @@
-ALTER IGNORE TABLE lead_category_association ADD UNIQUE (lead_id, marketing_category_id);

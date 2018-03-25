@@ -1,1 +1,0 @@
-ALTER TABLE `lodgement` CHANGE `salesinvoice_id` `invoice_id` INT(11) NULL DEFAULT NULL;

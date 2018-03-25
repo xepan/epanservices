@@ -1,1 +1,0 @@
-ALTER TABLE `salary_template_details` CHANGE `amount` `amount` VARCHAR(255) NULL DEFAULT NULL;

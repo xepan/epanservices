@@ -1,2 +1,0 @@
-ALTER TABLE `projectcomment` ADD COLUMN `is_seen_by_creator`  tinyint(4) NULL DEFAULT NULL AFTER `on_action`;
-ALTER TABLE `projectcomment` ADD COLUMN `is_seen_by_assignee`  tinyint(4) NULL DEFAULT NULL AFTER `is_seen_by_creator`;

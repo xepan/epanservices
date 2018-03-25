@@ -1,1 +1,0 @@
-ALTER TABLE `qsp_detail` ADD `item_template_design_id` INT(11) NULL AFTER `express_shipping_duration`;

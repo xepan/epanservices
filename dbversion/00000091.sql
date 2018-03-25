@@ -1,1 +1,0 @@
-ALTER TABLE `employee` ADD COLUMN `graphical_report_id`  int(11) NULL DEFAULT NULL;

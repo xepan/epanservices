@@ -1,1 +1,0 @@
-ALTER TABLE `employee_leave` Add COLUMN `narration`  text;

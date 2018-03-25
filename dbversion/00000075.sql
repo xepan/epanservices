@@ -1,1 +1,0 @@
-ALTER TABLE `customfield_generic` ADD `value` TEXT NOT NULL;

@@ -1,1 +1,0 @@
-ALTER TABLE `store_transaction_row` DROP `customfield_generic_id`, DROP `customfield_value_id`;

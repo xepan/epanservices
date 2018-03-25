@@ -1,1 +1,0 @@
-ALTER TABLE `account_transaction` ADD COLUMN `created_by_id` int(11) DEFAULT NULL after `transaction_template_id`;

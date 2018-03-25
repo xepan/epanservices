@@ -1,1 +1,0 @@
-ALTER TABLE `contact` ADD COLUMN `assign_at`  datetime NULL DEFAULT NULL;

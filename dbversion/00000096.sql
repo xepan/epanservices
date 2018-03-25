@@ -1,1 +1,0 @@
-ALTER TABLE `communication` ADD `sub_type` VARCHAR(255) NULL AFTER `tags`;

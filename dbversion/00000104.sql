@@ -1,1 +1,0 @@
-ALTER TABLE `employee_attandance` ADD COLUMN `is_holiday`  tinyint(4) NULL DEFAULT NULL;

@@ -1,1 +1,0 @@
-ALTER TABLE `item` ADD COLUMN `minimum_stock_limit`  int(11) NULL DEFAULT NULL;

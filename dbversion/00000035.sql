@@ -1,1 +1,0 @@
-ALTER TABLE `post` ADD `leave_template_id` int(11) NOT NULL AFTER `salary_template_id`;

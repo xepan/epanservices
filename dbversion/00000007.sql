@@ -1,1 +1,0 @@
-ALTER TABLE `customfield_generic` ADD `is_system` TINYINT(4) NOT NULL AFTER `created_by_id`;
