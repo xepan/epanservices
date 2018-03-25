@@ -459,20 +459,47 @@ class Model_Epan extends \xepan\base\Model_Epan{
 
 	function page_usage_limit($p){
 		$extra_info = json_decode($this['extra_info'],true);
-		$employee_limit = isset($extra_info ['specification']['employee'])?$extra_info ['specification']['employee']:0;
-		$email_settings_limit = isset($extra_info ['specification']['email'])?$extra_info ['specification']['email']:0;
-		$email_threshold_limit = isset($extra_info ['specification']['threshold'])?$extra_info ['specification']['threshold']:0;
-		$storage_limit = isset($extra_info ['specification']['storage'])?$extra_info ['specification']['storage']:0;
-		
+
+		$validity_limit = [
+						'Employee Limit'=>0,
+						'Email Accounts'=>0,
+						'Sendig Email Threshold Per Minute Per Setting'=>0,
+						'Mass Email Setting Allowed'=>0,
+						'Email IMAP Account Allowed'=>0,
+						'Storage Limit'=>0,
+						'Data Grabber'=>"No",
+				];
+
+		$employee_limit = isset($extra_info ['specification']['Employee Limit'])?$extra_info ['specification']['Employee Limit']:0;
+		$email_settings_limit = isset($extra_info ['specification']['Email Accounts'])?$extra_info ['specification']['Email Accounts']:0;
+		$email_threshold_limit = isset($extra_info ['specification']['Sendig Email Threshold Per Minute Per Setting'])?$extra_info ['specification']['Sendig Email Threshold Per Minute Per Setting']:0;
+		$storage_limit = isset($extra_info ['specification']['Storage Limit'])?$extra_info ['specification']['Storage Limit']:0;
+		$data_grabber = isset($extra_info ['specification']['Data Grabber'])?$extra_info ['specification']['Data Grabber']:"No";
+		$mass_email_allowed = isset($extra_info ['specification']['Mass Email Setting Allowed'])?$extra_info ['specification']['Mass Email Setting Allowed']:0;
+		$email_imap_limit = isset($extra_info ['specification']['Email IMAP Account Allowed'])?$extra_info ['specification']['Email IMAP Account Allowed']:0;
+
 		$form = $p->add('Form');
 		$form->addField('employee_limit')->set($employee_limit);
 		$form->addField('email_settings_limit')->set($email_settings_limit);
-		$form->addField('email_threshold_limit')->set($email_threshold_limit);
+		$form->addField('sending_email_threshold_per_minute_per_setting')->set($email_threshold_limit);
+		$form->addField('mass_email_allowed')->set($mass_email_allowed);
+		$form->addField('email_imap_account_allowed')->set($email_imap_limit);
 		$form->addField('storage_limit')->set($storage_limit);
+		$form->addField('data_grabber')->set($data_grabber);
 		$form->addSubmit('Save');
 		
 		if($form->isSubmitted()){
-			$this->usage_limit($form);
+
+			$validity_limit = [
+						'Employee Limit'=>$form['employee_limit'],
+						'Email Accounts'=>$form['email_settings_limit'],
+						'Sendig Email Threshold Per Minute Per Setting'=>$form['sending_email_threshold_per_minute_per_setting'],
+						'Mass Email Setting Allowed'=>$form['mass_email_allowed'],
+						'Email IMAP Account Allowed'=>$form['email_imap_account_allowed'],
+						'Storage Limit'=>$form['storage_limit'],
+						'Data Grabber'=>$form['data_grabber']
+				];
+			$this->usage_limit($validity_limit);
 			$this->app->employee
 				->addActivity("Epan '".$this['name']."' usage limit Changed By'".$this->app->employee['name']."'", $this->id, null,null,null,null)
 				->notifyWhoCan('pay,expire,manage_applications','Trial');
