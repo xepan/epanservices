@@ -23,7 +23,7 @@ class page_dbversion extends \xepan\base\Page{
         $crud = $this->add('xepan\base\CRUD');
         $crud->setModel($m,['code'],['id','name','code']);
         $f=$crud->form;
-	    $path=$this->api->pathfinder->base_location->base_path.'/../vendor/'.str_replace("\\","/",$this->namespace)."/".$this->dir;
+	    $path=$this->api->pathfinder->base_location->base_path.'/../vendor/xepan/base/'.$this->dir;
         
         if($crud->isEditing()){
 
