@@ -164,7 +164,7 @@ cd wsserver
 nohup php index.php >/dev/null 2>&1 &
 
 # ip=`ip addr show |grep "inet " |grep -v 127.0.0. |head -1|cut -d" " -f6|cut -d/ -f1`
-echo "<?php  \$config['websocket-notifications'] =  true; $config['websocket-server']='ws://$xepan_host:8889';" > /var/www/html/admin/config.php
+echo "<?php  \$config['websocket-notifications'] =  true; \$config['websocket-server']='ws://$xepan_host:8889';" > /var/www/html/admin/config.php
 
 # setup cronjob
 cat <(crontab -l) <(echo "* * * * * wget -O /dev/null -o /dev/null \"http://$xepan_host/?page=xepan_base_cron&cut_page=1\"") | crontab -
