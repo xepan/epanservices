@@ -65,10 +65,13 @@ git branch -f master HEAD && git checkout master
 git pull origin master
 
 cd /var/www/html/vendor/xepan/atk4
+git init
 git remote remove origin
 git remote add origin https://github.com/xepan/atk4.git
-git branch -f master HEAD && git checkout 4.3
 git pull origin 4.3
+git reset --hard origin/4.3
+
+#git branch -f master HEAD && git checkout 4.3
 
 cd /var/www/html/vendor/xepan/base
 git remote remove origin
