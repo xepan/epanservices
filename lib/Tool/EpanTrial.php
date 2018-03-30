@@ -28,26 +28,7 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
 		$this->create_trial_vp->set([$this,'create_trial_vp']);
 
 		$this->app->addStyleSheet('jquery-ui');
-		$company_m = $this->add('xepan\base\Model_ConfigJsonModel',
-					[
-						'fields'=>[
-									'company_name'=>"Line",
-									'company_owner'=>"Line",
-									'mobile_no'=>"Line",
-									'company_email'=>"Line",
-									'company_address'=>"Line",
-									'company_pin_code'=>"Line",
-									'company_description'=>"text",
-									'company_description'=>"text",
-									'company_logo_absolute_url'=>"Line",
-									'company_twitter_url'=>"Line",
-									'company_facebook_url'=>"Line",
-									'company_google_url'=>"Line",
-									'company_linkedin_url'=>"Line",
-									],
-						'config_key'=>'COMPANY_AND_OWNER_INFORMATION',
-						'application'=>'communication'
-					]);
+		$company_m = $this->add('xepan\base\Model_Config_CompanyInfo');
 		$company_m->tryLoadAny();	
 		
 		$social=$this->add('View',null,null,['view/schema-micro-data','social_block']);
