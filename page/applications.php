@@ -31,7 +31,7 @@ class page_applications extends \xepan\base\Page {
 		if(strpos($m['namespace'], 'xavoc\\')!==false){
 			$folder = '../shared/apps/';
 			$app_path = '../shared/apps/'.str_replace("\\", '/', $m['namespace']);
-			\Nette\Utils\FileSystem::copy('vendor/xepan/epanservices/templates/app_template',$app_path);
+			\Nette\Utils\FileSystem::copy('shared/apps/xepan/epanservices/templates/app_template',$app_path);
 			$data=[
 				'{name}'				=>$m['name'],
 				'{namespace}'			=>$m['namespace'],

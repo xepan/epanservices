@@ -14,7 +14,7 @@ class Initiator extends \Controller_Addon {
     function setup_admin(){
         $this->routePages('xepan_epanservices');
         $this->addLocation(array('template'=>'templates','js'=>'templates/js','css'=>'templates/css'))
-            ->setBaseURL('../vendor/xepan/epanservices/')
+            ->setBaseURL('../shared/apps/xepan/epanservices/')
             ;
 
 		if($this->app->getConfig('multi-xepans',false)){
@@ -50,7 +50,7 @@ class Initiator extends \Controller_Addon {
     function setup_pre_frontend(){
         $this->routePages('xepan_epanservices');
         $this->addLocation(array('template'=>'templates','js'=>'templates/js','css'=>'templates/css'))
-        ->setBaseURL('vendor/xepan/epanservices/')
+        ->setBaseURL('shared/apps/xepan/epanservices/')
         ;
 
         return $this;
@@ -59,7 +59,7 @@ class Initiator extends \Controller_Addon {
     function setup_frontend(){
         $this->routePages('xepan_epanservices');
             $this->addLocation(array('template'=>'templates','js'=>'templates/js','css'=>'templates/css'))
-            ->setBaseURL('./vendor/xepan/epanservices/');
+            ->setBaseURL('./shared/apps/xepan/epanservices/');
 
 
         $epan_model = $this->add('xepan/epanservices/Model_Epan');

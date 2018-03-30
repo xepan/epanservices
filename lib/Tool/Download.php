@@ -13,9 +13,9 @@ class Tool_Download extends \xepan\cms\View_Tool {
 		if($this->owner instanceof \AbstractController) return;
 
 		if($_GET['download']){
-			$val = (int) file_get_contents('vendor/xepan/epanservices/download-count.txt');
+			$val = (int) file_get_contents('shared/apps/xepan/epanservices/download-count.txt');
 			$val++;
-			file_put_contents('vendor/xepan/epanservices/download-count.txt', $val);
+			file_put_contents('shared/apps/xepan/epanservices/download-count.txt', $val);
 			$this->app->redirect($this->app->getConfig('xepan-community-stable-download-path'));
 			$this->js(true)->univ()->successMessage('Hello');
 		}

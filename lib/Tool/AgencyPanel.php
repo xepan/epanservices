@@ -14,7 +14,7 @@ class Tool_AgencyPanel extends \xepan\cms\View_Tool {
 		
 		if($this->owner instanceof \AbstractController) return;
 
-		$this->api->template->appendHTML('js_include','<link rel="stylesheet" type="text/css" href="'.$this->api->url()->absolute()->getBaseURL().'vendor/xepan/epanservices/templates/css/agency.css" />');
+		$this->api->template->appendHTML('js_include','<link rel="stylesheet" type="text/css" href="'.$this->api->url()->absolute()->getBaseURL().'shared/apps/xepan/epanservices/templates/css/agency.css" />');
 
 		$this->agency = $agency = $this->add('xepan\epanservices\Model_Agency');
 
@@ -164,7 +164,7 @@ class Tool_AgencyPanel extends \xepan\cms\View_Tool {
 		});
 
 		$cl->template->trySet('agency_name',$this->agency['name']);
-		$cl->template->trySet('agency_dp',($this->agency['image']?:"vendor/xepan/epanservices/templates/images/profile.png"));
+		$cl->template->trySet('agency_dp',($this->agency['image']?:"shared/apps/xepan/epanservices/templates/images/profile.png"));
 	}
 
 }

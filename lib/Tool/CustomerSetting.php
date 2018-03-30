@@ -46,7 +46,7 @@ class Tool_CustomerSetting extends \xepan\cms\View_Tool {
 		$col1 = $col->addColumn(4)->addClass('text-center');
 		$col2 = $col->addColumn(4);
 		
-		$src = 'vendor/xepan/epanservices/templates/images/profile.png';
+		$src = 'shared/apps/xepan/epanservices/templates/images/profile.png';
 		if($this->customer['image']){
 			$this->customer->reload();
 			$src = $this->customer['image'];
