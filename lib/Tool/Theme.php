@@ -9,7 +9,8 @@ class Tool_Theme extends \xepan\cms\View_Tool{
 			'show_progress_bar'=>1,
 			'show_preview_button'=>1,
 			'show_applynow_button'=>1,
-			'show_search'=>1
+			'show_search'=>1,
+			'show_status'=>'published' //all, published, unpublished
 		];
 
 	function init(){
@@ -29,7 +30,8 @@ class Tool_Theme extends \xepan\cms\View_Tool{
 						'dashboard_page'=>$this->options['dashboard_page'],
 						'show_preview_button'=>$this->options['show_preview_button'],
 						'show_applynow_button'=>$this->options['show_applynow_button'],
-						'show_search'=>$this->options['show_search']
+						'show_search'=>$this->options['show_search'],
+						'show_status'=>$this->options['show_status']
 					]);
 
 		if($this->options['show_progress_bar']){
