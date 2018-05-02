@@ -17,8 +17,8 @@ class Model_Epan extends \xepan\base\Model_Epan{
 	
 	public $actions = [
 		'Trial'=>['view','edit','manage_applications','pay','validity','expire','usage_limit','associate_with_category','copy_website_and_db_from','change_publish_status','previous_themes_folders'],
-		'Paid'=>['view','edit','manage_applications','expire','usage_limit','associate_with_category','copy_website_and_db_from','change_publish_status','previous_themes_folders'],
-		'Grace'=>['view','edit','delete','manage_applications','pay','expire','usage_limit','associate_with_category','copy_website_and_db_from','change_publish_status','previous_themes_folders'],
+		'Paid'=>['view','edit','manage_applications','validity','expire','usage_limit','associate_with_category','copy_website_and_db_from','change_publish_status','previous_themes_folders'],
+		'Grace'=>['view','edit','delete','manage_applications','pay','validity','expire','usage_limit','associate_with_category','copy_website_and_db_from','change_publish_status','previous_themes_folders'],
 		'Expired'=>['view','edit','delete','pay','associate_with_category','copy_website_and_db_from','change_publish_status','previous_themes_folders']
 	];
 
@@ -437,10 +437,11 @@ class Model_Epan extends \xepan\base\Model_Epan{
 
 		$form = $p->add('Form');
 		$form->addField('DateTimePicker','valid_till')->set($this['expiry_date']);
+		$form->addField('CheckBox','set_as_grace')->set(true);
 		$form->addSubmit('Save');
 		
 		if($form->isSubmitted()){
-			$this->validity($form['valid_till']);
+			$this->validity($form['valid_till'],$form['set_as_grace']);
 			$this->app->employee
 				->addActivity("Epan '".$this['name']."' Validity Changed By'".$this->app->employee['name']."'", $this->id, null,null,null,null)
 				->notifyWhoCan('pay,expire','Trial');
@@ -448,10 +449,13 @@ class Model_Epan extends \xepan\base\Model_Epan{
 		}
 	}
 
-	function validity($valid_till){
+	function validity($valid_till,$setGrace = true){
 		// $extra_info = json_decode($this['extra_info'],true);
 		// $extra_info ['valid_till'] = $valid_till;
 		$this['expiry_date'] = $valid_till;
+		if($setGrace)
+			$this['status'] = 'Grace';
+
 		$this->save();
 		return true;
 	}
