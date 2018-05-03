@@ -110,7 +110,7 @@ class Initiator extends \Controller_Addon {
             $job2 = new \Cron\Job\ShellJob();
             $job2->setSchedule(new \Cron\Schedule\CrontabSchedule('0 0 * * *'));
             if(!$job2->getSchedule() || $job2->getSchedule()->valid($now)){
-                foreach ($this->add('xepan\epanservices\Model_Epan')->addCondition('created_at','<',date('Y-m-d',strtotime('-14 days')))->addCondition('status','Trial') as $demo_finished) {
+                foreach ($this->add('xepan\epanservices\Model_Epan')->addCondition('expiry_date','<',$this->app->today)->addCondition('status','<>','Paid') as $demo_finished) {
                     $demo_finished->expire('Demo Expiered');
                 }
             }
