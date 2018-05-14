@@ -466,6 +466,7 @@ class Model_Epan extends \xepan\base\Model_Epan{
 
 		$validity_limit = [
 						'Employee Limit'=>0,
+						'Backend User Limit'=>0,
 						'Email Accounts'=>0,
 						'Sendig Email Threshold Per Minute Per Setting'=>0,
 						'Mass Email Setting Allowed'=>0,
@@ -475,6 +476,7 @@ class Model_Epan extends \xepan\base\Model_Epan{
 				];
 
 		$employee_limit = isset($extra_info ['specification']['Employee Limit'])?$extra_info ['specification']['Employee Limit']:0;
+		$backend_user_limit = isset($extra_info ['specification']['Backend User Limit'])?$extra_info ['specification']['Backend User Limit']:0;
 		$email_settings_limit = isset($extra_info ['specification']['Email Accounts'])?$extra_info ['specification']['Email Accounts']:0;
 		$email_threshold_limit = isset($extra_info ['specification']['Sendig Email Threshold Per Minute Per Setting'])?$extra_info ['specification']['Sendig Email Threshold Per Minute Per Setting']:0;
 		$storage_limit = isset($extra_info ['specification']['Storage Limit'])?$extra_info ['specification']['Storage Limit']:0;
@@ -483,11 +485,12 @@ class Model_Epan extends \xepan\base\Model_Epan{
 		$email_imap_limit = isset($extra_info ['specification']['Email IMAP Account Allowed'])?$extra_info ['specification']['Email IMAP Account Allowed']:0;
 
 		$form = $p->add('Form');
-		$form->addField('employee_limit')->set($employee_limit);
-		$form->addField('email_settings_limit')->set($email_settings_limit);
-		$form->addField('sending_email_threshold_per_minute_per_setting')->set($email_threshold_limit);
-		$form->addField('mass_email_allowed')->set($mass_email_allowed);
-		$form->addField('email_imap_account_allowed')->set($email_imap_limit);
+		$form->addField('employee_limit')->set($employee_limit)->setFieldHint('0 means unlimited');
+		$form->addField('backend_user_limit')->set($backend_user_limit)->setFieldHint('0 means unlimited');
+		$form->addField('email_settings_limit')->set($email_settings_limit)->setFieldHint('0 means unlimited');
+		$form->addField('sending_email_threshold_per_minute_per_setting')->set($email_threshold_limit)->setFieldHint('same as value define 5 then 5 limit or 0 then 0 limit');
+		$form->addField('mass_email_allowed')->set($mass_email_allowed)->setFieldHint('0 means unlimited');
+		$form->addField('email_imap_account_allowed')->set($email_imap_limit)->setFieldHint('0 means unlimited');
 		$form->addField('storage_limit')->set($storage_limit);
 		$form->addField('data_grabber')->set($data_grabber);
 		$form->addSubmit('Save');
@@ -496,6 +499,7 @@ class Model_Epan extends \xepan\base\Model_Epan{
 
 			$validity_limit = [
 						'Employee Limit'=>$form['employee_limit'],
+						'Backend User Limit'=>$form['backend_user_limit'],
 						'Email Accounts'=>$form['email_settings_limit'],
 						'Sendig Email Threshold Per Minute Per Setting'=>$form['sending_email_threshold_per_minute_per_setting'],
 						'Mass Email Setting Allowed'=>$form['mass_email_allowed'],
