@@ -19,7 +19,7 @@ class Model_Epan extends \xepan\base\Model_Epan{
 		'Trial'=>['view','edit','manage_applications','pay','validity','expire','usage_limit','associate_with_category','copy_website_and_db_from','change_publish_status','previous_themes_folders'],
 		'Paid'=>['view','edit','manage_applications','validity','expire','usage_limit','associate_with_category','copy_website_and_db_from','change_publish_status','previous_themes_folders'],
 		'Grace'=>['view','edit','delete','manage_applications','pay','validity','expire','usage_limit','associate_with_category','copy_website_and_db_from','change_publish_status','previous_themes_folders'],
-		'Expired'=>['view','edit','delete','pay','associate_with_category','copy_website_and_db_from','change_publish_status','previous_themes_folders']
+		'Expired'=>['view','edit','delete','pay','validity','associate_with_category','copy_website_and_db_from','change_publish_status','previous_themes_folders']
 	];
 
 	function init(){
