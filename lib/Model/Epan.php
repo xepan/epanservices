@@ -376,6 +376,7 @@ class Model_Epan extends \xepan\base\Model_Epan{
 
 			foreach ($applications as $name => $details) {
 				$f = $form->addField('CheckBox',$name);
+				$f = $form->addField('CheckBox',$name.'_hidden');
 				if(in_array($details['namespace'], array_column($installed_apps_array, 'application_namespace'))){
 					$f->set(true);
 				}
@@ -404,6 +405,7 @@ class Model_Epan extends \xepan\base\Model_Epan{
 						if($selection[$name]){
 							$installed_apps['epan_id']= $remote_epan_id;
 							$installed_apps['is_active']= 1;
+							$installed_apps['is_hidden']= $selection[$name.'_hidden'];
 							$installed_apps->save();
 						}else{
 							if(!$selection[$name] && $installed_apps->loaded()) $installed_apps->delete();
@@ -631,11 +633,11 @@ class Model_Epan extends \xepan\base\Model_Epan{
         	$spec = $extra_info['specification'];
 
         foreach ($spec as $key => $value) {
-            if(strtolower($value) === 'yes'){
+            if(strtolower($value) === 'yes' || strtolower($value) === 'no*' || strtolower($value) === 'hidden'){
             	$app = $this->add('xepan\base\Model_Application')->tryLoadBy('namespace','xepan\\'.strtolower($key));
             	if($app->loaded()){
             		if($app['user_installable']){
-	            		$epan->installApp($app);
+	            		$epan->installApp($app,(strtolower($value)!='yes'));
 	            		$installed_apps_namespaces[] = $app['namespace'];
             		}
             	}
