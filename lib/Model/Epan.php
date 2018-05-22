@@ -276,9 +276,12 @@ class Model_Epan extends \xepan\base\Model_Epan{
 			if($cnsl = $this->app->getConfig('View_Console',false)) $cnsl->out('Creating default user');
 			
 			$user_new = $this->add('xepan\base\Model_User')->tryLoadAny()->set('username',$user['username']);
-			if($user_model instanceof \xepan\base\Model_User && $user_model->loaded())
+			if($user_model instanceof \xepan\base\Model_User && $user_model->loaded()){
 				$user_new['password'] = $user_model['password'];
+				$user_new['created_by_id']=$this->app->customer->id;
+			}
 			$user_new->save();
+			$cnsl->out('User saved');
 
 			$this->app->db->dsql()->expr('SET FOREIGN_KEY_CHECKS = 1;')->execute();
 
@@ -376,9 +379,12 @@ class Model_Epan extends \xepan\base\Model_Epan{
 
 			foreach ($applications as $name => $details) {
 				$f = $form->addField('CheckBox',$name);
-				$f = $form->addField('CheckBox',$name.'_hidden');
 				if(in_array($details['namespace'], array_column($installed_apps_array, 'application_namespace'))){
 					$f->set(true);
+				}
+				$f_h = $form->addField('CheckBox',$name.'_hidden');
+				foreach ($installed_apps_array as $ins_app) {
+					if($ins_app['application']==$name && $ins_app['is_hidden']) $f_h->set(true);
 				}
 			}
 
