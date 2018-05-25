@@ -16,11 +16,15 @@ class page_epantemplates extends \xepan\base\Page {
 
 	function page_index(){		
 		$crud = $this->add('xepan\hr\CRUD',['allow_add'=>false],null,['view\epans']);
-		$crud->setModel('xepan\epanservices\Epan')->addCondition('is_template',true)
+		$crud->setModel('xepan\epanservices\Epan')->addCondition('is_template',true)->setOrder('id','desc')
 			->add('xepan\base\Controller_TopBarStatusFilter');;
 
 		$btn = $crud->grid->add('Button',null,'grid_buttons')->set('Add New Epan Template')->addClass('btn btn-primary');
 		$btn->js('click')->univ()->frameURL('Add New Template',$this->app->url('./addTemplate'));
+
+		$crud->grid->addQuickSearch(['name']);
+		$crud->grid->addPaginator(50);
+
 
 	}
 
