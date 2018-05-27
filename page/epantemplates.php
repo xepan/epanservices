@@ -15,13 +15,19 @@ class page_epantemplates extends \xepan\base\Page {
 	public $title='Epans';
 
 	function page_index(){		
-		$crud = $this->add('xepan\hr\CRUD',['allow_add'=>false],null,['view\epans']);
-		$crud->setModel('xepan\epanservices\Epan')->addCondition('is_template',true)
-			->add('xepan\base\Controller_TopBarStatusFilter');;
+		$crud = $this->add('xepan\hr\CRUD',['allow_add'=>false],null,null);
+		$template_m = $this->add('xepan\epanservices\Model_Epan');
+		$template_m->addCondition('is_template',true);
+		$template_m->add('xepan\base\Controller_TopBarStatusFilter',['extra_conditions'=>[['is_template',true]]]);
+		
+		$crud->setModel($template_m,
+				['name','created_by_id','created_at','expiry_date','status','is_template','aliases'],
+				['name','created_by','created_at','expiry_date','status','is_template','is_published']
+			);
 
 		$btn = $crud->grid->add('Button',null,'grid_buttons')->set('Add New Epan Template')->addClass('btn btn-primary');
 		$btn->js('click')->univ()->frameURL('Add New Template',$this->app->url('./addTemplate'));
-
+		$crud->noAttachment();
 	}
 
 	function page_addTemplate(){
