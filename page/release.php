@@ -16,19 +16,51 @@ class page_release extends \xepan\base\Page {
 
 	function init(){
 		parent::init();
+
+		// ====== release code ====== /
 		
 		$form = $this->add('Form');
+		$form->add('xepan\base\Controller_FLC')
+		->showLables(true)
+		->makePanelsCoppalsible(true)
+		->layout([
+				'file_name'=>'Release Details~c1~3',
+				'version'=>'c2~3',
+				'for_in_premises'=>'c3~3',
+				'FormButtons~ '=>'c4~3',
+			]);
 		$form->addField('Checkbox','for_in_premises');
 		$form->addField('Line','file_name')->set('xepan2.zip')->validate('required');
 		$form->addField('Line','version')->set(file_get_contents('../version'));
 
-		$form->addSubmit('GO');
+		$form->addSubmit('GO')->addClass('btn btn-primary');
 
 		$vp = $this->add('VirtualPage');
 		$vp->set([$this,'makeRelease']);
 
 		if($form->isSubmitted()){			
 			$form->js()->univ()->frameURL('Relase process',$this->app->url($vp->getURL(),$form->get()))->execute();
+		}
+
+
+		if(!file_exists('../api/updates.txt')) return;
+		// ======== Update Notification Text =========/
+
+		$form=$this->add('Form');
+		$form->add('xepan\base\Controller_FLC')
+		->showLables(true)
+		->makePanelsCoppalsible(true)
+		->layout([
+				'update_notification_text'=>'Release Update Message~c1~12'
+			]);
+		$form->addField('Text','update_notification_text')
+			->set(file_get_contents('../api/updates.txt'))
+			->setAttr('rows',15);
+		$form->addSubmit('Update')->addClass('btn btn-primary');
+
+		if($form->isSubmitted()){
+			file_put_contents('../api/updates.txt', $form['update_notification_text']);
+			$form->js()->univ()->successMessage('Message Updated')->execute();
 		}
 	}
 
