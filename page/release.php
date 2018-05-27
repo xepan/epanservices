@@ -17,6 +17,11 @@ class page_release extends \xepan\base\Page {
 	function init(){
 		parent::init();
 
+		if(!$this->app->auth->model->isSuperUser()) {
+			$this->add('View_Error')->set('Not Authorized');
+			return;
+		}
+
 		// ====== release code ====== /
 		
 		$form = $this->add('Form');
