@@ -47,7 +47,7 @@ class page_epans extends \xepan\base\Page {
 		}
 
 		$epan_model= $this->add('xepan\epanservices\Model_Epan');
-		$epan_model->add('xepan\base\Controller_TopBarStatusFilter');
+		$epan_model->add('xepan\base\Controller_TopBarStatusFilter',['extra_conditions'=>[['is_template',false],['is_template',null]]]);
 		
 		$crud = $this->add('xepan\hr\CRUD',null,null,null);
 		$crud->setModel($epan_model,
