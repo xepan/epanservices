@@ -89,7 +89,7 @@ class page_release extends \xepan\base\Page {
 
 			$c->out('Copying to release directory');
 
-			$output = shell_exec('rsync -a . ./release_files --exclude={.git/,/api,/tests,/shared/apps/xavoc,/shared/apps/xepan,/snippet,/websites} 2>&1');
+			$output = shell_exec('rsync -az . ./release_files --exclude=.git/ --exclude=/api --exclude=/tests --exclude=/shared/apps/xavoc --exclude=/shared/apps/xepan --exclude=/snippet --exclude=/websites 2>&1');
 			$c->out($output);
 			
 			// ========= in release_files directory ============= /
@@ -101,6 +101,10 @@ class page_release extends \xepan\base\Page {
 			// remove root symlink
 			if(file_exists('./atk4')){
 				unlink('./atk4');
+			}
+
+			if(file_exists('./config.php')){
+				unlink('./config.php');
 			}
 
 
@@ -119,6 +123,10 @@ class page_release extends \xepan\base\Page {
 
 			if(file_exists('./admin/xepantemplates')){
 				unlink('./admin/xepantemplates');
+			}
+
+			if(file_exists('./admin/config.php')){
+				unlink('./admin/config.php');
 			}
 
 			// remove install symlinks
