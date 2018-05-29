@@ -1,19 +1,19 @@
 # wget https://raw.githubusercontent.com/xepan/epanservices/master/serversetup -O xepan-install.sh && chmod +x xepan-install.sh && ./xepan-install.sh
 
-echo "======== XEPAN IS ASKING ============"
+echo "======== XAVOC ERP IS ASKING ============"
 echo What is mysql password you want to set
 read mysqlpassword
 
-echo "======== XEPAN IS ASKING ============"
+echo "======== XAVOC ERP IS ASKING ============"
 echo Input xepan installation database name
 read xepan_db_name
 
-echo "======== XEPAN IS ASKING ============"
-echo Which Epan version you want to install like 0.92
-read xepan_version
+# echo "======== XAVOC ERP IS ASKING ============"
+# echo Which Epan version you want to install like 0.92 (default is latest, leave blank for that)
+# read xepan_version
 
-echo "======== XEPAN IS ASKING ============"
-echo Epan Host or IP for crontab
+echo "======== XAVOC ERP IS ASKING ============"
+echo Epan Host or IP for crontab (Self IP in most cases)
 read xepan_host
 
 apt-get upgrade
@@ -43,107 +43,8 @@ rm index.html
 
 
 # Inpremises installation of ERP
-git init
-git remote add origin https://github.com/xepan/xepan2.git
-git remote remove origin
-git remote add origin https://github.com/xepan/xepan2.git
-git branch -f master HEAD && git checkout master
-git pull origin master
-
-composer install
-
-
-# Open Source Version
-#wget http://epan.in/xepan2-$xepan_version.zip
-#unzip xepan2-$xepan_version.zip
-
-### === init git for all required ===
-cd /var/www/html/vendor/xepan/accounts
-git remote remove origin
-git remote add origin https://github.com/xepan/accounts.git
-git branch -f master HEAD && git checkout master
-git pull origin master
-
-cd /var/www/html/vendor/xepan/atk4
-git init
-git remote remove origin
-git remote add origin https://github.com/xepan/atk4.git
-git pull origin 4.3
-git reset --hard origin/4.3
-
-cd /var/www/html/vendor/xepan/base
-git remote remove origin
-git remote add origin https://github.com/xepan/base.git
-git branch -f master HEAD && git checkout master
-git pull origin master
-
-cd /var/www/html/vendor/xepan/blog
-git remote remove origin
-git remote add origin https://github.com/xepan/blog.git
-git branch -f master HEAD && git checkout master
-git pull origin master
-
-cd /var/www/html/vendor/xepan/cms
-git remote remove origin
-git remote add origin https://github.com/xepan/cms.git
-git branch -f master HEAD && git checkout master
-git pull origin master
-
-cd /var/www/html/vendor/xepan/commerce
-git remote remove origin
-git remote add origin https://github.com/xepan/commerce.git
-git branch -f master HEAD && git checkout master
-git pull origin master
-
-cd /var/www/html/vendor/xepan/communication
-git remote remove origin
-git remote add origin https://github.com/xepan/communication.git
-git branch -f master HEAD && git checkout master
-git pull origin master
-
-cd /var/www/html/vendor/xepan/crm
-git remote remove origin
-git remote add origin https://github.com/xepan/crm.git
-git branch -f master HEAD && git checkout master
-git pull origin master
-
-cd /var/www/html/vendor/xepan/hr
-git remote remove origin
-git remote add origin https://github.com/xepan/hr.git
-git branch -f master HEAD && git checkout master
-git pull origin master
-
-cd /var/www/html/vendor/xepan/listing
-git remote remove origin
-git remote add origin https://github.com/xepan/listing.git
-git branch -f master HEAD && git checkout master
-git pull origin master
-
-cd /var/www/html/vendor/xepan/marketing
-git remote remove origin
-git remote add origin https://github.com/xepan/marketing.git
-git branch -f master HEAD && git checkout master
-git pull origin master
-
-cd /var/www/html/vendor/xepan/omnipay-instamojo
-git remote remove origin
-git remote add origin https://github.com/xepan/omnipay-instamojo.git
-git branch -f master HEAD && git checkout master
-git pull origin master
-
-cd /var/www/html/vendor/xepan/production
-git remote remove origin
-git remote add origin https://github.com/xepan/production.git
-git branch -f master HEAD && git checkout master
-git pull origin master
-
-cd /var/www/html/vendor/xepan/projects
-git remote remove origin
-git remote add origin https://github.com/xepan/projects.git
-git branch -f master HEAD && git checkout master
-git pull origin master
-
-rm -rf /var/www/html/vendor/xepan/epanservices
+wget http://xavoc.com/xepan2.zip
+unzip xepan2.zip
 
 cd /var/www/html
 chown -R www-data:www-data .
@@ -164,7 +65,6 @@ echo "<?php  \$config['websocket-notifications'] =  true; \$config['websocket-se
 
 # wsserver run
 cd wsserver
-composer install
 nohup php index.php >/dev/null 2>&1 &
 
 
