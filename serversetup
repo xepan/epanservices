@@ -13,7 +13,7 @@ read xepan_db_name
 # read xepan_version
 
 echo "======== XAVOC ERP IS ASKING ============"
-echo Epan Host or IP for crontab (Self IP in most cases)
+echo Epan Host or IP for crontab Self IP in most cases
 read xepan_host
 
 apt-get upgrade
