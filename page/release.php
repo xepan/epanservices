@@ -89,7 +89,7 @@ class page_release extends \xepan\base\Page {
 
 			$c->out('Copying to release directory');
 
-			$output = shell_exec('rsync -az . ./release_files --exclude=config.php --exclude=.git/ --exclude=/api --exclude=/tests --exclude=/shared/apps/xavoc --exclude=/shared/apps/xepan --exclude=/snippet --exclude=/websites 2>&1');
+			$output = shell_exec('rsync -az . ./release_files --exclude=config.php --exclude=.git/ --exclude=/api --exclude=/tests --exclude=/shared/apps/xavoc --exclude=/shared/apps/xepan --exclude=/snippet --exclude=/websites --exclude=/admin/websites --exclude=/install/websites 2>&1');
 			$c->out($output);
 			
 			// ========= in release_files directory ============= /
