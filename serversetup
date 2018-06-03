@@ -17,12 +17,10 @@ echo Epan Host or IP for crontab Self IP in most cases
 read xepan_host
 
 apt-get upgrade
-var2=`lsb_release -r | awk '{ print $2 }'`
 
 # php 7.1
 apt-get install -y python-software-properties
 add-apt-repository -y ppa:ondrej/php
-apt-get update -y
 
 #mariadb 10.1
 
@@ -30,7 +28,6 @@ sudo apt-get install software-properties-common
 sudo apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
 sudo add-apt-repository 'deb [arch=amd64,i386] http://sgp1.mirrors.digitalocean.com/mariadb/repo/10.1/ubuntu xenial main'
 
-apt-get update
 sudo dpkg-reconfigure tzdata
 sudo apt-get install software-properties-common
 sudo apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
