@@ -21,6 +21,22 @@ class Initiator extends \Controller_Addon {
             $this->app->side_menu->addItem(['Epans','icon'=>' fa fa-globe','badge'=>[1 ,'swatch'=>' label label-primary pull-right']],'xepan_epanservices_epans')->setAttr(['title'=>'Epans']);
         }
 
+        if($this->app->inConfigurationMode)
+            $this->populateConfigurationMenus();
+        else
+            $this->populateApplicationMenus();
+
+        
+        $this->app->addHook('entity_collection',[$this,'exportEntities']);
+        $this->app->addHook('collect_shortcuts',[$this,'collect_shortcuts']);        
+    	return $this; 
+    }
+
+    function populateConfigurationMenus(){
+
+    }
+
+    function populateApplicationMenus(){
         if(!$this->app->isAjaxOutput() && !$this->app->getConfig('hidden_xepan_epanservices',false)){
             $m = $this->app->top_menu->addMenu('Epans');
             $m->addItem(['Category','icon'=>'fa fa-sitemap'],'xepan_epanservices_category');
@@ -34,9 +50,6 @@ class Initiator extends \Controller_Addon {
 
         $this->app->side_menu->addItem([' DB Version Generate','icon'=>' fa fa-edit'],'xepan_epanservices_dbversion')->setAttr(['title'=>'DB Version Generate ']);
         
-        $this->app->addHook('entity_collection',[$this,'exportEntities']);
-        $this->app->addHook('collect_shortcuts',[$this,'collect_shortcuts']);        
-    	return $this; 
     }
 
     function collect_shortcuts($app,&$shortcuts){

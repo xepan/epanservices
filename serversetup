@@ -24,16 +24,18 @@ add-apt-repository -y ppa:ondrej/php
 
 #mariadb 10.1
 
-sudo apt-get install software-properties-common
-sudo apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
-sudo add-apt-repository 'deb [arch=amd64,i386] http://sgp1.mirrors.digitalocean.com/mariadb/repo/10.1/ubuntu xenial main'
+apt-get install software-properties-common
+apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
+add-apt-repository 'deb [arch=amd64,i386] http://sgp1.mirrors.digitalocean.com/mariadb/repo/10.1/ubuntu xenial main'
 
-sudo dpkg-reconfigure tzdata
-sudo apt-get install software-properties-common
-sudo apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
-sudo apt-get update && sudo apt-get install -y mariadb-server mariadb-client
+dpkg-reconfigure tzdata
+apt-get install software-properties-common
+apt-key adv --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8
+apt-get update && sudo apt-get install -y mariadb-server mariadb-client
+
 service mysql start
-#mysql_secure_installation
+
+#mysql_secure_installations
 sed -i 's/bind-address/#bind-address/g' /etc/mysql/mariadb.conf.d/50-server.cnf
 
 mysql -uroot -p$mysqlpassword -e "GRANT ALL ON *.* to root@'%' IDENTIFIED BY '$mysqlpassword';GRANT ALL ON *.* to root@'localhost' IDENTIFIED BY '$mysqlpassword';"
@@ -43,7 +45,7 @@ mysql -uroot -p$mysqlpassword -e "create database $xepan_db_name;"
 apt-get install -y apache2
 
 
-sudo apt-get install -y php7.1 libapache2-mod-php7.1 php7.1-cli php7.1-common php7.1-mbstring php7.1-gd php7.1-intl php7.1-xml php7.1-mysql php7.1-mcrypt php7.1-zip php7.1-curl php7.1-imap
+apt-get install -y php7.1 libapache2-mod-php7.1 php7.1-cli php7.1-common php7.1-mbstring php7.1-gd php7.1-intl php7.1-xml php7.1-mysql php7.1-mcrypt php7.1-zip php7.1-curl php7.1-imap
 apt-get install -y unzip 
 
 curl -sS https://getcomposer.org/installer | php
@@ -56,8 +58,6 @@ rm index.html
 # Inpremises installation of ERP
 wget http://xavoc.com/xepan2.zip
 unzip xepan2.zip
-
-cd /var/www/html
 chown -R www-data:www-data .
 
 # php settings
