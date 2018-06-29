@@ -169,8 +169,13 @@ class Tool_EpanTrial extends \xepan\cms\View_Tool {
         	$c->out('Setting up your new Epan');
         	$this->associateCustomerWithCategory($customer);
         	$c->out(' - Setting up done');
-			$this->sendGreetingsMail($email_id,$email_settings);
-        	$c->out('Send you a greeting email on '.$email_id);
+        	try{
+				$this->sendGreetingsMail($email_id,$email_settings);
+	        	$c->out('Send you a greeting email on '.$email_id);
+        	}catch(\Exception $e){
+        		$c->err($e->getMessage());
+        		$c->err('Could not send you email');
+        	}
 
         	$c->out('Redirecting to new created epan');
 			if($this->options['next_page']){
