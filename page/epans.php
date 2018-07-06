@@ -65,7 +65,15 @@ class page_epans extends \xepan\base\Page {
 		$crud->grid->addColumn('Button','live_edit',['descr'=>'Frontend Edit','button_class'=>'btn btn-danger']);
 		$crud->grid->addColumn('Button','admin_login',['descr'=>'Admin Login','button_class'=>'btn btn-danger']);
 		$crud->grid->removeColumn('status');
+		$crud->grid->addMethod('format_size',function($g,$f){
+			$dir=getcwd().'/websites/'.$g->model['name'];
+			$output = exec('du -sh ' . $dir);
+		    $filesize = str_replace($dir, '', $output);
+			$g->current_row_html[$f]=$filesize;
+		});
 		$crud->grid->addFormatter('name','template')->setTemplate('<a href="http://{$name}.epan.in" target="_blank">{$name}</a>','name');
+		$crud->grid->addColumn('size','size');
+		$crud->grid->addOrder()->move('size','before','action')->now();
 		$crud->noAttachment();
 	}
 
