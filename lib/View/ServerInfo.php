@@ -23,7 +23,7 @@ class View_ServerInfo extends \View {
 		$cpu_load_view->setIcon('fa fa-cogs');
 
 		$this->space_view = $space_view = $space_col->add('xepan\base\View_Widget_ProgressStatus');
-		$space_view->setHeading('Starage');
+		$space_view->setHeading('Storage');
 		$space_view->setIcon('fa fa-hdd-o');
 		$total_space = disk_total_space('/');
 		$free_space = disk_free_space('/');
