@@ -31,7 +31,16 @@ class View_ServerInfo extends \View {
 		$mem = explode(" ", $free_arr[1]);
 		$mem = array_filter($mem);
 		$mem = array_merge($mem);
-		$memory_usage = $mem[2]/$mem[1]*100;
+
+		if(isset($free_arr[2])){
+			$swap = explode(" ", $free_arr[2]);
+			$swap = array_filter($swap);
+			$swap = array_merge($swap);
+		}else{
+			$swap=[0,0,0];
+		}
+
+		$memory_usage = ($mem[2]+$swap[2])/($mem[1]+$swap[1])*100;
 
 		return $memory_usage;
 	}
