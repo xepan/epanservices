@@ -24,7 +24,7 @@ class View_ServerInfo extends \View {
 
 		$this->space_view = $space_view = $space_col->add('xepan\base\View_Widget_ProgressStatus');
 		$space_view->setHeading('Starage');
-		$space_view->setIcon('fa fa-hdd');
+		$space_view->setIcon('fa fa-hdd-o');
 		$total_space = disk_total_space('/');
 		$free_space = disk_free_space('/');
 		$per = round(($total_space-$free_space)/$total_space*100,0);
