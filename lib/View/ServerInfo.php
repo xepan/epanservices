@@ -10,8 +10,9 @@ class View_ServerInfo extends \View {
 		
 		$this->v= $this->add('View');
 		$this->cols = $cols = $this->v->add('Columns');
-		$memory_col = $cols->addColumn(6);
-		$cpu_col = $cols->addColumn(6);
+		$memory_col = $cols->addColumn(4);
+		$cpu_col = $cols->addColumn(4);
+		$space_col = $cols->addColumn(4);
 
 		$this->memory_view = $memory_view = $memory_col->add('xepan\base\View_Widget_ProgressStatus');
 		$memory_view->setHeading('Memory Status');
@@ -20,6 +21,16 @@ class View_ServerInfo extends \View {
 		$this->cpu_load_view = $cpu_load_view = $cpu_col->add('xepan\base\View_Widget_ProgressStatus');
 		$cpu_load_view->setHeading('Server Load');
 		$cpu_load_view->setIcon('fa fa-cogs');
+
+		$this->space_view = $space_view = $space_col->add('xepan\base\View_Widget_ProgressStatus');
+		$space_view->setHeading('Starage');
+		$space_view->setIcon('fa fa-hdd');
+		$total_space = disk_total_space('/');
+		$free_space = disk_free_space('/');
+		$per = round(($total_space-$free_space)/$total_space*100,0);
+		$this->space_view->setProgressPercentage($per);
+		$this->space_view->setFooter($per.'% [Free '. $this->app->byte2human($free_space).']');
+
 	}
 
 	function get_server_memory_usage(){
