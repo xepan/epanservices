@@ -46,6 +46,8 @@ class page_epans extends \xepan\base\Page {
 
 		}
 
+		$this->add('xepan\epanservices\View_ServerInfo');
+
 		$epan_model= $this->add('xepan\epanservices\Model_Epan');
 		$epan_model->add('xepan\base\Controller_TopBarStatusFilter',['extra_conditions'=>[['is_template',false],['is_template',null]]]);
 		
