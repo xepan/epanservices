@@ -53,7 +53,7 @@ class View_ServerInfo extends \View {
 
 		$memory_usage = ($mem[2]+$swap[2])/($mem[1]+$swap[1])*100;
 
-		return $memory_usage;
+		return round($memory_usage,0);
 	}
 
 	function get_server_cpu_usage(){
