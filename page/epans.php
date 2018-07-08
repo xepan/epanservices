@@ -61,6 +61,7 @@ class page_epans extends \xepan\base\Page {
 			;
 		
 		$crud->grid->addQuickSearch(['name']);
+		$crud->grid->addPaginator(25);
 
 		$crud->grid->add('Button',null,'grid_buttons')->addClass('btn btn-primary')->set('Update DB')->js('click',$this->js()->univ()->frameURL($this->updateEpansDB->getURL()));
 
