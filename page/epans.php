@@ -71,7 +71,16 @@ class page_epans extends \xepan\base\Page {
 			$dir=getcwd().'/websites/'.$g->model['name'];
 			$output = exec('du -sh ' . $dir);
 		    $filesize = str_replace($dir, '', $output);
-			$g->current_row_html[$f]=$filesize;
+
+		    preg_match(
+                    '|([a-z]+)://([^:]*)(:(.*))?@([A-Za-z0-9\.-]*)'.
+                    '(/([0-9a-zA-Z_/\.-]*))|',
+                    $this->app->getConfig('dsn'),
+                    $matches
+                );
+			$db_size = $this->app->db->dsql()->expr("SELECT SUM(data_length + index_length) AS 'size' FROM information_schema.TABLES WHERE table_schema='".($g->model['name']=='www'?$matches[7]:$g->model['name'])."';")->getOne();
+
+			$g->current_row_html[$f]=$this->app->byte2human($this->app->human2byte($filesize)+$db_size);
 		});
 		$crud->grid->addFormatter('name','template')->setTemplate('<a href="http://{$name}.epan.in" target="_blank">{$name}</a>','name');
 		$crud->grid->addColumn('size','size');
