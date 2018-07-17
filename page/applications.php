@@ -18,6 +18,11 @@ class page_applications extends \xepan\base\Page {
 	function init(){
 		parent::init();
 
+		if($this->app->auth->model['type'] != "SuperUser"){
+			$this->add('View_Error')->set('you are not authorize to acccess this');
+			return;
+		}
+
 		$app_model= $this->add('xepan\base\Model_Application');
 
 		$app_model->addHook('beforeInsert',[$this,'createAppStructure']);
