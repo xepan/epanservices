@@ -46,6 +46,8 @@ class page_epans extends \xepan\base\Page {
 
 		}
 
+		$this->add('xepan\epanservices\View_ServerInfo');
+
 		$epan_model= $this->add('xepan\epanservices\Model_Epan');
 		$epan_model->add('xepan\base\Controller_TopBarStatusFilter',['extra_conditions'=>[['is_template',false],['is_template',null]]]);
 		
@@ -59,13 +61,31 @@ class page_epans extends \xepan\base\Page {
 			;
 		
 		$crud->grid->addQuickSearch(['name']);
+		$crud->grid->addPaginator(25);
 
 		$crud->grid->add('Button',null,'grid_buttons')->addClass('btn btn-primary')->set('Update DB')->js('click',$this->js()->univ()->frameURL($this->updateEpansDB->getURL()));
 
 		$crud->grid->addColumn('Button','live_edit',['descr'=>'Frontend Edit','button_class'=>'btn btn-danger']);
 		$crud->grid->addColumn('Button','admin_login',['descr'=>'Admin Login','button_class'=>'btn btn-danger']);
 		$crud->grid->removeColumn('status');
+		$crud->grid->addMethod('format_size',function($g,$f){
+			$dir=getcwd().'/websites/'.$g->model['name'];
+			$output = exec('du -sh ' . $dir);
+		    $filesize = str_replace($dir, '', $output);
+
+		    preg_match(
+                    '|([a-z]+)://([^:]*)(:(.*))?@([A-Za-z0-9\.-]*)'.
+                    '(/([0-9a-zA-Z_/\.-]*))|',
+                    $this->app->getConfig('dsn'),
+                    $matches
+                );
+			$db_size = $this->app->db->dsql()->expr("SELECT SUM(data_length + index_length) AS 'size' FROM information_schema.TABLES WHERE table_schema='".($g->model['name']=='www'?$matches[7]:$g->model['name'])."';")->getOne();
+
+			$g->current_row_html[$f]=$this->app->byte2human($this->app->human2byte($filesize)+$db_size);
+		});
 		$crud->grid->addFormatter('name','template')->setTemplate('<a href="http://{$name}.epan.in" target="_blank">{$name}</a>','name');
+		$crud->grid->addColumn('size','size');
+		$crud->grid->addOrder()->move('size','before','action')->now();
 		$crud->noAttachment();
 	}
 
