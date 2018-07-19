@@ -11,6 +11,7 @@ class Tool_CustomerSetting extends \xepan\cms\View_Tool {
 		parent::init();
 		
 		$this->app->stickyGET('action');
+		$this->app->stickyGET('country_id');
 
 		if($this->owner instanceof \AbstractController) return;
 
@@ -70,7 +71,6 @@ class Tool_CustomerSetting extends \xepan\cms\View_Tool {
 			$i_form->js(null,[$img_view->js()->reload(),$i_form->js(true)->_selector('img.ds-dp')->attr('src',$this->customer['image'])])->univ()->successMessage('Profile Photo Updated')->execute();
 		}
 
-
 		$form = $col2->add('Form');
 		$form->add('xepan\base\Controller_FLC')
 				->addContentSpot()
@@ -96,11 +96,11 @@ class Tool_CustomerSetting extends \xepan\cms\View_Tool {
 
 		$state_field = $form->getElement('state_id')->validate('required');
 		$state_field->getModel()->addCondition('status','Active');
-
-		if($_GET['country_id']){
-			$state_field->getModel()->addCondition('country_id',$_GET['country_id']);
-		}
-		$country_field->js('change',$state_field->js()->reload(null,null,[$this->app->url(null,['cut_object'=>$state_field->name]),'country_id'=>$country_field->js()->val()]));
+		// if($_GET['country_id']){
+		// 	$state_field->getModel()->addCondition('country_id',$_GET['country_id']);
+		// }
+		$state_field->dependsOn($country_field);
+		// $country_field->js('change',$state_field->js()->reload(null,null,[$this->app->url(null,['cut_object'=>$state_field->name]),'country_id'=>$country_field->js()->val()]));
 
 		// load email
 		$email_field->set($this->customer->getEmails()[0]);
