@@ -481,6 +481,7 @@ class Model_Epan extends \xepan\base\Model_Epan{
 						'Email IMAP Account Allowed'=>0,
 						'Storage Limit'=>0,
 						'Data Grabber'=>"No",
+						'IndiaMart CRM Integration'=>"No"
 				];
 
 		$employee_limit = isset($extra_info ['specification']['Employee Limit'])?$extra_info ['specification']['Employee Limit']:0;
@@ -491,6 +492,7 @@ class Model_Epan extends \xepan\base\Model_Epan{
 		$data_grabber = isset($extra_info ['specification']['Data Grabber'])?$extra_info ['specification']['Data Grabber']:"No";
 		$mass_email_allowed = isset($extra_info ['specification']['Mass Email Setting Allowed'])?$extra_info ['specification']['Mass Email Setting Allowed']:0;
 		$email_imap_limit = isset($extra_info ['specification']['Email IMAP Account Allowed'])?$extra_info ['specification']['Email IMAP Account Allowed']:0;
+		$india_mart_allowed = isset($extra_info ['specification']['IndiaMart CRM Integration'])?$extra_info ['specification']['IndiaMart CRM Integration']:"No";
 
 		$form = $p->add('Form');
 		$form->addField('employee_limit')->set($employee_limit)->setFieldHint('0 means unlimited');
@@ -501,6 +503,7 @@ class Model_Epan extends \xepan\base\Model_Epan{
 		$form->addField('email_imap_account_allowed')->set($email_imap_limit)->setFieldHint('0 means unlimited');
 		$form->addField('storage_limit')->set($storage_limit);
 		$form->addField('data_grabber')->set($data_grabber);
+		$form->addField('india_mart_crm_integration')->set($india_mart_allowed);
 		$form->addSubmit('Save');
 		
 		if($form->isSubmitted()){
@@ -513,7 +516,8 @@ class Model_Epan extends \xepan\base\Model_Epan{
 						'Mass Email Setting Allowed'=>$form['mass_email_allowed'],
 						'Email IMAP Account Allowed'=>$form['email_imap_account_allowed'],
 						'Storage Limit'=>$form['storage_limit'],
-						'Data Grabber'=>$form['data_grabber']
+						'Data Grabber'=>$form['data_grabber'],
+						'IndiaMart CRM Integration'=>$form['india_mart_crm_integration'],
 				];
 			$this->usage_limit($validity_limit);
 			$this->app->employee
