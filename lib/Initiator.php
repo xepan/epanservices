@@ -108,6 +108,7 @@ class Initiator extends \Controller_Addon {
                 $other_epans = $this->add('xepan\base\Model_Epan')
                                     ->addCondition('id','<>',$this->app->epan->id)
                                     ->addCondition('is_published',true)
+                                    ->addCondition('is_template',false)
                                     ->addCondition('status',['Trial','Paid','Grace'])
                                     ;
                 foreach ($other_epans as $other_epan) {
