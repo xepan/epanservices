@@ -117,6 +117,7 @@ class Initiator extends \Controller_Addon {
                     $urls[] = 'http://'. $other_epan['name'].'.xavoc.com?page=xepan_base_cron&cut_page=true&now='.urlencode($this->app->now);
                 }
                 if(count($urls)){
+                    var_dump($urls);
                     $results = $this->multi_request($urls);
                 }
             }
