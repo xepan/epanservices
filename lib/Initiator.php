@@ -108,13 +108,13 @@ class Initiator extends \Controller_Addon {
                 $other_epans = $this->add('xepan\base\Model_Epan')
                                     ->addCondition('id','<>',$this->app->epan->id)
                                     ->addCondition('is_published',true)
-                                    ->addCondition('status',['Trial','Paid'])
+                                    ->addCondition('status',['Trial','Paid','Grace'])
                                     ;
                 foreach ($other_epans as $other_epan) {
                     // $command = 'wget http://'. $other_epans['name'].'.epan.in?page=xepan_base_cron&cut_page=true';
                     // echo "<br/> executing ". $command. '<br/>';
                     // shell_exec($command);
-                    $urls[] = 'http://'. $other_epan['name'].'.epan.in?page=xepan_base_cron&cut_page=true&now='.urlencode($this->app->now);
+                    $urls[] = 'http://'. $other_epan['name'].'.xavoc.com?page=xepan_base_cron&cut_page=true&now='.urlencode($this->app->now);
                 }
                 if(count($urls)){
                     $results = $this->multi_request($urls);
