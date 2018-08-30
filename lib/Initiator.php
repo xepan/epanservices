@@ -108,7 +108,7 @@ class Initiator extends \Controller_Addon {
                 $other_epans = $this->add('xepan\base\Model_Epan')
                                     ->addCondition('id','<>',$this->app->epan->id)
                                     ->addCondition('is_published',true)
-                                    ->addCondition('is_template',false)
+                                    ->addCondition([['is_template',false],['is_template',null]])
                                     ->addCondition('status',['Trial','Paid','Grace'])
                                     ;
                 foreach ($other_epans as $other_epan) {
@@ -118,6 +118,7 @@ class Initiator extends \Controller_Addon {
                     $urls[] = 'http://'. $other_epan['name'].'.xavoc.com?page=xepan_base_cron&cut_page=true&now='.urlencode($this->app->now);
                 }
 
+                echo "<pre>";
                 if(count($urls)){
                     var_dump($urls);
                     foreach (array_chunk($urls, 10) as $url_chunk) {
@@ -125,6 +126,7 @@ class Initiator extends \Controller_Addon {
                         $results = $this->multi_request($url_chunk);
                     }
                 }
+                echo "</pre>";
             }
 
             $job2 = new \Cron\Job\ShellJob();
