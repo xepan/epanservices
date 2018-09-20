@@ -25,10 +25,25 @@ class View_MyUnPaidInvoice extends \View{
 		$saleorder->setOrder('id','desc');
 		$saleorder->addCondition('invoice_status','Due');
 
+		$saleorder->addExpression('extra_info',function($m,$q){
+			$i = $m->add('xepan\commerce\Model_QSP_Detail',['table_alias'=>'details']);
+			$i->addCondition('qsp_master_id',$q->getField('id'));
+			$i->setLimit(1);
+			return $q->expr('IFNULL([0],"Due")',[$i->fieldQuery('extra_info')]);
+		})->caption('Epan Name');
+
 		if($saleorder->count()->getOne()){
 			$this->add('View')->set('My Unpaid Order')->addClass(' panel panel-heading xepan-grid-heading');
 			$grid = $this->add('xepan\base\Grid');
-			$grid->setModel($saleorder,['document_no','invoice_status','created_at','net_amount']);
+
+			$grid->addHook('formatRow',function($g){
+				$jp = new \xepan\base\JsonPath();
+				$x1=json_decode($g->model['extra_info'],true);
+				$x = $jp->get($x1,'$..custom_field_value_name');
+				$g->current_row_html['extra_info'] = implode(",", $x);
+			});
+
+			$grid->setModel($saleorder,['document_no','invoice_status','created_at','net_amount','extra_info']);
 			$grid->addColumn('Button','pay_now','Pay Now');
 			$grid->addPaginator($ipp=5);
 			$grid->addSno();
