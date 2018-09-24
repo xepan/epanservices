@@ -10,9 +10,10 @@ class View_ServerInfo extends \View {
 		
 		$this->v= $this->add('View');
 		$this->cols = $cols = $this->v->add('Columns');
-		$memory_col = $cols->addColumn(4);
-		$cpu_col = $cols->addColumn(4);
-		$space_col = $cols->addColumn(4);
+		$memory_col = $cols->addColumn(3);
+		$cpu_col = $cols->addColumn(3);
+		$space_col = $cols->addColumn(3);
+		$download_col = $cols->addColumn(3);
 
 		$this->memory_view = $memory_view = $memory_col->add('xepan\base\View_Widget_ProgressStatus');
 		$memory_view->setHeading('Memory Status');
@@ -30,6 +31,8 @@ class View_ServerInfo extends \View {
 		$per = round(($total_space-$free_space)/$total_space*100,0);
 		$this->space_view->setProgressPercentage($per);
 		$this->space_view->setFooter($per.'% [Free '. $this->app->byte2human($free_space).']');
+		if(file_exists('../shared/apps/xepan/epanservices/download-count.txt'))
+			$this->download_view = $download_view = $download_col->add('View_Info')->set('Open Source Downloads:'.file_get_contents('../shared/apps/xepan/epanservices/download-count.txt'));
 
 	}
 
