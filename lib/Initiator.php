@@ -91,6 +91,7 @@ class Initiator extends \Controller_Addon {
             $this->app->exportFrontEndTool('xepan\epanservices\Tool_CustomerOrderHistory','EpanTrial');
             $this->app->exportFrontEndTool('xepan\epanservices\Tool_Item','EpanTrial');
             $this->app->exportFrontEndTool('xepan\epanservices\Tool_Theme','EpanTrial');
+            $this->app->exportFrontEndTool('xepan\epanservices\Tool_Download','EpanTrial');
         }
 
         $this->app->addHook('cron_executor',function($app){
