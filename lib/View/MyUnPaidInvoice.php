@@ -39,7 +39,7 @@ class View_MyUnPaidInvoice extends \View{
 			$grid->addHook('formatRow',function($g){
 				$jp = new \xepan\base\JsonPath();
 				$x1=json_decode($g->model['extra_info'],true);
-				$x = $jp->get($x1,'$..custom_field_value_name');
+				$x = $jp->get($x1,'$..custom_field_value_name'); // http://goessner.net/articles/JsonPath/
 				$g->current_row_html['extra_info'] = implode(",", $x);
 			});
 

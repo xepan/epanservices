@@ -18,7 +18,7 @@ class page_applications extends \xepan\base\Page {
 	function init(){
 		parent::init();
 
-		if($this->app->auth->model['type'] != "SuperUser"){
+		if($this->app->auth->model['scope'] != "SuperUser"){
 			$this->add('View_Error')->set('you are not authorize to acccess this');
 			return;
 		}
